@@ -1,5 +1,5 @@
 [project]
-name = "lab-neo4j-aws"
+name = "neo4j-graphrag-workshop"
 version = "1.0.0"
 description = "Neo4j and AWS Bedrock GraphRAG Workshop"
 readme = "README.md"
@@ -13,8 +13,8 @@ dependencies = [
 
     # Strands Agents SDK (AWS open-source agent framework)
     # See: https://strandsagents.com
-    "strands-agents>=1.0.0",
-    "strands-agents-tools>=1.0.0",
+    "strands-agents>=0.2.0",
+    "strands-agents-tools>=0.2.0",
 
     # LangChain integration for Neo4j tools
     "langchain>=0.3.0",
@@ -23,11 +23,14 @@ dependencies = [
 
     # Neo4j
     "neo4j>=5.0.0",
-    "neo4j-graphrag>=1.10.0",
+    # Using local fork with Bedrock support
+    # After testing, replace with: "neo4j-graphrag[bedrock]>=1.10.0"
+    "neo4j-graphrag[bedrock] @ file:///Users/ryanknight/projects/neo4j-graphrag-python",
 
     # Utilities
     "python-dotenv>=1.0.0",
     "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
 
     # Jupyter notebooks
     "jupyter>=1.0.0",
@@ -42,17 +45,15 @@ dev = [
     "ruff>=0.1.0",
 ]
 
-cdk = [
-    "aws-cdk-lib>=2.150.0",
-    "constructs>=10.0.0",
-]
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
-packages = ["."]
+packages = ["solutions"]
 
 [tool.black]
 line-length = 100

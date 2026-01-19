@@ -1,6 +1,6 @@
 # Lab 3 - Amazon Bedrock Setup
 
-In this lab, you will set up Amazon Bedrock and enable access to the foundation models needed for the remaining labs. Amazon Bedrock is AWS's fully managed service for accessing foundation models from leading AI companies.
+In this lab, you will set up Amazon Bedrock and verify access to the foundation models needed for the remaining labs. Amazon Bedrock is AWS's fully managed service for accessing foundation models from leading AI companies.
 
 ## Prerequisites
 
@@ -21,15 +21,39 @@ Amazon Bedrock provides:
 
 In this lab, you'll:
 - Navigate to Amazon Bedrock in the AWS Console
-- Enable access to Claude and Titan models
+- Complete the one-time Anthropic use case form (required for Claude models)
 - Test the models in the Bedrock Playground
 - Understand the models you'll use in later labs
 
 ---
 
-## Part 1: Enable Bedrock Model Access
+## How Model Access Works (Updated October 2025)
 
-Before using any foundation models, you must request access in the Bedrock console.
+> **Important Change:** As of October 2025, Amazon Bedrock **automatically enables** all serverless foundation models by default. The previous "Model Access" page and manual enablement process have been retired.
+
+### What This Means for You
+
+| Provider | Access Status | Additional Requirement |
+|----------|---------------|------------------------|
+| **Amazon** (Titan) | Auto-enabled | None |
+| **Meta** (Llama) | Auto-enabled | None |
+| **Mistral AI** | Auto-enabled | None |
+| **Anthropic** (Claude) | Auto-enabled | One-time use case form |
+
+**Anthropic models require a one-time use case form submission** before first use. This form takes less than a minute to complete and grants immediate access.
+
+### Access Control
+
+Model access is now managed through standard AWS mechanisms:
+- **IAM Policies** - Control which users/roles can invoke specific models
+- **Service Control Policies (SCPs)** - Restrict model access at the organization level
+- **AWS Marketplace** - Claude models are billed through AWS Marketplace
+
+---
+
+## Part 1: Complete the Anthropic Use Case Form
+
+Before using Claude models, you need to submit a one-time use case form.
 
 ### Step 1: Navigate to Amazon Bedrock
 
@@ -42,45 +66,46 @@ Before using any foundation models, you must request access in the Bedrock conso
 
 ![Bedrock Console](images/bedrock_console.png)
 
-### Step 2: Access Model Access Settings
+### Step 2: Access the Chat Playground
 
-1. In the left sidebar, click **Model access** under the "Bedrock configurations" section
+1. In the left sidebar, click **Playgrounds** under "Getting started"
+2. Select **Chat playground**
 
-![Model Access Menu](images/model_access_menu.png)
+![Playground Menu](images/playground_menu.png)
 
-2. You'll see a list of available foundation models and their access status
+### Step 3: Select an Anthropic Model
 
-![Model Access List](images/model_access_list.png)
+1. In the playground, click **Select model**
+2. Choose **Anthropic** as the provider
+3. Select **Claude Sonnet 4.5** (or any Claude model)
 
-### Step 3: Request Model Access
+![Select Playground Model](images/select_playground_model.png)
 
-1. Click the **Manage model access** button (or **Modify model access**)
+### Step 4: Complete the Use Case Form
 
-![Manage Model Access](images/manage_model_access.png)
+If this is your first time using an Anthropic model in this account, you'll see a form requesting use case details.
 
-2. Enable the following models by checking their boxes:
+Fill out the form with details relevant to this workshop's SEC filings analysis use case:
 
-| Model | Provider | Purpose |
-|-------|----------|---------|
-| **Claude 3.5 Sonnet v2** | Anthropic | Agent reasoning and responses |
-| **Claude 3 Haiku** | Anthropic | Cost-effective alternative |
-| **Titan Text Embeddings V2** | Amazon | Vector embeddings (for Labs 6-7) |
+| Field | Suggested Value |
+|-------|-----------------|
+| **Use Case Description** | Building AI agents for SEC 10-K filings analysis - querying a Neo4j knowledge graph to analyze company risk factors, asset manager ownership patterns, and financial disclosures |
+| **Industry** | Financial Services |
+| **Expected Usage** | Select based on your workshop/testing needs (low volume is fine for this lab) |
 
-![Select Models](images/select_models.png)
+1. Enter your **Use Case Description** (example above or similar)
+2. Select **Financial Services** as the industry
+3. Estimate your monthly token usage
+4. Review and accept the **End User License Agreement (EULA)**
+5. Click **Submit**
 
-3. Click **Request model access** (or **Save changes**)
+> **Note:** Access is granted immediately after submission. If using AWS Organizations, submitting from the management account grants access to all member accounts.
 
-### Step 4: Wait for Approval
+![Anthropic Form](images/anthropic_form.png)
 
-- **Amazon Titan** models are typically approved instantly
-- **Anthropic Claude** models may take 1-5 minutes
-- Refresh the page to check status
+### Step 5: Verify Access
 
-![Access Granted](images/access_granted.png)
-
-Once you see **Access granted** for Claude and Titan, you can proceed.
-
-> **Note:** If access is not granted after 10 minutes, check that you agreed to any required terms and that your account doesn't have restrictions.
+After form submission, you should be able to use Claude in the playground immediately. If you see an error, wait a few seconds and try again.
 
 ---
 
@@ -88,25 +113,9 @@ Once you see **Access granted** for Claude and Titan, you can proceed.
 
 The Bedrock Playground lets you test models before building applications.
 
-### Step 5: Navigate to the Playground
+### Step 6: Test Claude
 
-1. In the left sidebar, click **Playgrounds** under "Getting started"
-2. Select **Chat playground**
-
-![Playground Menu](images/playground_menu.png)
-
-### Step 6: Select a Model
-
-1. In the playground, click **Select model**
-2. Choose **Anthropic** as the provider
-3. Select **Claude 3.5 Sonnet v2**
-4. Click **Apply**
-
-![Select Playground Model](images/select_playground_model.png)
-
-### Step 7: Test the Model
-
-Try asking the model about SEC filings to see how it responds:
+With Claude Sonnet 4.5 selected, try these prompts:
 
 **Prompt 1: General knowledge**
 ```
@@ -125,7 +134,7 @@ What are common risk factors that technology companies disclose in their 10-K fi
 Write a Cypher query to find all companies and their risk factors in a Neo4j graph database where companies have a HAS_RISK relationship to RiskFactor nodes.
 ```
 
-### Step 8: Adjust Model Parameters (Optional)
+### Step 7: Adjust Model Parameters (Optional)
 
 Click the **Configuration** panel to adjust:
 
@@ -133,32 +142,58 @@ Click the **Configuration** panel to adjust:
 |-----------|-------------|-------------|
 | **Temperature** | Randomness (0=focused, 1=creative) | 0.3 for analysis |
 | **Top P** | Nucleus sampling threshold | 0.9 |
-| **Max tokens** | Maximum response length | 2048 |
+| **Max tokens** | Maximum response length | 4096 |
 
 ![Model Configuration](images/model_configuration.png)
 
 ---
 
-## Part 3: Understand the Models
+## Part 3: Verify Titan Embeddings Access
+
+Amazon Titan models are auto-enabled with no additional requirements.
+
+### Step 8: Test Titan Embeddings (Optional)
+
+1. In the left sidebar, click **Playgrounds**
+2. Select **Text playground**
+3. Select **Amazon** as the provider
+4. Choose **Titan Text Embeddings V2**
+5. Enter a test phrase:
+
+```
+Apple Inc faces risks related to global supply chain disruptions
+```
+
+6. Click **Run**
+
+You'll see a vector of 1024 floating-point numbers - this is how text is converted to embeddings for semantic search.
+
+![Embeddings Test](images/embeddings_test.png)
+
+---
+
+## Part 4: Understand the Models
 
 ### Models You'll Use in This Workshop
 
-| Model | Use Case | Cost | Labs |
-|-------|----------|------|------|
-| **Claude 3.5 Sonnet v2** | Agent reasoning, text generation, Cypher queries | ~$3/M input tokens | 4, 8 |
-| **Claude 3 Haiku** | Fast, cost-effective responses | ~$0.25/M input tokens | Alternative |
-| **Titan Text Embeddings V2** | Vector embeddings (1024 dimensions) | ~$0.02/M tokens | 6-7 |
+| Model | Use Case | Context Window | Cost | Labs |
+|-------|----------|----------------|------|------|
+| **Claude Sonnet 4.5** | Agent reasoning, text generation, Cypher queries | 200K tokens (1M preview) | ~$3/M input tokens | 4, 8 |
+| **Claude Haiku 4.5** | Fast, cost-effective responses | 200K tokens | ~$0.80/M input tokens | Alternative |
+| **Titan Text Embeddings V2** | Vector embeddings (1024 dimensions) | N/A | ~$0.02/M tokens | 6-7 |
 
-### Claude vs GPT (Comparison with Azure)
+### Claude 4.5 Model Family
 
-| Feature | Claude (Bedrock) | GPT-4o (Azure) |
-|---------|------------------|----------------|
-| Provider | Anthropic | OpenAI |
-| Strengths | Reasoning, long context, safety | General purpose, vision |
-| Context window | 200K tokens | 128K tokens |
-| Workshop use | Agent reasoning | Agent reasoning |
+| Model | Best For | Performance |
+|-------|----------|-------------|
+| **Claude Opus 4.5** | Production code, complex agents | Highest capability |
+| **Claude Sonnet 4.5** | Balanced performance, rapid iteration | Best cost/performance |
+| **Claude Haiku 4.5** | Sub-agents, high-volume tasks | Fastest, lowest cost |
 
-Both models work well for this workshop - the patterns are the same regardless of the underlying model.
+All Claude 4.5 models support:
+- **Extended thinking** - Deeper reasoning for complex problems
+- **1M token context** (preview) - Process very long documents
+- **Hybrid reasoning** - Near-instant or extended thinking modes
 
 ### Titan Embeddings Best Practices
 
@@ -170,45 +205,64 @@ For the coding labs, you'll use Titan Text Embeddings V2 with these settings:
 
 ---
 
-## Part 4: (Optional) Test Text Embeddings
+## Troubleshooting
 
-Preview the embedding model you'll use in Lab 6.
+### "Access Denied" Error for Claude Models
 
-### Step 9: Navigate to Text Playground
+If you see an access error when trying to use Claude:
 
-1. In the left sidebar, click **Playgrounds**
-2. Select **Text playground**
+1. **Verify form completion**: Ensure you completed the Anthropic use case form
+2. **Check IAM permissions**: Your role needs `bedrock:InvokeModel` permission
+3. **Check AWS Marketplace permissions**: For first-time account setup, you may need:
+   - `aws-marketplace:Subscribe`
+   - `aws-marketplace:ViewSubscriptions`
+4. **Wait and retry**: Access propagation can take a few minutes
 
-### Step 10: Test Titan Embeddings
+### IAM Policy for Bedrock Access
 
-1. Select **Amazon** as the provider
-2. Choose **Titan Text Embeddings V2**
-3. Enter a test phrase:
+If you need to create an IAM policy for Bedrock access:
 
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel",
+                "bedrock:InvokeModelWithResponseStream"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "MarketplaceAccess",
+            "Effect": "Allow",
+            "Action": [
+                "aws-marketplace:ViewSubscriptions",
+                "aws-marketplace:Subscribe"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
 ```
-Apple Inc faces risks related to global supply chain disruptions
-```
 
-4. Click **Run**
-
-You'll see a vector of 1024 floating-point numbers - this is how text is converted to embeddings for semantic search.
-
-![Embeddings Test](images/embeddings_test.png)
+Or use the AWS managed policy: `AmazonBedrockFullAccess`
 
 ---
 
 ## Summary
 
 You have now set up Amazon Bedrock with:
-- **Model access** granted for Claude and Titan models
+- **Anthropic use case form** completed for Claude access
 - **Playground experience** testing Claude's capabilities
 - **Understanding** of the models you'll use in later labs
 
 ## Model Access Checklist
 
-Before proceeding, verify you have access to:
+Before proceeding, verify you can use:
 
-- [ ] Claude 3.5 Sonnet v2 (or Claude 3 Haiku)
+- [ ] Claude Sonnet 4.5 (or Claude Haiku 4.5)
 - [ ] Titan Text Embeddings V2
 
 ## What's Next
@@ -220,6 +274,8 @@ Continue to [Lab 4 - AI Agent Builder](../Lab_4_GAAB_Agents/) to create an AI ag
 ## References
 
 - [Amazon Bedrock Documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/)
+- [Amazon Bedrock Model Access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html)
+- [Simplified Model Access (AWS Blog)](https://aws.amazon.com/blogs/security/simplified-amazon-bedrock-model-access/)
 - [Amazon Bedrock Pricing](https://aws.amazon.com/bedrock/pricing/)
-- [Claude Model Card](https://docs.anthropic.com/claude/docs/models-overview)
+- [Claude on Amazon Bedrock](https://aws.amazon.com/bedrock/anthropic/)
 - [Titan Embeddings Best Practices](https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html)

@@ -43,6 +43,9 @@
     "AWS_SECRET_ACCESS_KEY": {
       "description": "AWS Secret Access Key for Bedrock access"
     },
+    "AWS_REGION": {
+      "description": "AWS Region for Bedrock (default: us-east-1)"
+    },
     "NEO4J_URI": {
       "description": "Neo4j Aura connection URI (neo4j+s://xxx.databases.neo4j.io)"
     },

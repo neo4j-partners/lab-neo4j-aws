@@ -26,6 +26,7 @@ For a seamless experience, configure your secrets in GitHub before launching the
 |-------------|-------------|---------|
 | `AWS_ACCESS_KEY_ID` | Your AWS access key | `AKIA...` |
 | `AWS_SECRET_ACCESS_KEY` | Your AWS secret key | `wJalrXU...` |
+| `AWS_REGION` | AWS region (optional) | `us-east-1` |
 | `NEO4J_URI` | Neo4j Aura connection URI | `neo4j+s://abc123.databases.neo4j.io` |
 | `NEO4J_USERNAME` | Neo4j username | `neo4j` |
 | `NEO4J_PASSWORD` | Neo4j password | `your-password` |
@@ -40,8 +41,8 @@ Once your codespace is running, verify your configuration:
 # Check AWS credentials
 aws sts get-caller-identity
 
-# Check Bedrock model access
-aws bedrock list-foundation-models --region us-east-1 --query 'modelSummaries[?contains(modelId, `claude`)].modelId'
+# Check Bedrock model access (verify Claude models are available)
+aws bedrock list-foundation-models --region us-east-1 --query 'modelSummaries[?contains(modelId, `claude-sonnet-4`)].modelId'
 
 # Check Neo4j connection
 python -c "from config import get_neo4j_driver; d = get_neo4j_driver(); print(d.verify_connectivity())"
@@ -142,26 +143,34 @@ export AWS_SECRET_ACCESS_KEY=your-secret-key
 export AWS_REGION=us-east-1
 ```
 
-## Enabling Bedrock Model Access
+## Bedrock Model Access
 
-Before using Bedrock models, you must enable access:
+> **Note (October 2025):** Amazon Bedrock now automatically enables all serverless foundation models by default. The previous "Model Access" page has been retired.
+
+### Amazon Titan Models
+Amazon Titan models (including Titan Text Embeddings V2) are **immediately available** - no setup required.
+
+### Anthropic Claude Models
+Claude models require a **one-time use case form** before first use:
 
 1. Sign in to AWS Console
-2. Navigate to **Amazon Bedrock**
-3. Click **Model access** in the left sidebar
-4. Click **Manage model access**
-5. Enable the following models:
-   - **Amazon Titan Text Embeddings V2** (usually instant)
-   - **Anthropic Claude 3.5 Sonnet** (may take a few minutes)
-6. Click **Save changes**
+2. Navigate to **Amazon Bedrock** > **Playgrounds** > **Chat playground**
+3. Select **Anthropic** as the provider and choose **Claude Sonnet 4.5**
+4. If prompted, complete the use case form:
+   - **Use Case**: Building AI agents for SEC 10-K filings analysis
+   - **Industry**: Financial Services
+5. Access is granted immediately after form submission
+
+See [Lab 3 - Bedrock Setup](Lab_3_Bedrock_Setup/) for detailed instructions.
 
 ## Troubleshooting
 
 ### "Access Denied" when calling Bedrock
 
-- Verify model access is enabled in Bedrock console
-- Check your IAM user has `bedrock:InvokeModel` permission
-- Confirm you're using the correct region
+- **For Claude models**: Complete the one-time Anthropic use case form in the Bedrock playground
+- Check your IAM user/role has `bedrock:InvokeModel` permission
+- For first-time account setup, you may need AWS Marketplace permissions (`aws-marketplace:Subscribe`)
+- Confirm you're using the correct region (us-east-1 recommended)
 
 ### "Connection refused" for Neo4j
 

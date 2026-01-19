@@ -40,7 +40,12 @@ NEO4J_URI=bolt://localhost:7687
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-password
 AWS_REGION=us-east-1
-AWS_BEDROCK_MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
+```
+
+The workshop uses sensible defaults for AWS Bedrock models. You can optionally override them:
+
+```
+AWS_BEDROCK_INFERENCE_PROFILE_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0
 AWS_BEDROCK_EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0
 ```
 
@@ -91,13 +96,55 @@ This creates embeddings for semantic search capabilities.
 
 ### Step 3: Entity Extraction
 
-Build the knowledge graph using `SimpleKGPipeline`:
+Build the knowledge graph using SimpleKGPipeline:
 
 ```bash
 uv run python -m solutions.01_03_entity_extraction
 ```
 
-This extracts entities and relationships from your documents.
+This is the core of the GraphRAG pipeline. It uses Claude Sonnet 4.5 on AWS Bedrock to read text and identify entities and relationships, then stores them in Neo4j as a knowledge graph.
+
+#### What It Does
+
+The entity extraction pipeline takes unstructured text and transforms it into structured graph data. For example, given SEC 10-K filing text about Apple, it identifies:
+
+**Entities** are the things mentioned in the text. The pipeline extracts three types:
+- Companies such as Apple Inc.
+- Products such as iPhone, Mac, iPad, and their variants
+- Services such as AppleCare, Apple Pay, and Cloud Services
+
+**Relationships** describe how entities connect to each other:
+- OFFERS_PRODUCT links a company to the products it sells
+- OFFERS_SERVICE links a company to the services it provides
+
+**Provenance** tracks where information came from. Each entity links back to the text chunk it was extracted from via FROM_CHUNK relationships. This enables you to trace any fact in the graph back to its source document.
+
+#### How It Works
+
+The SimpleKGPipeline orchestrates the extraction process:
+
+1. The text is split into manageable chunks
+2. Each chunk is sent to Claude Sonnet 4.5 with a schema describing what entities and relationships to look for
+3. Claude reads the text and returns structured JSON with the entities and relationships it found
+4. The pipeline creates nodes and relationships in Neo4j for each extracted item
+5. Embeddings are generated for each entity using Amazon Titan, enabling semantic search
+
+#### Schema-Driven Extraction
+
+The extraction is guided by a schema you define. The schema tells the LLM what types of entities to look for, what relationships are valid, and which entity types can connect to which. This keeps the extraction focused and consistent.
+
+For the SEC 10-K example, the schema specifies that Companies can offer Products and Services, but Products cannot offer other Products. This prevents the LLM from creating nonsensical relationships.
+
+#### Expected Results
+
+Running the extraction on the sample Apple 10-K text produces:
+- One Company node for Apple Inc.
+- Twelve Product nodes including iPhone models, Mac, iPad, and general categories
+- Seven Service nodes including AppleCare, Apple Pay, and Cloud Services
+- Nineteen relationships connecting Apple to its products and services
+- Twenty provenance links connecting entities to their source chunk
+
+The extraction typically completes in under sixty seconds.
 
 ### Step 4: Query the Full Dataset
 
@@ -167,9 +214,81 @@ uv run python -m solutions.05_02_hybrid_search
 
 ## Architecture
 
-- **AWS Bedrock** - LLM and embeddings (Claude, Titan)
+- **AWS Bedrock** - LLM (Claude 4.5 Sonnet via inference profile) and embeddings (Titan V2)
 - **neo4j-graphrag-python** - GraphRAG retrievers and pipelines (local fork)
 - **Neo4j** - Graph database with vector search
+
+## AWS Bedrock Configuration
+
+### Inference Profiles vs Direct Model Access
+
+AWS Bedrock offers two ways to invoke models:
+
+| Approach | Description | Use Case |
+|----------|-------------|----------|
+| **Direct Model Access** | Invoke models directly in a single Region | Simple single-Region inference |
+| **Inference Profiles** | Define model + Regions for routing requests | Cost tracking, metrics, cross-Region |
+
+**Why Claude 4.5 Sonnet requires an inference profile:**
+
+Newer models like Claude 4.5 Sonnet only support inference profile access (not direct on-demand). This provides:
+
+- **Usage Metrics**: CloudWatch logs for model invocation metrics
+- **Cost Tracking**: Attach tags for billing analysis with AWS cost allocation
+- **Cross-Region Inference**: Distribute requests across multiple AWS Regions for increased throughput
+- **Resilience**: Failover capabilities across Regions
+
+### Regional Inference Profile IDs
+
+| Region | Inference Profile ID |
+|--------|---------------------|
+| US | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
+| EU | `eu.anthropic.claude-sonnet-4-5-20250929-v1:0` |
+| APAC | `apac.anthropic.claude-sonnet-4-5-20250929-v1:0` |
+
+### Model Configuration Example
+
+```python
+from neo4j_graphrag.llm import BedrockLLM
+
+llm = BedrockLLM(
+    model_id="anthropic.claude-sonnet-4-5-20250929-v1:0",
+    inference_profile_id="us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    region_name="us-east-1",
+    model_params={
+        "maxTokens": 4096,
+        "temperature": 0,  # Use 0 for deterministic entity extraction
+    },
+)
+```
+
+### Best Practices
+
+1. **Use the Converse API**: Write code once and switch between models easily. The `BedrockLLM` class uses Converse internally.
+
+2. **Temperature Settings**:
+   - Use `temperature: 0` for entity extraction and structured outputs
+   - Use `temperature: 0.7-1.0` for creative/conversational tasks
+   - Note: Claude 4.5 only supports `temperature` OR `top_p`, not both
+
+3. **Extended Thinking** (for complex reasoning):
+   ```python
+   model_params={
+       "maxTokens": 20000,
+       "thinking": {"type": "enabled", "budget_tokens": 16000},
+   }
+   ```
+   Do not set `temperature`, `topP`, or `topK` when using extended thinking.
+
+4. **Pricing**: Costs are calculated based on the price in the Region from which you call the inference profile.
+
+### Sources
+
+- [AWS Bedrock Inference Profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html)
+- [Supported Regions and Models](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html)
+- [Claude Model Parameters](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-claude.html)
+- [Introducing Claude Sonnet 4.5 in Amazon Bedrock](https://aws.amazon.com/blogs/aws/introducing-claude-sonnet-4-5-in-amazon-bedrock-anthropics-most-intelligent-model-best-for-coding-and-complex-agents/)
+- [Optimizing Claude Models on Bedrock](https://repost.aws/articles/ARRfe9jE4dQmK8Y2oMYMqbfQ/how-to-optimize-workload-performance-when-using-anthropic-claude-models-on-bedrock)
 
 ## File Structure
 

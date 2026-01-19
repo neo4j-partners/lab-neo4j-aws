@@ -37,9 +37,11 @@ class AWSConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="", extra="ignore")
 
     region: str = Field(default="us-east-1", validation_alias="AWS_REGION")
-    bedrock_model_id: str = Field(
-        default="anthropic.claude-3-5-sonnet-20241022-v2:0",
-        validation_alias="AWS_BEDROCK_MODEL_ID",
+    # Claude Sonnet 4.5 US cross-region inference profile
+    # See: https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html
+    bedrock_inference_profile_id: str = Field(
+        default="us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+        validation_alias="AWS_BEDROCK_INFERENCE_PROFILE_ID",
     )
     bedrock_embedding_model_id: str = Field(
         default="amazon.titan-embed-text-v2:0",
@@ -86,11 +88,12 @@ def get_llm() -> BedrockLLM:
     Get LLM using AWS Bedrock.
 
     Uses boto3's default credential chain (env vars, ~/.aws/credentials, IAM role, etc.)
-    Returns BedrockLLM configured for Claude via the Converse API.
+    Returns BedrockLLM configured for Claude Sonnet 4.5 via the Converse API
+    with US cross-region inference profile.
     """
     config = get_aws_config()
 
     return BedrockLLM(
-        model_id=config.bedrock_model_id,
+        inference_profile_id=config.bedrock_inference_profile_id,
         region_name=config.region,
     )

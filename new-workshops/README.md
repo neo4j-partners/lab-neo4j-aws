@@ -320,11 +320,112 @@ uv run python -c "from neo4j_graphrag.neo4j_queries import upsert_node_query_mer
 
 ### Run Tests
 
-After making library changes, run the MERGE behavior tests:
+After making library changes, run the test suite:
 
 ```bash
+# Run all tests (MERGE behavior + graph structure)
 uv run python -m solutions.01_test_full_data_load
+
+# Run only graph structure validation (faster)
+uv run python -m solutions.01_test_full_data_load --graph-only
 ```
+
+## Test Suite: What It Tests and How
+
+The test file `solutions/01_test_full_data_load.py` validates two things: that the MERGE fix works correctly, and that the knowledge graph is properly structured after running the pipeline.
+
+### Part 1: MERGE Behavior Tests
+
+These tests verify that the library correctly prevents duplicate nodes.
+
+**Query Generation Test**
+Checks that the Cypher query is built correctly. The query must use `apoc.merge.node` instead of `CREATE`, merge on only the primary label (like `Company`), and add auxiliary labels afterward. This is important because merging on all labels would fail to find pre-existing nodes.
+
+**KGWriter Parameters Test**
+Confirms that the `Neo4jWriter` class has the new parameters `use_merge` and `merge_property`, and that they default to `True` and `"name"` respectively. This ensures the fix is enabled by default.
+
+**Validation Test**
+Tests that the library correctly separates nodes into three categories:
+- Entity nodes that have a `name` property go through MERGE
+- Lexical graph nodes (Chunk, Document) go through CREATE because each chunk is unique
+- Entity nodes missing the `name` property are skipped with a warning
+
+This prevents the library from trying to merge Chunk nodes on a non-existent `name` property.
+
+**Pre-existing Nodes Test**
+Creates a Company node directly in Neo4j (simulating a CSV import), then runs the same merge logic the library uses. Verifies that the merge finds and updates the existing node instead of creating a duplicate. The test checks that the node ID stays the same after merge.
+
+**Deduplication Test**
+Simulates what happens when the LLM extracts the same entity from multiple document chunks. Creates three rows for "Apple Inc." with different internal IDs (like three different chunks mentioning Apple). Verifies that only one node is created in the database.
+
+**Uniqueness Constraint Test**
+This is the original problem that started everything. Creates a uniqueness constraint on `Company.name`, creates an initial Company node, then tries to merge another Company with the same name. The test passes if no constraint violation occurs.
+
+### Part 2: Graph Structure Validation
+
+These tests examine the actual graph after running the pipeline to verify it was built correctly.
+
+**Node Counts Test**
+Queries the database to count nodes by label. Checks that Company nodes exist, that the `__KGBuilder__` infrastructure label exists, and that at least one entity type (Company, Product, RiskFactor, etc.) was extracted. This catches cases where the pipeline ran but failed to create any entities.
+
+**Relationship Counts Test**
+Counts relationships by type. Checks that relationships exist in general, that `FROM_CHUNK` relationships exist (which track where each entity was extracted from), and that at least one schema relationship type exists (like `FACES_RISK` or `OFFERS`). Missing `FROM_CHUNK` relationships would indicate the provenance tracking is broken.
+
+**Schema Compliance Test**
+Verifies that relationships connect the correct node types according to the schema. For example, `FACES_RISK` should only go from Company to RiskFactor, never from Product to Executive. The test queries each relationship type and checks for violations where the start or end node has the wrong label.
+
+**Lexical Structure Test**
+Examines the document-chunk-entity chain. Checks that Chunk nodes have `text` and `index` properties, and that entities are linked to chunks via `FROM_CHUNK` relationships. This provenance chain is essential for RAG applications that need to cite sources.
+
+**Embeddings Test**
+Verifies that Chunk nodes have vector embeddings. Checks the count of chunks with embeddings and reports the embedding dimension (typically 1024 for Titan). Missing embeddings would break vector similarity search.
+
+**Entity Properties Test**
+Confirms that all Company nodes have a `name` property and all entities have the merge key property. Nodes missing the `name` property would have been skipped during merge, which could indicate extraction issues.
+
+**Orphan Entities Test**
+Looks for entities that have no relationships at all. Some orphans are acceptable (a company mentioned in passing), but more than 10% orphans suggests the LLM failed to connect entities properly. The test reports examples of orphan entities for investigation.
+
+**No Duplicates Test**
+The final verification that MERGE worked. Searches for any nodes with the same label and name that appear more than once. Finding duplicates would indicate the MERGE logic failed somewhere.
+
+### Understanding the Output
+
+When you run the tests, each test prints detailed information:
+
+```
+=== Test: Graph Node Counts ===
+  Node counts by label:
+    __KGBuilder__: 245
+    __Entity__: 217
+    RiskFactor: 118
+    Product: 47
+    Chunk: 27
+    Company: 15
+  PASS: Has Company nodes
+  PASS: Has __KGBuilder__ nodes
+  PASS: Total nodes > 0
+  PASS: Has at least one entity type
+
+  Result: 4/4 checks passed
+```
+
+The node counts tell you what was extracted. In this example, the LLM found 118 risk factors, 47 products, and 45 financial metrics from the SEC filing. The 27 Chunk nodes mean the document was split into 27 pieces for processing.
+
+The graph summary at the end shows overall statistics:
+
+```
+=== Graph Summary ===
+  Total nodes: 268
+  Total relationships: 382
+  Entity nodes: 217
+  Company nodes: 15
+  Chunk nodes: 27
+  Entities per chunk: 8.04
+  Relationships per entity: 1.76
+```
+
+"Entities per chunk" tells you how many entities the LLM extracted from each text chunk on average. "Relationships per entity" indicates how connected the graph is. Higher numbers generally mean richer extraction.
 
 ## File Structure
 

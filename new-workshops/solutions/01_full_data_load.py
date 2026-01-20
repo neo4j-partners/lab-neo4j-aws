@@ -261,6 +261,126 @@ async def process_pdf(
         logger.error(f"  Failed: {pdf_path.name} - {e}")
 
 
+async def print_graph_summary(driver: neo4j.Driver) -> None:
+    """Print a detailed summary of the knowledge graph."""
+    print("\n" + "=" * 60)
+    print("KNOWLEDGE GRAPH SUMMARY")
+    print("=" * 60)
+
+    with driver.session() as session:
+        # Node counts by label
+        result = session.run("""
+            MATCH (n)
+            WITH labels(n) AS lbls, count(n) AS cnt
+            UNWIND lbls AS label
+            RETURN label, sum(cnt) AS count
+            ORDER BY count DESC
+        """)
+        print("\nNODE COUNTS BY LABEL:")
+        total_nodes = 0
+        for record in result:
+            print(f"   {record['label']}: {record['count']}")
+            total_nodes += record['count']
+
+        # Relationship counts by type
+        result = session.run("""
+            MATCH ()-[r]->()
+            RETURN type(r) AS type, count(r) AS count
+            ORDER BY count DESC
+        """)
+        print("\nRELATIONSHIP COUNTS BY TYPE:")
+        total_rels = 0
+        for record in result:
+            print(f"   {record['type']}: {record['count']}")
+            total_rels += record['count']
+
+        # Lexical graph summary (Documents, Chunks)
+        result = session.run("""
+            MATCH (d:Document)
+            OPTIONAL MATCH (d)-[:FROM_DOCUMENT]-(c:Chunk)
+            WITH d, count(c) AS chunk_count
+            RETURN count(d) AS documents, sum(chunk_count) AS total_chunks
+        """)
+        record = result.single()
+        print("\nLEXICAL GRAPH:")
+        print(f"   Documents: {record['documents']}")
+        print(f"   Chunks: {record['total_chunks']}")
+
+        # Entity extraction summary
+        result = session.run("""
+            MATCH (e:__Entity__)
+            WITH labels(e) AS lbls
+            UNWIND lbls AS label
+            WITH label
+            WHERE label <> '__Entity__' AND label <> '__KGBuilder__'
+            RETURN label, count(*) AS count
+            ORDER BY count DESC
+        """)
+        print("\nEXTRACTED ENTITIES BY TYPE:")
+        for record in result:
+            print(f"   {record['label']}: {record['count']}")
+
+        # Provenance (FROM_CHUNK links)
+        result = session.run("""
+            MATCH (e:__Entity__)-[r:FROM_CHUNK]->(c:Chunk)
+            RETURN count(DISTINCT e) AS entities_with_provenance,
+                   count(r) AS provenance_links
+        """)
+        record = result.single()
+        print("\nPROVENANCE TRACKING:")
+        print(f"   Entities with FROM_CHUNK links: {record['entities_with_provenance']}")
+        print(f"   Total provenance links: {record['provenance_links']}")
+
+        # Embedding summary
+        result = session.run("""
+            MATCH (c:Chunk)
+            WHERE c.embedding IS NOT NULL
+            RETURN count(c) AS chunks_with_embeddings,
+                   size(c.embedding) AS embedding_dim
+            LIMIT 1
+        """)
+        record = result.single()
+        print("\nEMBEDDINGS:")
+        if record and record['chunks_with_embeddings'] > 0:
+            print(f"   Chunks with embeddings: {record['chunks_with_embeddings']}")
+            print(f"   Embedding dimensions: {record['embedding_dim']}")
+        else:
+            print("   No chunk embeddings found")
+
+        # Schema relationships (business domain)
+        result = session.run("""
+            MATCH (c:Company)-[r]->(target)
+            WHERE type(r) IN ['FACES_RISK', 'OFFERS', 'HAS_EXECUTIVE', 'REPORTS', 'COMPETES_WITH', 'PARTNERS_WITH']
+            WITH type(r) AS relationship,
+                 [l IN labels(target) WHERE NOT l IN ['__KGBuilder__', '__Entity__']][0] AS target_type,
+                 r
+            RETURN relationship, target_type, count(r) AS count
+            ORDER BY count DESC
+        """)
+        print("\nSCHEMA RELATIONSHIPS (Company -> ...):")
+        schema_rels = list(result)
+        if schema_rels:
+            for record in schema_rels:
+                print(f"   Company-[{record['relationship']}]->{record['target_type']}: {record['count']}")
+        else:
+            print("   No schema relationships found")
+
+        # Asset manager holdings
+        result = session.run("""
+            MATCH (a:AssetManager)-[r:OWNS]->(c:Company)
+            RETURN count(DISTINCT a) AS managers, count(r) AS holdings
+        """)
+        record = result.single()
+        print("\nASSET MANAGER HOLDINGS:")
+        print(f"   Asset managers: {record['managers']}")
+        print(f"   Total holdings: {record['holdings']}")
+
+        # Summary totals
+        print("\n" + "-" * 60)
+        print(f"TOTALS: {total_nodes} nodes, {total_rels} relationships")
+        print("=" * 60 + "\n")
+
+
 async def main(
     pdf_limit: Optional[int] = None,
     skip_metadata: bool = False,
@@ -373,16 +493,8 @@ async def main(
 
         logger.info("Data loading complete!")
 
-        # Show summary
-        with driver.session() as session:
-            result = session.run("""
-                MATCH (n)
-                RETURN labels(n)[0] AS label, count(n) AS count
-                ORDER BY count DESC
-            """)
-            logger.info("Node counts:")
-            for record in result:
-                logger.info(f"  {record['label']}: {record['count']}")
+        # Show detailed summary
+        await print_graph_summary(driver)
 
     finally:
         driver.close()

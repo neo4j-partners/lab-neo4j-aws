@@ -1,0 +1,16 @@
+product_id,name,description,category
+P001,iPhone,Flagship smartphone with iOS operating system,Consumer Electronics
+P002,Mac,Personal computer line including MacBook and iMac,Consumer Electronics
+P003,iPad,Tablet computer with iPadOS,Consumer Electronics
+P004,Azure,Cloud computing platform and infrastructure service,Cloud Platform
+P005,Windows,Desktop and server operating system,Software
+P006,Surface,Line of touchscreen personal computers and tablets,Consumer Electronics
+P007,GeForce,Consumer graphics processing units for gaming,Graphics Hardware
+P008,Tegra,System-on-chip for mobile devices and automotive,Semiconductor
+P009,DGX,AI supercomputing system for data centers,Data Center Hardware
+P010,Pixel,Google-branded smartphone line,Consumer Electronics
+P011,Chromebook,Laptop running Chrome OS,Consumer Electronics
+P012,Nest,Smart home devices including thermostats and cameras,Consumer Electronics
+P013,Kindle,E-reader and tablet device family,Consumer Electronics
+P014,Echo,Smart speaker with Alexa voice assistant,Consumer Electronics
+P015,Fire TV,Streaming media player and smart TV platform,Consumer Electronics

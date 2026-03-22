@@ -1,0 +1,14 @@
+[project]
+name = "populate-financial-db"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "neo4j>=5.0",
+    "python-dotenv",
+    "pydantic-settings",
+    "typer[all]>=0.9",
+    "rich",
+]
+
+[project.scripts]
+populate-financial-db = "populate_financial_db.main:app"

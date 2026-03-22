@@ -1,0 +1,16 @@
+risk_id,name,description,category,severity
+R001,Supply Chain Disruption,Dependence on global supply chains and single-source components may cause production delays,Supply Chain,High
+R002,Semiconductor Shortage,Global chip shortages may limit product availability and increase component costs,Supply Chain,High
+R003,Regulatory Compliance,Increasing government regulations across multiple jurisdictions may impact operations,Regulatory,Medium
+R004,Antitrust Scrutiny,Ongoing antitrust investigations and litigation in multiple countries,Regulatory,High
+R005,Data Privacy Regulation,Evolving data privacy laws such as GDPR and CCPA require ongoing compliance investment,Regulatory,Medium
+R006,Intense Market Competition,Highly competitive markets with rapidly changing technology and customer preferences,Competition,Medium
+R007,AI Competition,Rapidly evolving AI landscape with increasing competitive pressure from new entrants,Competition,High
+R008,Cybersecurity Threats,Increasing sophistication of cyberattacks targeting infrastructure and customer data,Cybersecurity,Critical
+R009,Data Breach Risk,Potential unauthorized access to sensitive customer and corporate data,Cybersecurity,Critical
+R010,Macroeconomic Conditions,Economic downturns or recessions may reduce consumer and enterprise spending,Market,Medium
+R011,Foreign Exchange Fluctuation,Significant international revenue exposure creates currency translation risks,Market,Medium
+R012,Interest Rate Sensitivity,Changes in interest rates may impact borrowing costs and investment valuations,Market,Low
+R013,Talent Acquisition,Intense competition for skilled engineering and technical talent,Operational,Medium
+R014,Climate and Sustainability,Increasing regulatory and stakeholder pressure on environmental sustainability,Environmental,Medium
+R015,Geopolitical Risk,Trade tensions and geopolitical instability particularly related to China and Taiwan,Geopolitical,High

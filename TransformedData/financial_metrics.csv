@@ -1,0 +1,21 @@
+metric_id,company_id,metric_name,value,unit,fiscal_year
+FM001,C001,Revenue,394328,USD_millions,2024
+FM002,C001,Net Income,100913,USD_millions,2024
+FM003,C001,R&D Spending,29915,USD_millions,2024
+FM004,C001,Operating Margin,30.7,percent,2024
+FM005,C002,Revenue,245122,USD_millions,2024
+FM006,C002,Net Income,88136,USD_millions,2024
+FM007,C002,R&D Spending,27195,USD_millions,2024
+FM008,C002,Operating Margin,44.6,percent,2024
+FM009,C003,Revenue,79774,USD_millions,2024
+FM010,C003,Net Income,42597,USD_millions,2024
+FM011,C003,R&D Spending,10544,USD_millions,2024
+FM012,C003,Operating Margin,62.1,percent,2024
+FM013,C004,Revenue,339859,USD_millions,2024
+FM014,C004,Net Income,94264,USD_millions,2024
+FM015,C004,R&D Spending,45427,USD_millions,2024
+FM016,C004,Operating Margin,32.5,percent,2024
+FM017,C005,Revenue,620134,USD_millions,2024
+FM018,C005,Net Income,44419,USD_millions,2024
+FM019,C005,R&D Spending,85622,USD_millions,2024
+FM020,C005,Operating Margin,10.7,percent,2024

@@ -1,0 +1,16 @@
+executive_id,name,title,company_id
+E001,Tim Cook,Chief Executive Officer,C001
+E002,Luca Maestri,Chief Financial Officer,C001
+E003,Craig Federighi,Senior Vice President of Software Engineering,C001
+E004,Satya Nadella,Chief Executive Officer,C002
+E005,Amy Hood,Chief Financial Officer,C002
+E006,Kevin Scott,Chief Technology Officer,C002
+E007,Jensen Huang,Chief Executive Officer,C003
+E008,Colette Kress,Chief Financial Officer,C003
+E009,Bill Dally,Chief Scientist,C003
+E010,Sundar Pichai,Chief Executive Officer,C004
+E011,Ruth Porat,Chief Financial Officer,C004
+E012,Kent Walker,President of Global Affairs,C004
+E013,Andy Jassy,Chief Executive Officer,C005
+E014,Brian Olsavsky,Chief Financial Officer,C005
+E015,Werner Vogels,Chief Technology Officer,C005

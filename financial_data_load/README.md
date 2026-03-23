@@ -84,9 +84,9 @@ EMBEDDING_PROVIDER=bedrock
 AWS_REGION=us-east-1
 ```
 
-`EMBEDDING_MODEL_ID` is optional — if omitted, the default is `amazon.titan-embed-text-v2:0` (1024 dimensions). AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
+This configures both the LLM and embeddings to use Bedrock. The LLM defaults to Claude Sonnet 4.5 and embeddings default to Titan Text Embeddings V2 (1024 dimensions). Both model IDs are optional — override with `MODEL_ID` and `EMBEDDING_MODEL_ID` if needed.
 
-The LLM for entity extraction and resolution is configured separately via `AZURE_AI_MODEL_NAME` or `OPENAI_API_KEY`. See the [Embedding Providers](#embedding-providers) section for the full provider comparison.
+AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role). See the [AI Providers](#ai-providers) section for the full provider comparison.
 
 ### 4. Test Connections
 
@@ -277,27 +277,47 @@ Persistent agent memory using neo4j-agent-memory:
 | 19 | `07_03_memory_tools_agent.py` | Agent with explicit memory tools |
 | 20 | `07_04_reasoning_memory.py` | Reasoning memory traces and tool stats |
 
-## Embedding Providers
+## AI Providers
 
-The embedding system is modular — set `EMBEDDING_PROVIDER` in `.env` to switch between providers. The rest of the code (pipeline, schema, retrievers) works identically regardless of provider.
+`EMBEDDING_PROVIDER` controls both the embedding and LLM backends. Set it once and both follow.
 
-| Provider | `EMBEDDING_PROVIDER` | Model | Dimensions | Auth |
-|----------|---------------------|-------|------------|------|
+### Embeddings
+
+| Provider | `EMBEDDING_PROVIDER` | Default model | Dimensions | Auth |
+|----------|---------------------|---------------|------------|------|
 | Azure AI Foundry | `azure` | text-embedding-3-small | 1536 | `az login` token |
 | OpenAI | `openai` | text-embedding-3-small | 1536 | `OPENAI_API_KEY` |
 | AWS Bedrock | `bedrock` | amazon.titan-embed-text-v2:0 | 1024 | AWS credential chain |
 
-### AWS Bedrock configuration
+### LLM
+
+| Provider | Default model | Override | Auth |
+|----------|---------------|----------|------|
+| Azure AI Foundry | gpt-4o | `AZURE_AI_MODEL_NAME` | `az login` token |
+| OpenAI | gpt-4o | `AZURE_AI_MODEL_NAME` | `OPENAI_API_KEY` |
+| AWS Bedrock | us.anthropic.claude-sonnet-4-5-20250929-v1:0 | `MODEL_ID` | AWS credential chain |
+
+### Mixed mode
+
+To use different providers for LLM and embeddings, set `LLM_PROVIDER` separately:
+
+```bash
+EMBEDDING_PROVIDER=bedrock    # embeddings via Titan v2
+LLM_PROVIDER=azure            # LLM via Azure AI Foundry
+```
+
+### AWS Bedrock details
 
 ```bash
 EMBEDDING_PROVIDER=bedrock
 AWS_REGION=us-east-1
-# EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0  # optional, this is the default
+# MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0       # optional
+# EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0              # optional
 ```
 
-The Bedrock provider uses Amazon Titan Text Embeddings V2 via the `BedrockEmbeddings` class from [neo4j-graphrag-python](https://github.com/neo4j/neo4j-graphrag-python). `EMBEDDING_MODEL_ID` is optional — if omitted, the library defaults to `amazon.titan-embed-text-v2:0`. AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
+The Bedrock provider uses `BedrockLLM` and `BedrockEmbeddings` from [neo4j-graphrag-python](https://github.com/neo4j/neo4j-graphrag-python). Both model IDs are optional — the defaults shown above are used when omitted. AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
 
-**Why Titan v2 instead of Nova?** Amazon Nova Multimodal Embeddings (`amazon.nova-2-multimodal-embeddings-v1:0`) uses an async-only API (`StartAsyncInvoke`) that writes results to S3. This is designed for batch workloads, not real-time per-chunk embedding. The `SimpleKGPipeline` calls `embed_query()` synchronously per chunk, which requires the standard `invoke_model` API that Titan v2 supports.
+**Why Titan v2 for embeddings instead of Nova?** Amazon Nova Multimodal Embeddings (`amazon.nova-2-multimodal-embeddings-v1:0`) uses an async-only API (`StartAsyncInvoke`) that writes results to S3. This is designed for batch workloads, not real-time per-chunk embedding. The `SimpleKGPipeline` calls `embed_query()` synchronously per chunk, which requires the standard `invoke_model` API that Titan v2 supports.
 
 ### Dimension compatibility
 
@@ -360,8 +380,9 @@ NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-password
 
-# Embedding provider (required): azure, openai, or bedrock
+# AI provider (required): azure, openai, or bedrock
 EMBEDDING_PROVIDER=azure
+# LLM_PROVIDER=azure  # optional, defaults to EMBEDDING_PROVIDER
 ```
 
 **Azure AI Foundry** — populated automatically by `uv run python setup_env.py` after `azd up`:
@@ -376,7 +397,8 @@ AZURE_AI_EMBEDDING_NAME=text-embedding-3-small
 
 ```bash
 AWS_REGION=us-east-1
-# EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0  # optional, this is the default
+# MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0  # optional
+# EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0        # optional
 ```
 
 ## Entity Resolution Experimentation Results

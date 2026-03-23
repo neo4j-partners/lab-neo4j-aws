@@ -1,6 +1,6 @@
 # Embedding Provider Plan
 
-Make the embedding system modular so it can support OpenAI, Azure, and Bedrock Nova.
+Make the embedding system modular so it can support OpenAI, Azure, and AWS Bedrock.
 
 ---
 
@@ -22,7 +22,7 @@ We need a single `get_embedder()` that picks the right provider based on which e
 |----------|-----|------|---------------|------------|
 | OpenAI | openai (via neo4j-graphrag) | API key | text-embedding-3-small | 1536 |
 | Azure | openai (via neo4j-graphrag) | az login token | text-embedding-3-small | 1536 |
-| Bedrock Nova | boto3 | AWS credentials | amazon.nova-embed-v1:0 | 1024 |
+| Bedrock | neo4j-graphrag (`BedrockEmbeddings`) | AWS credentials | amazon.titan-embed-text-v2:0 | 1024 |
 
 ---
 
@@ -85,33 +85,63 @@ The goal was to get the existing code ready so adding a new provider is just add
 
 ---
 
-## Phase 2 — Add Bedrock Nova with boto3
+## Phase 2 — Add Bedrock Titan v2 via neo4j-graphrag [DONE]
 
-Once Phase 1 is done, this is just adding one new provider file and the env vars.
+### Decision: Titan v2, not Nova
+
+The original plan targeted `amazon.nova-embed-v1:0`, but investigation showed:
+- Amazon Nova Multimodal Embeddings (`amazon.nova-2-multimodal-embeddings-v1:0`) uses an **async-only API** (`StartAsyncInvoke`) that writes results to S3
+- The `SimpleKGPipeline` calls `embed_query()` synchronously per chunk, requiring the standard `invoke_model` API
+- Amazon Titan Text Embeddings V2 (`amazon.titan-embed-text-v2:0`) supports synchronous `invoke_model` and is already the default in neo4j-graphrag's `BedrockEmbeddings` class
+
+### Decision: neo4j-graphrag BedrockEmbeddings, not custom boto3
+
+The neo4j-graphrag library already has a fully tested `BedrockEmbeddings` class that:
+- Extends the same `Embedder` interface used by the pipeline
+- Handles rate limiting with exponential backoff
+- Supports cross-region inference profiles
+- Defaults to `amazon.titan-embed-text-v2:0`
+
+No reason to duplicate this with a raw boto3 wrapper.
+
+### What was done
+
+1. **[DONE] Implemented `src/embeddings/bedrock.py`**
+   - Uses `BedrockEmbeddings` from neo4j-graphrag (not a custom boto3 wrapper)
+   - Reads `AWS_REGION` and `EMBEDDING_MODEL_ID` from config
+   - `EMBEDDING_MODEL_ID` is optional — omitting it uses the library default (`amazon.titan-embed-text-v2:0`)
+   - Auth via standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role)
+
+2. **[DONE] Added `aws_region` and `embedding_model_id` fields to `AgentConfig`**
+   - `AWS_REGION` — passed explicitly to `BedrockEmbeddings(region_name=...)` for consistency with how other providers flow through AgentConfig
+   - `EMBEDDING_MODEL_ID` — only passed when explicitly set; otherwise the library default is used
+
+3. **[DONE] Updated `.env.sample`**
+   - Fixed model ID from `amazon.nova-embed-v1:0` to `amazon.titan-embed-text-v2:0`
+   - Noted that `EMBEDDING_MODEL_ID` is optional
+   - Updated dimension comment to reference Titan v2
+
+4. **[DONE] Documented in `README.md`**
+   - Added "Embedding Providers" section with provider comparison table
+   - Explained Bedrock configuration and why Titan v2 was chosen over Nova
+   - Documented dimension compatibility between providers
+
+### Files changed
+
+| File | Change |
+|------|--------|
+| `src/embeddings/bedrock.py` | Replaced stub with `BedrockEmbeddings` from neo4j-graphrag |
+| `src/config.py` | Added `aws_region` and `embedding_model_id` optional fields to `AgentConfig` |
+| `.env.sample` | Fixed model ID default, updated comments |
+| `README.md` | Added Embedding Providers section |
+
+### Wiring (unchanged from Phase 1)
+
+These were already in place and required no changes:
+- `src/embeddings/__init__.py` — routes `bedrock` to `bedrock.create_embedder()`
+- `get_embedding_dimensions()` — defaults to 1024 for bedrock provider
 
 ### TODO
 
-1. **Implement `src/embeddings/bedrock.py`**
-   - Use boto3 `bedrock-runtime` client directly
-   - Call `invoke_model` with the Nova embedding model
-   - Handle auth via standard AWS credential chain (env vars, profile, IAM role)
-   - Return embeddings in the same format neo4j-graphrag expects
-
-2. **Add Bedrock env vars to `.env.sample`**
-   - `AWS_REGION` (or reuse `REGION` from the project root CONFIG.txt)
-   - `EMBEDDING_MODEL_ID` (e.g., `amazon.nova-embed-v1:0`)
-   - `EMBEDDING_PROVIDER=bedrock`
-
-3. **Wire up the provider in `src/embeddings/__init__.py`**
-   - When `EMBEDDING_PROVIDER=bedrock`, call `bedrock.create_embedder()`
-   - (Already wired — just needs the implementation in bedrock.py)
-
-4. **Handle the dimension difference**
-   - Nova embeddings are 1024 dimensions (not 1536)
-   - The config already carries `EMBEDDING_DIMENSIONS` from Phase 1
-   - Backups made with 1536-dim embeddings won't be compatible with 1024-dim index — document this
-
-5. **Test end-to-end**
-   - `uv run python main.py load --clear` with Bedrock config
-   - `uv run python main.py verify` to confirm vector search works
-   - Run the solution demos to confirm they work with the new provider
+- **Test end-to-end** with Bedrock config: `uv run python main.py load --clear` → `verify`
+- Run solution demos to confirm they work with the Bedrock provider

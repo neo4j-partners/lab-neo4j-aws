@@ -75,6 +75,14 @@ class AgentConfig(BaseSettings):
         default=None, validation_alias="EMBEDDING_DIMENSIONS",
     )
 
+    # --- AWS Bedrock settings ---
+    aws_region: str | None = Field(
+        default=None, validation_alias="AWS_REGION",
+    )
+    embedding_model_id: str | None = Field(
+        default=None, validation_alias="EMBEDDING_MODEL_ID",
+    )
+
     @computed_field
     @property
     def inference_endpoint(self) -> str | None:

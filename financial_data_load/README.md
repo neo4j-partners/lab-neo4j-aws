@@ -1,14 +1,24 @@
 # Financial Data Load Workshop
 
-Build AI agents using Microsoft Agent Framework with Azure AI Foundry, integrated with Neo4j graph database capabilities via the neo4j-graphrag-python library.
+Build a GraphRAG knowledge graph from SEC 10-K financial filings using Neo4j and the neo4j-graphrag-python library. Supports Azure AI Foundry or AWS Bedrock as the AI provider.
 
 ## Prerequisites
 
-- Azure subscription with access to Azure AI Foundry
+**Required for all setups:**
+
 - Neo4j Aura instance (or local Neo4j database)
 - Python 3.12.x
-- [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
 - [uv](https://docs.astral.sh/uv/) package manager
+
+**For Azure AI Foundry:**
+
+- Azure subscription with access to Azure AI Foundry
+- [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
+
+**For AWS Bedrock:**
+
+- AWS account with Bedrock model access enabled
+- AWS credentials configured (`~/.aws/credentials`, env vars, or IAM role)
 
 ## Quick Start
 
@@ -18,7 +28,29 @@ All commands below assume you are in the `financial_data_load/` directory:
 cd financial_data_load
 ```
 
-### 1. Deploy Azure AI Infrastructure
+### 1. Install Dependencies
+
+From the **project root**:
+
+```bash
+uv sync --prerelease=allow
+```
+
+### 2. Configure Neo4j
+
+Edit the `.env` file (copy from `.env.sample` if needed) and set the Neo4j credentials:
+
+```bash
+NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-password
+```
+
+### 3. Configure AI Provider
+
+Choose one of the two options below, then continue from step 4.
+
+#### Option A: Azure AI Foundry
 
 ```bash
 # Login to Azure
@@ -32,23 +64,27 @@ azd up
 uv run python setup_env.py
 ```
 
-### 2. Configure Neo4j
-
-Edit the `.env` file and update the Neo4j credentials:
+This populates `.env` with the Azure endpoints and model names. Verify that your `.env` contains:
 
 ```bash
-NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
-NEO4J_USERNAME=neo4j
-NEO4J_PASSWORD=your-password
+EMBEDDING_PROVIDER=azure
+AZURE_AI_PROJECT_ENDPOINT=https://...
+AZURE_AI_MODEL_NAME=gpt-4o
+AZURE_AI_EMBEDDING_NAME=text-embedding-3-small
 ```
 
-### 3. Install Dependencies
+#### Option B: AWS Bedrock
 
-From the **project root**:
+Add the following to your `.env`:
 
 ```bash
-uv sync --prerelease=allow
+EMBEDDING_PROVIDER=bedrock
+AWS_REGION=us-east-1
 ```
+
+`EMBEDDING_MODEL_ID` is optional — if omitted, the default is `amazon.titan-embed-text-v2:0` (1024 dimensions). AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
+
+The LLM for entity extraction and resolution is configured separately via `AZURE_AI_MODEL_NAME` or `OPENAI_API_KEY`. See the [Embedding Providers](#embedding-providers) section for the full provider comparison.
 
 ### 4. Test Connections
 
@@ -149,7 +185,7 @@ ER_MODEL_NAME=gpt-4o                # LLM model for entity resolution
 
 | Command | Description |
 |---------|-------------|
-| `main.py test` | Test Neo4j and Azure AI connections |
+| `main.py test` | Test Neo4j and AI provider connections |
 | `main.py load [--limit N] [--files PDF ...] [--clear]` | Load CSV metadata + process PDFs |
 | `main.py backup` | Back up full database to `backups/` |
 | `main.py restore [--backup PATH]` | Restore database from backup |
@@ -239,6 +275,32 @@ Persistent agent memory using neo4j-agent-memory:
 | 19 | `07_03_memory_tools_agent.py` | Agent with explicit memory tools |
 | 20 | `07_04_reasoning_memory.py` | Reasoning memory traces and tool stats |
 
+## Embedding Providers
+
+The embedding system is modular — set `EMBEDDING_PROVIDER` in `.env` to switch between providers. The rest of the code (pipeline, schema, retrievers) works identically regardless of provider.
+
+| Provider | `EMBEDDING_PROVIDER` | Model | Dimensions | Auth |
+|----------|---------------------|-------|------------|------|
+| Azure AI Foundry | `azure` | text-embedding-3-small | 1536 | `az login` token |
+| OpenAI | `openai` | text-embedding-3-small | 1536 | `OPENAI_API_KEY` |
+| AWS Bedrock | `bedrock` | amazon.titan-embed-text-v2:0 | 1024 | AWS credential chain |
+
+### AWS Bedrock configuration
+
+```bash
+EMBEDDING_PROVIDER=bedrock
+AWS_REGION=us-east-1
+# EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0  # optional, this is the default
+```
+
+The Bedrock provider uses Amazon Titan Text Embeddings V2 via the `BedrockEmbeddings` class from [neo4j-graphrag-python](https://github.com/neo4j/neo4j-graphrag-python). `EMBEDDING_MODEL_ID` is optional — if omitted, the library defaults to `amazon.titan-embed-text-v2:0`. AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
+
+**Why Titan v2 instead of Nova?** Amazon Nova Multimodal Embeddings (`amazon.nova-2-multimodal-embeddings-v1:0`) uses an async-only API (`StartAsyncInvoke`) that writes results to S3. This is designed for batch workloads, not real-time per-chunk embedding. The `SimpleKGPipeline` calls `embed_query()` synchronously per chunk, which requires the standard `invoke_model` API that Titan v2 supports.
+
+### Dimension compatibility
+
+Embeddings from different providers have different dimensions (1536 for OpenAI/Azure, 1024 for Bedrock Titan v2). The vector index dimension is set automatically based on the configured provider. Database backups created with one provider's dimensions are not compatible with a different provider's vector index — you'll need to re-run `load` if you switch providers.
+
 ## Architecture
 
 - **Azure AI Foundry** — Model hosting (gpt-4o, text-embedding-3-small)
@@ -303,21 +365,31 @@ financial_data_load/
 
 ## Environment Variables
 
-After running `setup_env.py`, your `.env` file will contain:
+Core variables present in every `.env`:
 
 ```bash
-# Azure AI (from azd)
-AZURE_AI_EMBEDDING_NAME=text-embedding-3-small
-AZURE_AI_MODEL_NAME=gpt-4o
-AZURE_AI_PROJECT_ENDPOINT=https://...
-AZURE_AI_SERVICES_ENDPOINT=https://...
-AZURE_RESOURCE_GROUP=rg-...
-AZURE_TENANT_ID=...
-
 # Neo4j Database Connection
 NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-password
+
+# Embedding provider (required): azure, openai, or bedrock
+EMBEDDING_PROVIDER=azure
+```
+
+**Azure AI Foundry** — populated automatically by `uv run python setup_env.py` after `azd up`:
+
+```bash
+AZURE_AI_PROJECT_ENDPOINT=https://...
+AZURE_AI_MODEL_NAME=gpt-4o
+AZURE_AI_EMBEDDING_NAME=text-embedding-3-small
+```
+
+**AWS Bedrock:**
+
+```bash
+AWS_REGION=us-east-1
+# EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0  # optional, this is the default
 ```
 
 ## Entity Resolution Experimentation Results
@@ -360,8 +432,10 @@ uv run python main.py verify
 
 ## Cleanup
 
-To remove deployed Azure resources and local azd state:
+**Azure AI Foundry** — remove deployed resources and local azd state:
 
 ```bash
 azd down --force --purge
 ```
+
+**AWS Bedrock** — no infrastructure to tear down (uses on-demand API access).

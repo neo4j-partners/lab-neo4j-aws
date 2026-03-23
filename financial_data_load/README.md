@@ -316,11 +316,12 @@ Embeddings from different providers have different dimensions (1536 for OpenAI/A
 
 ```
 financial_data_load/
-├── azure.yaml              # azd deployment configuration
+├── pyproject.toml          # Dependencies (uv sync)
 ├── main.py                 # CLI entry point (load, snapshot, resolve, apply-merges, finalize, etc.)
-├── setup_env.py            # Sync azd outputs to .env
-├── infra/
-│   ├── main.bicep          # Azure AI Foundry infrastructure
+├── azure.yaml              # azd deployment configuration (Azure only)
+├── setup_env.py            # Sync azd outputs to .env (Azure only)
+├── infra/                  # Azure AI Foundry infrastructure (Azure only)
+│   ├── main.bicep
 │   └── main.parameters.json
 ├── financial-data/         # SEC 10-K data files
 │   ├── Company_Filings.csv
@@ -330,7 +331,7 @@ financial_data_load/
 ├── snapshots/              # Entity snapshots (JSON, git-ignored)
 ├── logs/                   # Merge plans and processing logs
 ├── src/                    # Data loader modules
-│   ├── config.py           # Settings, Azure auth, Neo4j connection
+│   ├── config.py           # Settings, auth, Neo4j connection
 │   ├── schema.py           # Graph schema, constraints, indexes
 │   ├── loader.py           # CSV loading, company/asset manager nodes
 │   ├── pipeline.py         # SimpleKGPipeline, PDF processing
@@ -338,31 +339,15 @@ financial_data_load/
 │   ├── entity_resolution.py # LLM-based entity resolution
 │   ├── compare.py          # Compare resolution runs, ground truth scoring
 │   ├── backup.py           # Full database backup and restore
-│   └── samples.py          # Sample queries
+│   ├── samples.py          # Sample queries
+│   └── embeddings/         # Modular embedding providers
+│       ├── __init__.py     # Provider router, get_embedder(), get_embedding_dimensions()
+│       ├── openai.py       # OpenAI (direct API key)
+│       ├── azure.py        # Azure AI Foundry (az login token)
+│       └── bedrock.py      # AWS Bedrock (Titan v2 via neo4j-graphrag)
 └── solution_srcs/          # Workshop solution files
     ├── config.py           # Shared config for solutions
-    ├── test_connection.py  # Connection test script
-    ├── 01_01_data_loading.py
-    ├── 01_02_embeddings.py
-    ├── 01_03_entity_extraction.py
-    ├── 01_04_full_dataset_queries.py
-    ├── 01_test_full_data_load.py  # Graph structure validation tests
-    ├── 02_01_vector_retriever.py
-    ├── 02_02_vector_cypher_retriever.py
-    ├── 02_03_text2cypher_retriever.py
-    ├── 03_02_vector_graph_agent.py
-    ├── 03_03_text2cypher_agent.py
-    ├── 06_01_fulltext_context_provider.py
-    ├── 06_02_vector_context_provider.py
-    ├── 06_03_graph_enriched_provider.py
-    ├── 05_01_simple_agent.py
-    ├── 05_01_fulltext_search.py
-    ├── 05_02_context_provider.py
-    ├── 05_02_hybrid_search.py
-    ├── 07_01_memory_context_provider.py
-    ├── 07_02_entity_extraction.py
-    ├── 07_03_memory_tools_agent.py
-    └── 07_04_reasoning_memory.py
+    └── ...                 # 01_xx through 07_xx solution scripts
 ```
 
 ## Environment Variables

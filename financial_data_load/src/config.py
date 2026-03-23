@@ -75,6 +75,14 @@ class AgentConfig(BaseSettings):
         default=None, validation_alias="EMBEDDING_DIMENSIONS",
     )
 
+    # --- LLM provider (optional, defaults to EMBEDDING_PROVIDER) ---
+    llm_provider: str | None = Field(
+        default=None, validation_alias="LLM_PROVIDER",
+    )
+    llm_model_id: str | None = Field(
+        default=None, validation_alias="MODEL_ID",
+    )
+
     # --- AWS Bedrock settings ---
     aws_region: str | None = Field(
         default=None, validation_alias="AWS_REGION",
@@ -82,6 +90,11 @@ class AgentConfig(BaseSettings):
     embedding_model_id: str | None = Field(
         default=None, validation_alias="EMBEDDING_MODEL_ID",
     )
+
+    @property
+    def resolved_llm_provider(self) -> str:
+        """LLM provider: explicit LLM_PROVIDER, or falls back to EMBEDDING_PROVIDER."""
+        return (self.llm_provider or self.embedding_provider).lower()
 
     @computed_field
     @property
@@ -122,17 +135,33 @@ def get_azure_token() -> str:
 
 
 def get_llm():
-    """Get LLM configured from environment (OpenAI or Azure AI Foundry)."""
+    """Get LLM for the resolved provider (bedrock, openai, or azure)."""
+    config = AgentConfig()
+    provider = config.resolved_llm_provider
+
+    if provider == "bedrock":
+        from neo4j_graphrag.llm import BedrockLLM
+
+        kwargs: dict = {}
+        if config.aws_region:
+            kwargs["region_name"] = config.aws_region
+        if config.llm_model_id:
+            kwargs["model_id"] = config.llm_model_id
+        return BedrockLLM(**kwargs)
+
     from neo4j_graphrag.llm import OpenAILLM
 
-    config = AgentConfig()
-
-    if config.use_openai:
+    if provider == "openai":
+        if not config.openai_api_key:
+            raise ValueError(
+                "OpenAI LLM provider requires OPENAI_API_KEY to be set."
+            )
         return OpenAILLM(
             model_name=config.model_name,
             api_key=config.openai_api_key,
         )
 
+    # azure (default for non-bedrock when no OPENAI_API_KEY)
     token = get_azure_token()
     return OpenAILLM(
         model_name=config.model_name,

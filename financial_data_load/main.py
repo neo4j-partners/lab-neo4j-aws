@@ -290,7 +290,7 @@ def cmd_clean(args):
 
 
 def cmd_test(args):
-    """Test Neo4j and Azure AI connections."""
+    """Test Neo4j and AI provider connections."""
     import test_connection
     test_connection.main()
 
@@ -592,7 +592,7 @@ def main():
 
     # test
     p_test = subparsers.add_parser(
-        "test", help="Test Neo4j and Azure AI connections")
+        "test", help="Test Neo4j and AI provider connections")
     p_test.set_defaults(func=cmd_test)
 
     # solutions

@@ -117,3 +117,5 @@ snapshots/
 *.key
 credentials.json
 secrets.json
+.env.gold
+.env.gold.copy

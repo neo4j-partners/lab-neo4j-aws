@@ -265,7 +265,8 @@ def test_graph_relationship_counts(driver):
         # Get all relationship types and counts
         result = session.run("""
             MATCH ()-[r]->()
-            RETURN type(r) AS type, count(r) AS count
+            WITH type(r) AS type, count(r) AS count
+            RETURN type, count
             ORDER BY count DESC
         """)
 
@@ -535,7 +536,7 @@ def test_graph_no_orphan_entities(driver):
         # Find entities with no relationships at all
         orphan_result = session.run("""
             MATCH (e:__Entity__)
-            WHERE NOT (e)--()
+            WHERE NOT EXISTS { (e)--() }
             RETURN count(e) AS orphan_count,
                    collect(e.name)[0..5] AS examples
         """)
@@ -544,8 +545,8 @@ def test_graph_no_orphan_entities(driver):
         # Find entities with no schema relationships (only FROM_CHUNK)
         no_schema_rel_result = session.run("""
             MATCH (e:__Entity__)
-            WHERE NOT (e)-[:FACES_RISK|OFFERS|HAS_EXECUTIVE|REPORTS|COMPETES_WITH|PARTNERS_WITH]-()
-              AND NOT (e)<-[:FACES_RISK|OFFERS|HAS_EXECUTIVE|REPORTS|COMPETES_WITH|PARTNERS_WITH]-()
+            WHERE NOT EXISTS { (e)-[:FACES_RISK|OFFERS|HAS_EXECUTIVE|REPORTS|COMPETES_WITH|PARTNERS_WITH]-() }
+              AND NOT EXISTS { (e)<-[:FACES_RISK|OFFERS|HAS_EXECUTIVE|REPORTS|COMPETES_WITH|PARTNERS_WITH]-() }
             RETURN count(e) AS count
         """)
         no_schema_rel = no_schema_rel_result.single()["count"]

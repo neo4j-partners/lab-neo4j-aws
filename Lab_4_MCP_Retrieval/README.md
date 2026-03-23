@@ -15,7 +15,7 @@ Before starting this lab, make sure you have:
 
 | Notebook | Title | What You Build |
 |----------|-------|----------------|
-| [01_vector_search_mcp.ipynb](01_vector_search_mcp.ipynb) | Vector Search via MCP | Semantic vector search with Bedrock Titan embeddings through an MCP agent |
+| [01_vector_search_mcp.ipynb](01_vector_search_mcp.ipynb) | Vector Search via MCP | Semantic vector search with Bedrock Nova embeddings through an MCP agent |
 | [02_graph_enriched_search_mcp.ipynb](02_graph_enriched_search_mcp.ipynb) | Graph-Enriched Search via MCP | Vector search enriched with document metadata, neighboring chunks, and entity traversal (companies, products, risk factors) |
 | [03_fulltext_hybrid_search_mcp.ipynb](03_fulltext_hybrid_search_mcp.ipynb) | Fulltext and Hybrid Search via MCP | Keyword search with Lucene operators and agent-driven hybrid search combining vector and fulltext via custom `@tool` wrappers |
 
@@ -31,7 +31,7 @@ All three notebooks use the same underlying Neo4j indexes and graph structure as
 |--------|-------------|-------------------------------|
 | Connection | MCP server via AgentCore Gateway | Direct Neo4j driver |
 | Query execution | Agent calls `execute-query` MCP tool | Retriever class methods |
-| Embedding | Client-side (Bedrock Titan), passed to agent or wrapped in `@tool` | Retriever calls embedder internally |
+| Embedding | Client-side (Bedrock Nova), passed to agent or wrapped in `@tool` | Retriever calls embedder internally |
 | Hybrid search | Agent runs both queries and combines results | `HybridRetriever` handles score normalization and alpha tuning |
 | Graph traversal | Cypher in agent prompt | `retrieval_query` parameter on retriever classes |
 

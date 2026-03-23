@@ -2,7 +2,7 @@
 Data loading and index creation for GraphRAG validation.
 
 Functions for loading CSV data into Document/Chunk nodes,
-generating Titan V2 embeddings, and creating vector + fulltext indexes.
+generating Nova embeddings, and creating vector + fulltext indexes.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import nest_asyncio
 from neo4j import Driver
-from neo4j_graphrag.embeddings import BedrockEmbeddings
+from neo4j_graphrag.embeddings import BedrockNovaEmbeddings
 from neo4j_graphrag.experimental.components.text_splitters.fixed_size_splitter import (
     FixedSizeSplitter,
 )
@@ -104,16 +104,19 @@ def create_documents_and_chunks(driver: Driver, data_dir: Path) -> int:
                 filing_id=filing_id,
             )
 
-            for idx, chunk_text in enumerate(chunks):
-                session.run(
-                    "MATCH (d:Document {filing_id: $filing_id}) "
-                    "CREATE (c:Chunk {text: $text, index: $index}) "
-                    "CREATE (c)-[:FROM_DOCUMENT]->(d)",
-                    filing_id=filing_id,
-                    text=chunk_text,
-                    index=idx,
-                )
-                total_chunks += 1
+            chunk_data = [
+                {"text": chunk_text, "index": idx}
+                for idx, chunk_text in enumerate(chunks)
+            ]
+            session.run(
+                "MATCH (d:Document {filing_id: $filing_id}) "
+                "UNWIND $chunks AS chunk "
+                "CREATE (c:Chunk {text: chunk.text, index: chunk.index}) "
+                "CREATE (c)-[:FROM_DOCUMENT]->(d)",
+                filing_id=filing_id,
+                chunks=chunk_data,
+            )
+            total_chunks += len(chunks)
 
             # Link sequential chunks with NEXT_CHUNK
             if len(chunks) > 1:
@@ -133,8 +136,8 @@ def create_documents_and_chunks(driver: Driver, data_dir: Path) -> int:
 # ── Embeddings ──────────────────────────────────────────────────────────────
 
 
-def generate_embeddings(driver: Driver, embedder: BedrockEmbeddings) -> int:
-    """Generate Titan V2 embeddings for all Chunk nodes without an embedding.
+def generate_embeddings(driver: Driver, embedder: BedrockNovaEmbeddings) -> int:
+    """Generate Nova embeddings for all Chunk nodes without an embedding.
 
     Returns the number of chunks updated.
     """

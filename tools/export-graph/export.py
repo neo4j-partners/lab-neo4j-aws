@@ -1,4 +1,4 @@
-"""Export the gold Neo4j database to TransformedData/ CSVs.
+"""Export the gold Neo4j database to setup/seed-data/ CSVs.
 
 Filters to primary filing companies (those with a Document node) and their
 directly-connected entities only. LLM-extracted "companies" that are really
@@ -10,7 +10,7 @@ Usage:
     uv run export.py
 
 Reads credentials from ../../financial_data_load/.env.gold
-Writes CSVs to ../../TransformedData/
+Writes CSVs to ../../setup/seed-data/
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-EXPORT_DIR = ROOT / "TransformedData"
+EXPORT_DIR = ROOT / "setup" / "seed-data"
 ENV_FILE = ROOT / "financial_data_load" / ".env.gold"
 
 # ---------------------------------------------------------------------------

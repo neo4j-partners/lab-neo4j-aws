@@ -34,7 +34,7 @@ def export_snapshot(driver: Driver, label: str = "Company") -> Path:
                properties(e) AS props,
                source_chunks,
                rel_count
-        ORDER BY e.name
+        ORDER BY coalesce(e.name, '')
     """
     )
 

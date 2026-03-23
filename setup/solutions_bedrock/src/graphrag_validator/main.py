@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import typer
 from neo4j import GraphDatabase
-from neo4j_graphrag.embeddings import BedrockEmbeddings
+from neo4j_graphrag.embeddings import BedrockNovaEmbeddings
 from neo4j_graphrag.generation import GraphRAG
 from neo4j_graphrag.llm import BedrockLLM
 from rich.console import Console
@@ -68,12 +68,12 @@ def test() -> None:
         _banner("GraphRAG Validator -- SEC Financial Graph")
         console.print(f"  Neo4j URI: {settings.neo4j_uri}")
         console.print(f"  Model:     {settings.model_id}")
-        console.print(f"  Embedder:  {settings.embedding_model_id}")
+        console.print(f"  Embedder:  amazon.nova-2-multimodal-embeddings-v1:0 ({settings.embedding_dimensions} dims)")
         console.print(f"  Region:    {settings.region}")
 
-        embedder = BedrockEmbeddings(
-            model_id=settings.embedding_model_id,
+        embedder = BedrockNovaEmbeddings(
             region_name=settings.region,
+            embedding_dimension=settings.embedding_dimensions,
         )
         llm = BedrockLLM(
             model_id=settings.model_id,
@@ -90,7 +90,7 @@ def test() -> None:
             raise typer.Exit(1)
 
         # ── Phase 2: Embeddings ─────────────────────────────────────────
-        _phase(2, "Embedding Generation (Titan V2)")
+        _phase(2, "Embedding Generation (Nova)")
         try:
             updated = generate_embeddings(driver, embedder)
             _ok(f"Generated embeddings for {updated} chunks")
@@ -192,9 +192,9 @@ def chat() -> None:
         _banner("GraphRAG Chat (HybridCypherRetriever)")
         console.print("Type your question and press Enter. Type 'quit' to exit.\n")
 
-        embedder = BedrockEmbeddings(
-            model_id=settings.embedding_model_id,
+        embedder = BedrockNovaEmbeddings(
             region_name=settings.region,
+            embedding_dimension=settings.embedding_dimensions,
         )
         llm = BedrockLLM(
             model_id=settings.model_id,

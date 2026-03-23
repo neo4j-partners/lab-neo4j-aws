@@ -101,6 +101,7 @@ def show_relationships(driver) -> None:
         result = session.run("""
             MATCH (c:Company)-[r]->(target)
             WHERE type(r) IN ['OFFERS_PRODUCT', 'OFFERS_SERVICE']
+              AND c.name IS NOT NULL
             RETURN c.name as company, type(r) as relationship,
                    labels(target)[0] as target_type, target.name as target_name
             ORDER BY c.name, type(r)

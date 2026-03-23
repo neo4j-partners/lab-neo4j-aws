@@ -64,28 +64,28 @@ def create_document(driver, path: str, page: int) -> str:
 
 def create_chunks(driver, doc_id: str, chunks: list[str]) -> list[str]:
     """Create Chunk nodes linked to a Document. Returns chunk element IDs."""
-    chunk_ids = []
     with driver.session() as session:
-        for index, text in enumerate(chunks):
-            result = session.run("""
-                MATCH (d:Document) WHERE elementId(d) = $doc_id
-                CREATE (c:Chunk {text: $text, index: $index})
-                CREATE (c)-[:FROM_DOCUMENT]->(d)
-                RETURN elementId(c) as chunk_id
-            """, doc_id=doc_id, text=text, index=index)
-            chunk_ids.append(result.single()["chunk_id"])
-    return chunk_ids
+        chunk_params = [{"text": text, "index": index} for index, text in enumerate(chunks)]
+        result = session.run("""
+            MATCH (d:Document) WHERE elementId(d) = $doc_id
+            UNWIND $chunks AS chunk
+            CREATE (c:Chunk {text: chunk.text, index: chunk.index})
+            CREATE (c)-[:FROM_DOCUMENT]->(d)
+            RETURN elementId(c) as chunk_id
+        """, doc_id=doc_id, chunks=chunk_params)
+        return [record["chunk_id"] for record in result]
 
 
 def link_chunks(driver, chunk_ids: list[str]) -> int:
     """Create NEXT_CHUNK relationships between sequential chunks."""
+    pairs = [{"id1": chunk_ids[i], "id2": chunk_ids[i + 1]} for i in range(len(chunk_ids) - 1)]
     with driver.session() as session:
-        for i in range(len(chunk_ids) - 1):
-            session.run("""
-                MATCH (c1:Chunk) WHERE elementId(c1) = $id1
-                MATCH (c2:Chunk) WHERE elementId(c2) = $id2
-                CREATE (c1)-[:NEXT_CHUNK]->(c2)
-            """, id1=chunk_ids[i], id2=chunk_ids[i + 1])
+        session.run("""
+            UNWIND $pairs AS pair
+            MATCH (c1:Chunk) WHERE elementId(c1) = pair.id1
+            MATCH (c2:Chunk) WHERE elementId(c2) = pair.id2
+            CREATE (c1)-[:NEXT_CHUNK]->(c2)
+        """, pairs=pairs)
     return len(chunk_ids) - 1
 
 
@@ -95,7 +95,8 @@ def show_graph_structure(driver) -> None:
         result = session.run("""
             MATCH (d:Document)
             OPTIONAL MATCH (d)<-[:FROM_DOCUMENT]-(c:Chunk)
-            RETURN d.path as document, d.page as page, count(c) as chunks
+            WITH d, count(c) as chunks
+            RETURN d.path as document, d.page as page, chunks
         """)
         print("\n=== Graph Structure ===")
         for record in result:
@@ -105,6 +106,7 @@ def show_graph_structure(driver) -> None:
         result = session.run("""
             MATCH (c:Chunk)
             OPTIONAL MATCH (c)-[:NEXT_CHUNK]->(next:Chunk)
+            WHERE c.index IS NOT NULL
             RETURN c.index as idx,
                    c.text as text,
                    next.index as next_idx

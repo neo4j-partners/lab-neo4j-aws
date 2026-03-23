@@ -18,7 +18,7 @@ These steps must be completed by the workshop admin before participants begin.
 
 In the AWS Console, navigate to **Amazon Bedrock > Model access** and enable:
 - `us.anthropic.claude-sonnet-4-5-20250929-v1:0` (or your preferred Claude model)
-- `amazon.titan-embed-text-v2:0`
+- `amazon.nova-2-multimodal-embeddings-v1:0`
 
 This is a manual console step and cannot be scripted.
 
@@ -51,7 +51,7 @@ Ensure the following fields are set in `CONFIG.txt` before distributing to parti
 | `NEO4J_USERNAME` | Lab 1 — Aura instance creation | Labs 2, 6, 7, 8 |
 | `NEO4J_PASSWORD` | Lab 1 — Aura instance creation | Labs 2, 6, 7, 8 |
 | `MODEL_ID` | Pre-configured default | Labs 3, 4, 6, 7 |
-| `EMBEDDING_MODEL_ID` | Pre-configured default | Labs 4, 6 |
+| `EMBEDDING_DIMENSIONS` | Pre-configured default (1024) | Labs 4, 6 |
 | `REGION` | Pre-configured default | Labs 3, 4, 6, 7 |
 | `MCP_GATEWAY_URL` | MCP server deployment | Labs 4, 7 |
 | `MCP_ACCESS_TOKEN` | MCP server deployment | Labs 4, 7 |
@@ -90,7 +90,7 @@ This deletes the execution role, S3 bucket, and removes the deployment policy fr
 
 ### populate — Load the Financial Knowledge Graph
 
-Loads structured CSV data from `TransformedData/` into Neo4j as a knowledge graph with companies, products, services, risk factors, financial metrics, executives, asset managers, and SEC filings.
+Loads structured CSV data from `setup/seed-data/` into Neo4j as a knowledge graph with companies, products, risk factors, asset managers, and their relationships.
 
 ```bash
 cd setup/populate
@@ -119,18 +119,15 @@ NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=...
 MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0
-EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0
 REGION=us-east-1
 ```
 
 ## Graph Schema
 
 ```
-(:Company) -[:OFFERS_PRODUCT]-> (:Product)
-(:Company) -[:OFFERS_SERVICE]-> (:Service)
-(:Company) -[:FACES_RISK]-> (:RiskFactor)
-(:Company) -[:HAS_METRIC]-> (:FinancialMetric)
-(:Company) -[:HAS_EXECUTIVE]-> (:Executive)
-(:AssetManager) -[:OWNS]-> (:Company)
-(:Company) -[:FILED]-> (:Document) <-[:FROM_DOCUMENT]- (:Chunk) -[:NEXT_CHUNK]-> (:Chunk)
+(:Company)       -[:OFFERS]->         (:Product)
+(:Company)       -[:FACES_RISK]->     (:RiskFactor)
+(:Company)       -[:COMPETES_WITH]->  (:Company)
+(:Company)       -[:PARTNERS_WITH]->  (:Company)
+(:AssetManager)  -[:OWNS {shares}]->  (:Company)
 ```

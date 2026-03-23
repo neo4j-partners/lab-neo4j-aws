@@ -31,6 +31,17 @@ EXTRACTION_CONSTRAINTS: list[tuple[str, str, str]] = [
     ("unique_financialmetric_name", "FinancialMetric", "name"),
 ]
 
+# Range indexes created BEFORE the pipeline to speed up MERGE lookups.
+# Dropped by drop_pipeline_indexes() after finalize creates uniqueness
+# constraints (which include their own backing indexes).
+PIPELINE_INDEXES: list[tuple[str, str, str]] = [
+    ("idx_company_name", "Company", "name"),
+    ("idx_riskfactor_name", "RiskFactor", "name"),
+    ("idx_product_name", "Product", "name"),
+    ("idx_executive_name", "Executive", "name"),
+    ("idx_financialmetric_name", "FinancialMetric", "name"),
+]
+
 
 # ---------------------------------------------------------------------------
 # DDL functions (all idempotent via IF NOT EXISTS)
@@ -76,6 +87,22 @@ def _dedup_exact_names(driver: Driver) -> None:
         )
         total_merged = sum(r["cnt"] - 1 for r in result.records)
         print(f"  [DEDUP] {label}: merged {total_merged} duplicate nodes ({dup_count} groups)")
+
+
+def create_pipeline_indexes(driver: Driver) -> None:
+    """Create range indexes to speed up MERGE lookups during pipeline run."""
+    for name, label, prop in PIPELINE_INDEXES:
+        driver.execute_query(
+            f"CREATE INDEX {name} IF NOT EXISTS FOR (n:{label}) ON (n.{prop})"
+        )
+        print(f"  [OK] Range index: {name} ({label}.{prop})")
+
+
+def drop_pipeline_indexes(driver: Driver) -> None:
+    """Drop temporary range indexes (superseded by uniqueness constraints)."""
+    for name, _label, _prop in PIPELINE_INDEXES:
+        driver.execute_query(f"DROP INDEX {name} IF EXISTS")
+        print(f"  [OK] Dropped index: {name}")
 
 
 def create_all_constraints(driver: Driver) -> None:

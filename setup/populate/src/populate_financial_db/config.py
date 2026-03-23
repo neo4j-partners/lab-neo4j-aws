@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     neo4j_uri: str = Field(validation_alias="NEO4J_URI")
     neo4j_username: str = Field(default="neo4j", validation_alias="NEO4J_USERNAME")
     neo4j_password: str = Field(validation_alias="NEO4J_PASSWORD")
-    data_dir: str = Field(default="TransformedData/", validation_alias="DATA_DIR")
+    data_dir: str = Field(default="setup/seed-data/", validation_alias="DATA_DIR")
 
     @property
     def resolved_data_dir(self) -> Path:

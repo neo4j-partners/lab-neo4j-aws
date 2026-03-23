@@ -72,6 +72,7 @@ def cmd_load(args):
         load_company_metadata,
     )
     from src.pipeline import process_all_pdfs
+    from src.schema import create_pipeline_indexes
 
     start = time.monotonic()
 
@@ -80,11 +81,15 @@ def cmd_load(args):
             clear_database(driver)
             print()
 
-        # Load metadata (no constraints yet -- pipeline needs to write freely)
+        # Load metadata (no uniqueness constraints yet -- pipeline needs to
+        # write freely, but range indexes speed up MERGE lookups)
         company_meta = {}
         if COMPANY_CSV.exists():
             company_meta = load_company_metadata(COMPANY_CSV)
             create_company_nodes(driver, company_meta)
+
+        print("\nCreating range indexes for pipeline...")
+        create_pipeline_indexes(driver)
 
         # Get PDFs
         pdf_files = sorted(PDF_DIR.glob("*.pdf"))
@@ -275,12 +280,15 @@ def cmd_finalize(args):
     )
     from src.schema import (
         create_all_constraints, create_fulltext_indexes,
-        create_embedding_indexes,
+        create_embedding_indexes, drop_pipeline_indexes,
     )
     from src.pipeline import validate_enrichment
 
     with connect() as driver:
-        print("Creating constraints...")
+        print("Dropping temporary pipeline indexes...")
+        drop_pipeline_indexes(driver)
+
+        print("\nCreating constraints...")
         create_all_constraints(driver)
 
         print("\nCreating indexes...")

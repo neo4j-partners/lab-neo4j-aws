@@ -1,7 +1,7 @@
 """
 Core data loading pipeline for the SEC financial knowledge graph.
 
-Reads CSV files from TransformedData/ and loads nodes and relationships
+Reads CSV files from setup/seed-data/ and loads nodes and relationships
 into Neo4j using MERGE to ensure idempotent loads.
 """
 

@@ -43,7 +43,7 @@ AWS_REGION=us-east-1
 MODEL_ID=us.anthropic.claude-sonnet-4-6
 ```
 
-The LLM uses the model specified by `MODEL_ID` (required). Embeddings default to Titan Text Embeddings V2 (1024 dimensions) — override with `EMBEDDING_MODEL_ID` if needed.
+The LLM uses the model specified by `MODEL_ID` (required). Embeddings use Amazon Nova Multimodal Embeddings (1024 dimensions by default) — override with `EMBEDDING_DIMENSIONS` if needed.
 
 AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
 
@@ -230,20 +230,18 @@ Persistent agent memory using neo4j-agent-memory:
 
 ## AI Provider
 
-Uses `BedrockLLM` and `BedrockEmbeddings` from [neo4j-graphrag-python](https://github.com/neo4j/neo4j-graphrag-python). AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
+Uses `BedrockLLM` and `BedrockNovaEmbeddings` from [neo4j-graphrag-python](https://github.com/neo4j-partners/neo4j-graphrag-python). AWS credentials are resolved by the standard boto3 credential chain (env vars, `~/.aws/credentials`, IAM role).
 
 | Component | Default model | Override env var |
 |-----------|---------------|------------------|
 | LLM | (none — `MODEL_ID` required) | `MODEL_ID` |
-| Embeddings | amazon.titan-embed-text-v2:0 | `EMBEDDING_MODEL_ID` |
+| Embeddings | amazon.nova-2-multimodal-embeddings-v1:0 | `EMBEDDING_DIMENSIONS` |
 
-Embedding dimensions default to 1024 (Titan v2). Override with `EMBEDDING_DIMENSIONS` if using a different embedding model.
-
-**Why Titan v2 for embeddings instead of Nova?** Amazon Nova Multimodal Embeddings (`amazon.nova-2-multimodal-embeddings-v1:0`) uses an async-only API (`StartAsyncInvoke`) that writes results to S3. This is designed for batch workloads, not real-time per-chunk embedding. The `SimpleKGPipeline` calls `embed_query()` synchronously per chunk, which requires the standard `invoke_model` API that Titan v2 supports.
+Embedding dimensions default to 1024 (Nova default is 3072 but we use 1024 to match existing vector indexes).
 
 ## Architecture
 
-- **AWS Bedrock** — LLM (Claude) and embeddings (Titan v2)
+- **AWS Bedrock** — LLM (Claude) and embeddings (Nova)
 - **neo4j-graphrag-python** — Graph retrieval capabilities
 - **Neo4j** — Graph database with vector search
 
@@ -276,7 +274,7 @@ financial_data_load/
 │   ├── samples.py          # Sample queries
 │   └── embeddings/         # Embedding provider
 │       ├── __init__.py     # get_embedder(), get_embedding_dimensions()
-│       └── bedrock.py      # AWS Bedrock (Titan v2 via neo4j-graphrag)
+│       └── bedrock.py      # AWS Bedrock (Nova via neo4j-graphrag)
 └── solution_srcs/          # Workshop solution files
     ├── config.py           # Shared config for solutions
     └── ...                 # 01_xx through 07_xx solution scripts
@@ -293,8 +291,7 @@ NEO4J_PASSWORD=your-password
 # AWS Bedrock
 AWS_REGION=us-east-1
 MODEL_ID=us.anthropic.claude-sonnet-4-6
-# EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0        # optional
-# EMBEDDING_DIMENSIONS=1024                               # optional
+# EMBEDDING_DIMENSIONS=1024                               # optional (default: 1024)
 ```
 
 ## Entity Resolution Experimentation Results
@@ -335,6 +332,22 @@ uv run python main.py apply-cleanse
 uv run python main.py finalize
 uv run python main.py verify
 ```
+
+## Pipeline Performance: Range Indexes
+
+The `load` command creates temporary **range indexes** before processing PDFs. These are dropped during `finalize` when uniqueness constraints (which include their own backing indexes) take over.
+
+### Why indexes speed up writes
+
+Without an index, every `MERGE` does a full label scan — O(n) per write, and n grows with each PDF. With an index, each `MERGE` is an O(log n) lookup plus a small index update. The scan cost grows quadratically across the pipeline run; the index maintenance cost is near-constant.
+
+The net effect is indexes make the pipeline significantly **faster** for writes, not slower. Index overhead only becomes a concern for bulk `LOAD CSV` or `UNWIND` batch imports where you already have a way to avoid `MERGE`, which isn't the case here — `SimpleKGPipeline` issues individual `MERGE` statements per entity.
+
+### What is a range index?
+
+In Neo4j, a **range index** (created with `CREATE INDEX ... FOR (n:Label) ON (n.property)`) is the standard B-tree index for property lookups. It speeds up equality checks (`WHERE n.name = $value`), range comparisons (`<`, `>`), prefix matching, and — critically — `MERGE` operations that need to find-or-create a node by property value.
+
+A **uniqueness constraint** (`CREATE CONSTRAINT ... REQUIRE n.prop IS UNIQUE`) automatically creates a backing range index *plus* enforces that no two nodes share the same value. During the pipeline run we can't use uniqueness constraints because `SimpleKGPipeline` may create duplicate entities across chunks that get resolved later. So we use plain range indexes for the MERGE speedup without the uniqueness enforcement, then swap to constraints in the `finalize` step.
 
 ## Cleanup
 

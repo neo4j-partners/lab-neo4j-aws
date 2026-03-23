@@ -189,5 +189,5 @@ No merge conflicts: each agent only modifies its own file. The orchestrator (`cl
 - [ ] Remove `src/snapshot.py` and `src/compare.py` (dedup logic in `entity_resolution.py` is reused, not removed)
 - [ ] Update README section 6: replace `snapshot → resolve → apply-merges` with `cleanse → apply-cleanse`
 - [ ] Update `main.py` docstring to reflect new pipeline flow
-- [ ] Re-export CSVs to `TransformedData/` after cleansing and verify improved counts
+- [ ] Re-export CSVs to `setup/seed-data/` after cleansing and verify improved counts
 - [ ] Update the extraction schema prompts in `schema.py` to reduce noise at the source (more specific entity descriptions, negative examples in the schema)

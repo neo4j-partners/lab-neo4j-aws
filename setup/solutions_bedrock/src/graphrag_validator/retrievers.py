@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Final
 
 from neo4j import Driver
-from neo4j_graphrag.embeddings import BedrockEmbeddings
+from neo4j_graphrag.embeddings import BedrockNovaEmbeddings
 from neo4j_graphrag.llm import BedrockLLM
 from neo4j_graphrag.retrievers import (
     HybridCypherRetriever,
@@ -38,13 +38,14 @@ EXPECTED_NODE_COUNTS: dict[str, int] = {
 CONTEXT_QUERY: Final[str] = """
 MATCH (node)-[:FROM_DOCUMENT]->(doc:Document)<-[:FILED]-(company:Company)
 OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
-OPTIONAL MATCH (company)-[:OFFERS_PRODUCT]->(product:Product)
 WITH node, score, company, doc,
-     collect(DISTINCT risk.name)[0..5] AS risks,
+     collect(DISTINCT risk.name)[0..5] AS risks
+OPTIONAL MATCH (company)-[:OFFERS_PRODUCT]->(product:Product)
+WITH node, score, company, doc, risks,
      collect(DISTINCT product.name)[0..5] AS products
 RETURN node.text AS text,
        score,
-       company.name AS company,
+       company.name AS company_name,
        company.ticker AS ticker,
        risks,
        products
@@ -55,15 +56,17 @@ RETURN node.text AS text,
 HYBRID_CONTEXT_QUERY: Final[str] = """
 MATCH (node)-[:FROM_DOCUMENT]->(doc:Document)<-[:FILED]-(company:Company)
 OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
-OPTIONAL MATCH (company)-[:OFFERS_PRODUCT]->(product:Product)
-OPTIONAL MATCH (company)-[:OFFERS_SERVICE]->(service:Service)
 WITH node, score, company, doc,
-     collect(DISTINCT risk.name)[0..5] AS risks,
-     collect(DISTINCT product.name)[0..5] AS products,
+     collect(DISTINCT risk.name)[0..5] AS risks
+OPTIONAL MATCH (company)-[:OFFERS_PRODUCT]->(product:Product)
+WITH node, score, company, doc, risks,
+     collect(DISTINCT product.name)[0..5] AS products
+OPTIONAL MATCH (company)-[:OFFERS_SERVICE]->(service:Service)
+WITH node, score, company, doc, risks, products,
      collect(DISTINCT service.name)[0..5] AS services
 RETURN node.text AS text,
        score,
-       company.name AS company,
+       company.name AS company_name,
        company.ticker AS ticker,
        doc.filing_type AS filing_type,
        risks,
@@ -79,7 +82,7 @@ class Retrievers:
     """Holds the Neo4j driver, AI services, and pre-built retriever instances."""
 
     driver: Driver
-    embedder: BedrockEmbeddings
+    embedder: BedrockNovaEmbeddings
     llm: BedrockLLM
     vector: VectorRetriever
     vector_cypher: VectorCypherRetriever
@@ -88,14 +91,14 @@ class Retrievers:
 
 def build_retrievers(
     driver: Driver,
-    embedder: BedrockEmbeddings,
+    embedder: BedrockNovaEmbeddings,
     llm: BedrockLLM,
 ) -> Retrievers:
     """Construct all four retriever instances against the loaded graph.
 
     Args:
         driver: An open Neo4j driver.
-        embedder: BedrockEmbeddings (Titan V2, 1024 dims).
+        embedder: BedrockNovaEmbeddings (Nova, 1024 dims).
         llm: BedrockLLM (Claude).
 
     Returns:

@@ -110,6 +110,7 @@ def samples() -> None:
         (
             "Company Overview",
             "MATCH (c:Company) "
+            "WHERE c.name IS NOT NULL "
             "RETURN c.name AS company, c.ticker AS ticker, c.sector AS sector "
             "ORDER BY c.name LIMIT 10",
             ["company", "ticker", "sector"],
@@ -117,6 +118,7 @@ def samples() -> None:
         (
             "Risk Analysis",
             "MATCH (c:Company)-[:FACES_RISK]->(r:RiskFactor) "
+            "WHERE r.severity IS NOT NULL AND c.name IS NOT NULL "
             "RETURN c.name AS company, r.name AS risk, r.severity AS severity "
             "ORDER BY r.severity DESC, c.name LIMIT 10",
             ["company", "risk", "severity"],
@@ -125,6 +127,7 @@ def samples() -> None:
             "Portfolio Overlap",
             "MATCH (a:AssetManager)-[:OWNS]->(c:Company) "
             "WITH a, collect(c.name) AS companies "
+            "WHERE a.name IS NOT NULL "
             "RETURN a.name AS manager, size(companies) AS holdings, "
             "       companies[0..5] AS sample_companies "
             "ORDER BY holdings DESC LIMIT 10",
@@ -133,6 +136,7 @@ def samples() -> None:
         (
             "Filing Summary",
             "MATCH (c:Company)-[:FILED]->(d:Document) "
+            "WHERE d.filing_date IS NOT NULL "
             "RETURN c.name AS company, d.filing_type AS type, "
             "       d.filing_date AS date, d.fiscal_year AS year "
             "ORDER BY d.filing_date DESC LIMIT 10",
@@ -141,6 +145,7 @@ def samples() -> None:
         (
             "Executive Listing",
             "MATCH (c:Company)-[:HAS_EXECUTIVE]->(e:Executive) "
+            "WHERE c.name IS NOT NULL AND e.title IS NOT NULL "
             "RETURN c.name AS company, e.name AS executive, e.title AS title "
             "ORDER BY c.name, e.title LIMIT 10",
             ["company", "executive", "title"],

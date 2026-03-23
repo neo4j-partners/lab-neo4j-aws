@@ -71,13 +71,15 @@ def export_snapshot(driver: Driver, model_name: str) -> Path:
     # Export all LLM-extracted entities with properties
     for label in _LLM_ENTITY_LABELS:
         rows, _, _ = driver.execute_query(
-            f"MATCH (n:{label}) RETURN properties(n) AS props ORDER BY n.name"
+            f"MATCH (n:{label}) WHERE n.name IS NOT NULL "
+            f"RETURN properties(n) AS props ORDER BY n.name"
         )
         snapshot["entities"][label] = [_clean_props(r["props"]) for r in rows]
 
     # Export Company entities
     rows, _, _ = driver.execute_query(
-        "MATCH (c:Company) RETURN properties(c) AS props ORDER BY c.name"
+        "MATCH (c:Company) WHERE c.name IS NOT NULL "
+        "RETURN properties(c) AS props ORDER BY c.name"
     )
     snapshot["entities"]["Company"] = [_clean_props(r["props"]) for r in rows]
 
@@ -85,6 +87,8 @@ def export_snapshot(driver: Driver, model_name: str) -> Path:
     rows, _, _ = driver.execute_query("""
         MATCH (source)-[r]->(target)
         WHERE type(r) IN $rel_types
+          AND source.name IS NOT NULL
+          AND target.name IS NOT NULL
         RETURN source.name AS source, type(r) AS rel_type,
                target.name AS target
         ORDER BY type(r), source.name, target.name

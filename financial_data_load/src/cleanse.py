@@ -50,7 +50,7 @@ def _snapshot_entities(driver: Driver, label: str) -> list[SnapshotEntity]:
         "       properties(e) AS props, "
         "       source_chunks, "
         "       rel_count "
-        "ORDER BY e.name"
+        "ORDER BY coalesce(e.name, '')"
     )
 
     entities = []
@@ -94,6 +94,10 @@ def cleanse(driver: Driver, phase: str | None = None) -> Path:
 
     LOG_DIR.mkdir(exist_ok=True)
 
+    plan_path = (
+        LOG_DIR / f"cleanse_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    )
+
     # Snapshot all entity types
     print("Snapshotting entities...")
     snapshots: dict[str, list[SnapshotEntity]] = {}
@@ -104,12 +108,29 @@ def cleanse(driver: Driver, phase: str | None = None) -> Path:
         entity_counts[label] = len(entities)
         print(f"  {label}: {len(entities)} entities")
 
-    # Phase 1: Validation
+    # Mutable state that gets saved incrementally
     removals: list[RemovalDecision] = []
+    dedup_sections: dict[str, DedupSection] = {}
+    ground_truth = None
+
+    def _save_plan() -> None:
+        """Write current plan state to disk."""
+        plan = CleansePlan(
+            created_at=datetime.now().isoformat(),
+            entity_counts=entity_counts,
+            removals=removals,
+            dedup_sections=dedup_sections,
+            ground_truth=ground_truth,
+        )
+        plan_path.write_text(plan.model_dump_json(indent=2))
+
+    # Phase 1: Validation
     if phase is None or phase == "validate":
         print("\n--- Phase 1: Validation ---")
         removals = validate_entities(snapshots)
         print(f"  Total: {len(removals)} entities marked for removal")
+        _save_plan()
+        print(f"  (checkpoint saved: {plan_path.name})")
 
     # Filter out removed entities before dedup
     removed_ids = {r.element_id for r in removals}
@@ -123,7 +144,6 @@ def cleanse(driver: Driver, phase: str | None = None) -> Path:
             print(f"  {label}: {before} -> {after} after validation")
 
     # Phase 2: Deduplication
-    dedup_sections: dict[str, DedupSection] = {}
     if phase is None or phase == "dedup":
         print("\n--- Phase 2: Deduplication ---")
         for label in ENTITY_LABELS:
@@ -142,25 +162,15 @@ def cleanse(driver: Driver, phase: str | None = None) -> Path:
             )
             ready = [g for g in result.merge_groups if g["status"] == "ready"]
             print(f"    {len(ready)} merge groups ready")
+            _save_plan()
+            print(f"    (checkpoint saved: {plan_path.name})")
 
     # Ground truth scoring (Company only)
-    ground_truth = None
     if "Company" in dedup_sections:
         ground_truth = _score_company_ground_truth(dedup_sections["Company"])
 
-    # Write plan
-    plan = CleansePlan(
-        created_at=datetime.now().isoformat(),
-        entity_counts=entity_counts,
-        removals=removals,
-        dedup_sections=dedup_sections,
-        ground_truth=ground_truth,
-    )
-
-    plan_path = (
-        LOG_DIR / f"cleanse_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    )
-    plan_path.write_text(plan.model_dump_json(indent=2))
+    # Final write
+    _save_plan()
     print(f"\nCleanse plan written: {plan_path}")
 
     if ground_truth:

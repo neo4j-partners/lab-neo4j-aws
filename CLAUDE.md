@@ -21,7 +21,6 @@ NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=...
 MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0
-EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0
 REGION=us-east-1
 ```
 
@@ -49,7 +48,7 @@ Includes AgentCore deployment at the end using `bedrock-agentcore-starter-toolki
 Location: `Lab_4_MCP_Retrieval/`
 
 Three notebooks covering vector search, graph-enriched retrieval, and hybrid search through the Neo4j MCP server:
-- `01_vector_search_mcp.ipynb`: Semantic vector search via MCP using Bedrock Titan embeddings
+- `01_vector_search_mcp.ipynb`: Semantic vector search via MCP using Bedrock Nova embeddings
 - `02_graph_enriched_search_mcp.ipynb`: Vector search with graph traversal for enriched context (document, chunks, entities)
 - `03_fulltext_hybrid_search_mcp.ipynb`: Fulltext keyword search and agent-driven hybrid search with `@tool` wrappers
 
@@ -72,23 +71,25 @@ Uses a forked neo4j-graphrag with Bedrock support:
 pip install "neo4j-graphrag[bedrock] @ git+https://github.com/neo4j-partners/neo4j-graphrag-python.git@bedrock-embeddings"
 ```
 
-Key utility classes in `data_utils.py`:
+Key utility classes in `lib/data_utils.py`:
 - `Neo4jConnection`: Manages driver connection using `Neo4jConfig` (pydantic-settings)
-- `CSVLoader`: Loads structured data from `TransformedData/` CSV files
 - `DataLoader`: Loads text data files
-- `get_embedder()`: Returns `BedrockEmbeddings` configured from environment
+- `get_embedder()`: Returns `BedrockNovaEmbeddings` configured from environment
 - `get_llm()`: Returns `BedrockLLM` configured from environment
+- `get_embedding()`: Returns raw float array via Bedrock Nova for Cypher queries
 - `split_text()`: Wraps `FixedSizeSplitter` with async handling for Jupyter
+
+Key utility classes in `lib/mcp_utils.py`:
+- `MCPConnection`: Wraps MCP client setup, tool discovery, and `execute_query(cypher)` for notebooks
 
 Graph structure for SEC financial data:
 ```
-(:Company) -[:OFFERS_PRODUCT]-> (:Product)
-(:Company) -[:OFFERS_SERVICE]-> (:Service)
-(:Company) -[:FACES_RISK]-> (:RiskFactor)
-(:Company) -[:HAS_METRIC]-> (:FinancialMetric)
-(:Company) -[:HAS_EXECUTIVE]-> (:Executive)
-(:AssetManager) -[:OWNS]-> (:Company)
-(:Company) -[:FILED]-> (:Document) <-[:FROM_DOCUMENT]- (:Chunk) -[:NEXT_CHUNK]-> (:Chunk)
+(:Company)       -[:OFFERS]->         (:Product)
+(:Company)       -[:FACES_RISK]->     (:RiskFactor)
+(:Company)       -[:COMPETES_WITH]->  (:Company)
+(:Company)       -[:PARTNERS_WITH]->  (:Company)
+(:AssetManager)  -[:OWNS {shares}]->  (:Company)
+(:Company)       -[:FILED]-> (:Document) <-[:FROM_DOCUMENT]- (:Chunk) -[:NEXT_CHUNK]-> (:Chunk)
 ```
 
 ### Lab 7 - MCP Agent
@@ -115,18 +116,17 @@ Contains `AuraAgentClient` class for OAuth2 authentication and agent invocation:
 ## Knowledge Graph Schema
 
 The SEC financial dataset includes:
-- **Nodes**: Company, Product, Service, RiskFactor, FinancialMetric, Executive, AssetManager, Document, Chunk
-- **Relationships**: OFFERS_PRODUCT, OFFERS_SERVICE, FACES_RISK, HAS_METRIC, HAS_EXECUTIVE, OWNS, FILED, FROM_DOCUMENT, NEXT_CHUNK, FROM_CHUNK
-- **Vector Index**: `chunkEmbeddings` on Chunk.embedding (1024 dims for Titan)
+- **Nodes**: Company, Product, RiskFactor, AssetManager, Document, Chunk
+- **Relationships**: OFFERS, FACES_RISK, COMPETES_WITH, PARTNERS_WITH, OWNS, FILED, FROM_DOCUMENT, NEXT_CHUNK, FROM_CHUNK
+- **Vector Index**: `chunkEmbeddings` on Chunk.embedding (1024 dims for Nova)
 - **Fulltext Indexes**: `search_chunks` (on Chunk.text), `search_entities` (on Company/Product/RiskFactor names)
 
 ## Financial Data
 
-Structured CSV data lives in `TransformedData/`:
-- `companies.csv`, `products.csv`, `services.csv` — Entity data
-- `risk_factors.csv`, `financial_metrics.csv`, `executives.csv`, `asset_managers.csv`
-- Junction tables for relationships between entities
-- `sec_filings.csv` — SEC filing metadata
+Structured CSV seed data lives in `setup/seed-data/`:
+- `companies.csv`, `products.csv`, `risk_factors.csv`, `asset_managers.csv` — Entity data
+- `company_products.csv`, `company_risk_factors.csv`, `asset_manager_companies.csv` — Junction tables
+- `company_competitors.csv`, `company_partners.csv` — Company-to-Company relationships
 
 ## Running Notebooks
 

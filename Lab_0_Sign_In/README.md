@@ -63,7 +63,7 @@ Amazon Bedrock is available in select regions. For this workshop, we recommend *
 
 **Note:** If this is your first time using Bedrock, you may need to request access to specific models:
 - Click **Manage model access**
-- Enable **Amazon Titan Text Embeddings V2** (usually approved instantly)
+- Enable **Amazon Nova Multimodal Embeddings** (usually approved instantly)
 - Enable **Anthropic Claude 3.5 Sonnet** (may take a few minutes)
 - Click **Save changes**
 
@@ -76,7 +76,7 @@ Amazon Bedrock is available in select regions. For this workshop, we recommend *
 ### Model access shows "Not available"
 - Some models require explicit access requests
 - Click **Manage model access** and request the needed models
-- Titan models are usually instant; Claude may take a few minutes
+- Nova models are usually instant; Claude may take a few minutes
 
 ### Cannot find Bedrock in services
 - Ensure you are in a region that supports Bedrock

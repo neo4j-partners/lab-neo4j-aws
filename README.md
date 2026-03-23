@@ -60,7 +60,6 @@ NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your_password_here
 MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0
-EMBEDDING_MODEL_ID=amazon.titan-embed-text-v2:0
 REGION=us-east-1
 ```
 
@@ -72,7 +71,7 @@ See `CONFIG.txt` for all available settings grouped by lab.
 |-----------|------------|
 | **Knowledge Graph** | Neo4j Aura (via AWS Marketplace) |
 | **Foundation Models** | Amazon Bedrock (Claude Sonnet) |
-| **Embeddings** | Amazon Titan Text Embeddings V2 |
+| **Embeddings** | Amazon Nova Multimodal Embeddings |
 | **Agent Frameworks** | LangGraph, Strands Agents SDK |
 | **GraphRAG Library** | neo4j-graphrag |
 | **Agent Protocol** | Model Context Protocol (MCP) |
@@ -86,7 +85,7 @@ User Query → AI Agent → Tool Selection
         ↓                     ↓                         ↓
   Vector Search         Text2Cypher              Cypher Template
         ↓                     ↓                         ↓
-  Titan Embeddings       Claude LLM                Direct Query
+  Nova Embeddings        Claude LLM                Direct Query
         ↓                     ↓                         ↓
         └─────────────────────┴─────────────────────────┘
                               ↓

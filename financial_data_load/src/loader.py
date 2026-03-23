@@ -80,16 +80,23 @@ def load_asset_managers(csv_path: Path) -> list[dict]:
 def create_company_nodes(driver: Driver, companies: dict[str, dict]) -> None:
     """Create Company nodes from CSV metadata."""
     print(f"Creating {len(companies)} Company nodes...")
-    with driver.session() as session:
-        for filename, meta in companies.items():
-            normalized_name = normalize_company_name(meta["name"])
-            session.run("""
-                MERGE (c:Company:__Entity__ {name: $name})
-                SET c.ticker = $ticker,
-                    c.cik = $cik,
-                    c.cusip = $cusip
-            """, name=normalized_name, ticker=meta["ticker"],
-                cik=meta["cik"], cusip=meta["cusip"])
+    batch = [
+        {
+            "name": normalize_company_name(meta["name"]),
+            "ticker": meta["ticker"],
+            "cik": meta["cik"],
+            "cusip": meta["cusip"],
+        }
+        for meta in companies.values()
+    ]
+    driver.execute_query(
+        """
+        UNWIND $batch AS row
+        MERGE (c:Company:__Entity__ {name: row.name})
+        SET c.ticker = row.ticker, c.cik = row.cik, c.cusip = row.cusip
+        """,
+        batch=batch,
+    )
     print(f"  [OK] Created {len(companies)} Company nodes.")
 
 
@@ -99,18 +106,25 @@ def create_asset_manager_relationships(
 ) -> None:
     """Create AssetManager nodes and OWNS relationships."""
     print(f"Creating {len(holdings)} asset manager relationships...")
-    with driver.session() as session:
-        for holding in holdings:
-            normalized_company = normalize_company_name(holding["company_name"])
-            session.run("""
-                MERGE (a:AssetManager {managerName: $manager_name})
-                WITH a
-                MATCH (c:Company {name: $company_name})
-                MERGE (a)-[r:OWNS]->(c)
-                SET r.shares = $shares
-            """, manager_name=holding["manager_name"],
-                company_name=normalized_company,
-                shares=holding["shares"])
+    batch = [
+        {
+            "manager_name": holding["manager_name"],
+            "company_name": normalize_company_name(holding["company_name"]),
+            "shares": holding["shares"],
+        }
+        for holding in holdings
+    ]
+    driver.execute_query(
+        """
+        UNWIND $batch AS row
+        MERGE (a:AssetManager {managerName: row.manager_name})
+        WITH a, row
+        MATCH (c:Company {name: row.company_name})
+        MERGE (a)-[r:OWNS]->(c)
+        SET r.shares = row.shares
+        """,
+        batch=batch,
+    )
     print(f"  [OK] Created {len(holdings)} asset manager relationships.")
 
 

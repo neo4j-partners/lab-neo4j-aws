@@ -1,7 +1,7 @@
 [project]
 name = "export-graph"
 version = "0.1.0"
-description = "One-shot export of the gold Neo4j database to TransformedData CSVs"
+description = "One-shot export of the gold Neo4j database to setup/seed-data CSVs"
 requires-python = ">=3.11"
 dependencies = [
     "neo4j>=5.0.0",

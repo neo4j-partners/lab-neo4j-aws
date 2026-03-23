@@ -50,10 +50,8 @@ MATCH (node)<-[:FROM_CHUNK]-(c1:Company)
 MATCH (c1)-[:FACES_RISK]->(risk:RiskFactor)<-[:FACES_RISK]-(c2:Company)
 WHERE c1 <> c2
 WITH c1.name AS source_company, c2.name AS related, risk.name AS shared_risk
-RETURN
-  source_company,
-  collect(DISTINCT related)[0..10] AS related_companies,
-  collect(DISTINCT shared_risk)[0..10] AS shared_risks
+WITH source_company, collect(DISTINCT related)[0..10] AS related_companies, collect(DISTINCT shared_risk)[0..10] AS shared_risks
+RETURN source_company, related_companies, shared_risks
 LIMIT 10
 """
 

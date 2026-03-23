@@ -40,6 +40,7 @@ RETURN
     company.ticker AS ticker,
     risks,
     products
+WHERE score IS NOT NULL
 ORDER BY score DESC
 """
 

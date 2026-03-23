@@ -100,7 +100,7 @@ def process_all_pdfs(
     embedder = get_embedder()
     agent_config = AgentConfig()
     print(f"  LLM: {agent_config.llm_model_id}")
-    print(f"  Embeddings: {agent_config.embedding_model_id or 'amazon.titan-embed-text-v2:0'}")
+    print(f"  Embeddings: amazon.nova-2-multimodal-embeddings-v1:0 ({agent_config.embedding_dimensions or 1024} dims)")
     if agent_config.aws_region:
         print(f"  Region: {agent_config.aws_region}")
 
@@ -423,12 +423,12 @@ def validate_enrichment(driver: Driver) -> None:
     print(f"\nValidation (sample size {_SAMPLE_SIZE}):")
 
     # 1. Chunks with embeddings linked to documents
-    rows, _, _ = driver.execute_query(f"""
+    rows, _, _ = driver.execute_query("""
         MATCH (c:Chunk)-[:FROM_DOCUMENT]->(d:Document)
         WHERE c.embedding IS NOT NULL
         RETURN elementId(c) AS chunk_id, size(c.embedding) AS dims
-        LIMIT {_SAMPLE_SIZE}
-    """)
+        LIMIT $limit
+    """, limit=_SAMPLE_SIZE)
     print(f"\n  Chunks with embeddings ({len(rows)} samples):")
     for r in rows:
         print(f"    {r['chunk_id'][:20]}...  dims={r['dims']}")
@@ -437,24 +437,24 @@ def validate_enrichment(driver: Driver) -> None:
 
     # 2. Extracted entities by type
     for label in _EXTRACTED_LABELS:
-        rows, _, _ = driver.execute_query(f"""
-            MATCH (n:{label})
-            RETURN n.name AS name
-            LIMIT {_SAMPLE_SIZE}
-        """)
+        rows, _, _ = driver.execute_query(
+            f"MATCH (n:{label}) RETURN n.name AS name LIMIT $limit",
+            limit=_SAMPLE_SIZE,
+        )
         if rows:
             names = ", ".join(r["name"] for r in rows)
             print(f"\n  {label} ({len(rows)} samples): {names}")
 
     # 3. Schema relationships
-    rows, _, _ = driver.execute_query(f"""
+    rows, _, _ = driver.execute_query("""
         MATCH (c:Company)-[r]->(target)
-        WHERE type(r) IN ['FACES_RISK', 'OFFERS', 'HAS_EXECUTIVE', 'REPORTS',
-                          'COMPETES_WITH', 'PARTNERS_WITH']
+        WHERE type(r) IN $rel_types
         WITH type(r) AS rel, count(r) AS cnt
         RETURN rel, cnt ORDER BY cnt DESC
-        LIMIT {_SAMPLE_SIZE}
-    """)
+        LIMIT $limit
+    """, rel_types=['FACES_RISK', 'OFFERS', 'HAS_EXECUTIVE', 'REPORTS',
+                    'COMPETES_WITH', 'PARTNERS_WITH'],
+        limit=_SAMPLE_SIZE)
     if rows:
         print(f"\n  Schema relationships:")
         for r in rows:

@@ -80,17 +80,16 @@ def store_chunks_with_embeddings(driver, doc_path: str, chunk_data: list[dict]) 
         session.run("CREATE (d:Document {path: $path})", path=doc_path)
 
         # Create Chunks with embeddings
-        for chunk in chunk_data:
-            session.run("""
-                MATCH (d:Document {path: $path})
-                CREATE (c:Chunk {
-                    text: $text,
-                    index: $index,
-                    embedding: $embedding
-                })
-                CREATE (c)-[:FROM_DOCUMENT]->(d)
-            """, path=doc_path, text=chunk["text"],
-                index=chunk["index"], embedding=chunk["embedding"])
+        session.run("""
+            MATCH (d:Document {path: $path})
+            UNWIND $chunks AS chunk
+            CREATE (c:Chunk {
+                text: chunk.text,
+                index: chunk.index,
+                embedding: chunk.embedding
+            })
+            CREATE (c)-[:FROM_DOCUMENT]->(d)
+        """, path=doc_path, chunks=chunk_data)
 
         # Create NEXT_CHUNK relationships
         session.run("""

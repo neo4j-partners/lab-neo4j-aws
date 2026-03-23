@@ -56,9 +56,6 @@ class AgentConfig(BaseSettings):
     llm_model_id: str | None = Field(
         default=None, validation_alias="MODEL_ID",
     )
-    embedding_model_id: str | None = Field(
-        default=None, validation_alias="EMBEDDING_MODEL_ID",
-    )
     embedding_dimensions: int | None = Field(
         default=None, validation_alias="EMBEDDING_DIMENSIONS",
     )
@@ -103,7 +100,7 @@ def get_llm_deterministic():
 
 
 def get_embedder():
-    """Get a BedrockEmbeddings instance."""
+    """Get a BedrockNovaEmbeddings instance."""
     from .embeddings import get_embedder as _get_embedder
 
     return _get_embedder()

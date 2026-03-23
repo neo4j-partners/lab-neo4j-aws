@@ -1,4 +1,4 @@
-"""Bedrock embedding provider.
+"""Bedrock Nova embedding provider.
 
 Usage:
     from src.embeddings import get_embedder, get_embedding_dimensions
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 def get_embedder() -> Embedder:
-    """Get a BedrockEmbeddings instance."""
+    """Get a BedrockNovaEmbeddings instance."""
     from .bedrock import create_embedder
 
     return create_embedder()
@@ -22,9 +22,9 @@ def get_embedder() -> Embedder:
 def get_embedding_dimensions() -> int:
     """Get the embedding vector dimensions.
 
-    Returns the explicit EMBEDDING_DIMENSIONS if set, otherwise infers
-    from the model: 1024 for Titan, 1024 for Nova (Nova default is 3072
-    but we use 1024 to match existing vector indexes).
+    Returns the explicit EMBEDDING_DIMENSIONS if set, otherwise defaults
+    to 1024 (Nova default is 3072 but we use 1024 to match existing
+    vector indexes).
     """
     from ..config import AgentConfig
 

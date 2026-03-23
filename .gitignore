@@ -112,6 +112,13 @@ logs/
 model_snapshots/
 snapshots/
 
+# Backups
+financial_data_load/backups/
+
+# Financial data snapshots
+financial_data_load/snapshots/
+financial_data_load/model_snapshots/
+
 # Secrets and credentials
 *.pem
 *.key

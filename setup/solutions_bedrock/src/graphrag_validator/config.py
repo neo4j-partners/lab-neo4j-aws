@@ -32,12 +32,9 @@ class Settings(BaseSettings):
         default="us.anthropic.claude-sonnet-4-5-20250929-v1:0",
         validation_alias="MODEL_ID",
     )
-    embedding_model_id: str = Field(
-        default="amazon.titan-embed-text-v2:0",
-        validation_alias="EMBEDDING_MODEL_ID",
-    )
     region: str = Field(default="us-east-1", validation_alias="REGION")
-    data_dir: str = Field(default="TransformedData/", validation_alias="DATA_DIR")
+    embedding_dimensions: int = Field(default=1024, validation_alias="EMBEDDING_DIMENSIONS")
+    data_dir: str = Field(default="setup/seed-data/", validation_alias="DATA_DIR")
 
     @property
     def resolved_data_dir(self) -> Path:

@@ -55,14 +55,14 @@ The visualization reveals how different asset managers are exposed to various ri
 
 ## Step 5: Access Graph Data Science
 
-To analyze the graph structure, click on the **Graph Data Science** button in the left toolbar. This opens the data science panel where you can apply graph algorithms.
+Inside Explore, find the vertical icon toolbar on the left side of the canvas. Click the **Graph Data Science** icon (the connected-nodes icon near the bottom of the toolbar). This opens the Data Science panel.
 
 ![Graph Data Science](images/gds_panel.png)
 
 ## Step 6: Apply Degree Centrality Algorithm
 
-1. Click **Add algorithm**
-2. Select **Degree Centrality** from the dropdown
+1. Click **+ Add** in the Data Science panel
+2. Select **Degree Centrality** from the Algorithm dropdown
 
 This algorithm measures the number of incoming and outgoing relationships for each node, helping identify the most connected nodes in your graph.
 

@@ -1,0 +1,12 @@
+name: lab-neo4j-aws
+title: Neo4j + AWS Bedrock Workshop
+version: '1.0'
+start_page: ROOT:index.adoc
+nav:
+- nav.adoc
+asciidoc:
+  attributes:
+    source-highlighter: highlight.js
+    icons: font
+    idprefix: ''
+    idseparator: '-'

@@ -1,0 +1,27 @@
+site:
+  title: Neo4j + AWS Bedrock Workshop
+  url: https://neo4j-partners.github.io/lab-neo4j-aws
+  start_page: lab-neo4j-aws::index.adoc
+
+content:
+  sources:
+  - url: ..
+    branches: HEAD
+    start_path: site
+
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./supplemental-ui
+
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: '-'
+    source-highlighter: highlight.js
+
+output:
+  dir: ./build/site
+  clean: true

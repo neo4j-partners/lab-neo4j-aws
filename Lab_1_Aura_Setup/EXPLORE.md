@@ -53,42 +53,39 @@ The visualization reveals how different asset managers are exposed to various ri
 - Click on a relationship to see its type and properties
 - Double-click a node to expand and see more connections
 
-## Step 5: Access Graph Data Science
+## Step 5: Explore the Competitive Landscape
 
-Inside Explore, find the vertical icon toolbar on the left side of the canvas. Click the **Graph Data Science** icon (the connected-nodes icon near the bottom of the toolbar). This opens the Data Science panel.
+Clear the current search and build a new pattern:
+
+1. Type `Company`
+2. Select the **COMPETES_WITH** relationship
+3. Select **Company**
+
+This creates the pattern: `Company — COMPETES_WITH → Company`
+
+The visualization shows which filing companies compete with which other companies. You'll see Microsoft with the most competitor edges, followed by NVIDIA and PG&E. The outer ring of smaller nodes are mentioned companies (Google, Oracle, Samsung, etc.) that appear in filings but aren't filing companies themselves.
+
+## Step 6: Apply Degree Centrality
+
+With the competitive landscape still on the canvas, open the **Graph Data Science** panel by clicking the connected-nodes icon on the left toolbar.
 
 ![Graph Data Science](images/gds_panel.png)
 
-## Step 6: Apply Degree Centrality Algorithm
-
-1. Click **+ Add** in the Data Science panel
+1. Click **+ Add**
 2. Select **Degree Centrality** from the Algorithm dropdown
-
-This algorithm measures the number of incoming and outgoing relationships for each node, helping identify the most connected nodes in your graph.
-
-3. Click **Apply algorithm** to run the analysis
+3. Click **Apply algorithm**
 
 ![Apply Centrality](images/apply_centrality.png)
 
+Degree Centrality counts the number of relationships each node has. In this competitive graph, it answers: **which company has the most competitive connections?**
+
 ## Step 7: Size Nodes Based on Scores
 
-After the algorithm completes, you'll see a notification showing how many scores were added.
-
-Click **Size nodes based on scores** to visually represent the centrality - nodes with more connections will appear larger.
+After the algorithm completes, click **Size nodes based on scores** to visually represent the centrality — nodes with more competitive connections appear larger.
 
 ![Size Nodes](images/size_nodes.png)
 
-## Step 8: Analyze the Results
-
-The graph now displays nodes sized according to their degree centrality scores:
-- **Larger nodes** = More connections (higher centrality)
-- Asset managers owning more companies appear larger
-- Companies with more risk factors appear larger
-
-This makes it easy to visually identify:
-- The most significant institutional investors
-- Companies with diverse risk profiles
-- Common risk factors across multiple companies
+Microsoft will dominate the visualization (24 competitor edges), making it immediately obvious which filing company operates in the most competitive markets. Mentioned companies like Google and Oracle will be small since they only have a single incoming edge.
 
 ![Centrality Results](images/centrality_results.png)
 
@@ -96,18 +93,17 @@ This makes it easy to visually identify:
 
 Try these patterns to explore more of the knowledge graph:
 
-### Explore Company Products
+### Company Products
 ```
 Company — OFFERS → Product
 ```
 Reveals products and services mentioned in filings.
 
-### Explore Competitive Landscape
+### Partner Network
 ```
-Company — COMPETES_WITH → Company
 Company — PARTNERS_WITH → Company
 ```
-Shows competitive and partnership relationships between companies.
+Shows supply chain and strategic partnerships — NVIDIA's partner list reveals its semiconductor supply chain.
 
 ### Compare Risk Factors
 Click on a specific RiskFactor node and expand to see which companies share that risk.

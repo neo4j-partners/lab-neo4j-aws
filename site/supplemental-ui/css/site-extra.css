@@ -1,0 +1,17 @@
+/* Improve content width */
+.doc {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Add padding for readability */
+.article {
+  padding: 2rem 3rem;
+}
+
+/* Adjust for smaller screens */
+@media screen and (max-width: 1023px) {
+  .article {
+    padding: 1.5rem 2rem;
+  }
+}

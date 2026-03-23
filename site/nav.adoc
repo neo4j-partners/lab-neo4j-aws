@@ -1,0 +1,7 @@
+* xref:index.adoc[Home]
+* Labs
+** xref:lab0.adoc[Lab 0: Sign In to AWS]
+*** xref:lab0-instructions.adoc[Instructions]
+** xref:lab1.adoc[Lab 1: Neo4j Aura Setup]
+*** xref:lab1-instructions.adoc[Instructions]
+*** xref:lab1-explore.adoc[Explore the Graph]

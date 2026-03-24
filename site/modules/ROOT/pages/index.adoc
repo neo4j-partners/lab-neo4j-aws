@@ -22,11 +22,17 @@ Amazon Bedrock provides the AI backbone. Claude models handle reasoning, tool se
 
 Three stages build on each other across the workshop.
 
-**Knowledge Graph Construction.** CSV seed data loads into Neo4j as nodes and relationships. Unstructured 10-K filing text is chunked, embedded with Nova, and linked to extracted entities. The result is a searchable knowledge graph with both structured and unstructured data.
+**Knowledge Graph Construction.** CSV seed data loads into Neo4j as nodes and relationships, forming the structured layer of companies, products, risk factors, and institutional ownership. Unstructured 10-K filing text is chunked and embedded with Nova, then linked to the structured layer through Document nodes. The result is a searchable knowledge graph that connects semantic text to typed entities.
 
 **GraphRAG Retrieval.** Vector search finds semantically similar chunks. Graph traversal enriches results with connected entities — the company that filed the document, related products, shared risk factors. Fulltext search handles keyword queries. Hybrid approaches combine all three.
 
 **Agent Orchestration.** LangGraph agents use the ReAct pattern to select retrieval tools, execute queries, and synthesize answers. The Neo4j MCP Server exposes schema inspection and read-only Cypher as agent tools. Aura Agents provides a no-code path to the same capabilities.
+
+== The SEC 10-K Dataset
+
+The workshop uses data from SEC 10-K filings, the annual reports that publicly traded companies file with the U.S. Securities and Exchange Commission. Each filing contains both structured data (company details, financial metrics, institutional ownership) and unstructured narrative text (risk factor discussions, business descriptions, executive commentary). That combination makes 10-K filings a natural fit for GraphRAG: the structured data forms a queryable graph of entities and relationships, while the narrative text provides the semantic content that embedding-based retrieval searches over.
+
+The dataset covers approximately 76 companies across technology, finance, healthcare, and automotive sectors. It includes 274 products, 203 risk factors, and 15 institutional asset managers with their portfolio holdings. Questions like "Which risk factors expose an asset manager's portfolio across multiple sectors?" require traversing structured relationships. Questions like "What do companies say about supply chain disruption?" require searching unstructured filing text by meaning. GraphRAG handles both, and the combination of both in a single query is where the architecture earns its complexity.
 
 == Knowledge Graph Schema
 
@@ -108,10 +114,6 @@ User Query -> AI Agent -> Tool Selection
 | xref:lab7.adoc[Lab 7]
 | Connect AI agents to Neo4j via MCP with LangGraph and Strands frameworks
 | 30 min
-
-| xref:lab8.adoc[Lab 8]
-| Call the Lab 2 agent programmatically with OAuth2 authentication and async batch queries
-| 20 min
 |===
 
 == Prerequisites

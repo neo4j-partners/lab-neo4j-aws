@@ -45,13 +45,19 @@ if [ "$START_STEP" -le 3 ]; then
     fi
 
     echo ""
-    echo "=== Step 3: Apply cleanse (removals -> merges -> normalize) ==="
-    uv run python main.py apply-cleanse --plan "$PLAN"
+    echo "=== Step 3: Apply cleanse (removals -> merges) ==="
+    uv run python main.py apply-cleanse --plan "$PLAN" --skip-normalize
 fi
 
 if [ "$START_STEP" -le 4 ]; then
     echo ""
-    echo "=== Step 4: Finalize ==="
+    echo "=== Step 4: Normalize ==="
+    uv run python main.py normalize
+fi
+
+if [ "$START_STEP" -le 5 ]; then
+    echo ""
+    echo "=== Step 5: Finalize ==="
     uv run python main.py finalize
 fi
 

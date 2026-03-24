@@ -19,7 +19,7 @@ MCP (Model Context Protocol) is an open standard for agent-to-tool communication
 
 == Three Retrieval Strategies
 
-The three notebooks progress through retrieval strategies that build on each other.
+The three notebooks progress through retrieval strategies that build on each other. Each strategy returns more context than the previous one. Vector search returns chunk text. Graph-enriched search returns chunk text plus connected entities and document metadata. Hybrid search returns results from both keyword and semantic matching, giving the agent the broadest possible context to reason over.
 
 === Vector Search
 

@@ -9,113 +9,53 @@ This is a hands-on workshop teaching GraphRAG (Graph Retrieval-Augmented Generat
 ## Workshop Structure
 
 - **Part 1 (Labs 0-2)**: No-code exploration using Neo4j Aura console and Aura Agents visual builder
-- **Part 2 (Labs 3-6)**: Python-based GraphRAG with LangGraph and neo4j-graphrag library
-- **Part 3 (Labs 7-8)**: Advanced MCP (Model Context Protocol) agents and Aura Agents API
+- **Part 2 (Labs 3-6)**: Python-based GraphRAG with Strands Agents SDK and neo4j-graphrag library
+- **Part 3 (Lab 7)**: MCP agents and Aura Agents API
 
 ## Key Configuration
 
-All credentials are stored in `CONFIG.txt` at the project root (gitignored). The file uses dotenv format:
-
-```
-NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
-NEO4J_USERNAME=neo4j
-NEO4J_PASSWORD=...
-MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0
-REGION=us-east-1
-```
+All credentials are stored in `CONFIG.txt` at the project root (gitignored). The file uses dotenv format with keys: `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`, `MODEL_ID`, `REGION`, `MCP_GATEWAY_URL`, `MCP_ACCESS_TOKEN`.
 
 ## Lab Code Patterns
 
-### Lab 3 - Basic LangGraph Agent + AgentCore Deployment
-Location: `Lab_3_Intro_to_Bedrock_and_Agents/basic_langgraph_agent.ipynb`
+### Lab 3 - Basic Strands Agent + AgentCore Deployment
+Location: `Lab_3_Intro_to_Bedrock_and_Agents/01_basic_strands_agent.ipynb`
 
-Uses `ChatBedrockConverse` from langchain-aws with the ReAct pattern:
-```python
-from langchain_aws import ChatBedrockConverse
-from langgraph.graph import StateGraph, MessagesState
-from langgraph.prebuilt import ToolNode
-```
-
-For cross-region inference profiles (MODEL_ID starting with `us.` or `global.`), derive base_model_id:
-```python
-if MODEL_ID.startswith("us.anthropic."):
-    BASE_MODEL_ID = MODEL_ID.replace("us.anthropic.", "anthropic.")
-```
-
-Includes AgentCore deployment at the end using `bedrock-agentcore-starter-toolkit` and `direct_code_deploy`.
+Uses `strands.Agent` with `strands.models.BedrockModel` and `@tool` decorator. Defines simple tools (get_current_time, add_numbers), creates an agent, tests it with queries including sample SEC filing data. Ends with packaging and deploying the agent to AgentCore Runtime via `bedrock-agentcore-starter-toolkit` using `direct_code_deploy`.
 
 ### Lab 4 - MCP-Based Retrieval
 Location: `Lab_4_MCP_Retrieval/`
 
-Three notebooks covering vector search, graph-enriched retrieval, and hybrid search through the Neo4j MCP server:
-- `01_vector_search_mcp.ipynb`: Semantic vector search via MCP using Bedrock Nova embeddings
-- `02_graph_enriched_search_mcp.ipynb`: Vector search with graph traversal for enriched context (document, chunks, entities)
-- `03_fulltext_hybrid_search_mcp.ipynb`: Fulltext keyword search and agent-driven hybrid search with `@tool` wrappers
+Three notebooks using Strands Agents SDK with MCP to search a Neo4j knowledge graph:
+- `01_vector_search_mcp.ipynb`: Semantic vector search via `strands.tools.mcp.MCPClient` using Bedrock Nova embeddings
+- `02_graph_enriched_search_mcp.ipynb`: Vector search with graph traversal for enriched context (document metadata, neighboring chunks, connected entities)
+- `03_fulltext_hybrid_search_mcp.ipynb`: Fulltext keyword search and agent-driven hybrid search with custom `@tool` wrappers
 
-MCP connection pattern (notebooks 01-02 use inline setup; notebook 03 uses `lib/mcp_utils.py`):
-```python
-from langchain_mcp_adapters.client import MultiServerMCPClient
-from langgraph.prebuilt import create_react_agent
-# Or via lib utilities:
-from lib.mcp_utils import MCPConnection
-from lib.data_utils import get_embedding
-```
+Notebooks 01-02 use Strands `MCPClient` with `streamablehttp_client` transport in a context-manager-per-query pattern. Notebook 03 additionally uses `lib/mcp_utils.py` (`MCPConnection` wrapping a raw MCP `ClientSession`) for persistent connections needed by custom async `@tool` functions.
 
 ### Lab 6 - GraphRAG
 Location: `Lab_6_GraphRAG/`
 
-Six notebooks covering data loading, embeddings, vector retrieval, graph-enhanced retrieval, full-text search, and hybrid search.
-
-Uses a forked neo4j-graphrag with Bedrock support:
-```bash
-pip install "neo4j-graphrag[bedrock] @ git+https://github.com/neo4j-partners/neo4j-graphrag-python.git@bedrock-embeddings"
-```
-
-Key utility classes in `lib/data_utils.py`:
-- `Neo4jConnection`: Manages driver connection using `Neo4jConfig` (pydantic-settings)
-- `DataLoader`: Loads text data files
-- `get_embedder()`: Returns `BedrockNovaEmbeddings` configured from environment
-- `get_llm()`: Returns `BedrockLLM` configured from environment
-- `get_embedding()`: Returns raw float array via Bedrock Nova for Cypher queries
-- `split_text()`: Wraps `FixedSizeSplitter` with async handling for Jupyter
-
-Key utility classes in `lib/mcp_utils.py`:
-- `MCPConnection`: Wraps MCP client setup, tool discovery, and `execute_query(cypher)` for notebooks
-
-Graph structure for SEC financial data:
-```
-(:Company)       -[:OFFERS]->         (:Product)
-(:Company)       -[:FACES_RISK]->     (:RiskFactor)
-(:Company)       -[:COMPETES_WITH]->  (:Company)
-(:Company)       -[:PARTNERS_WITH]->  (:Company)
-(:AssetManager)  -[:OWNS {shares}]->  (:Company)
-(:Company)       -[:FILED]-> (:Document) <-[:FROM_DOCUMENT]- (:Chunk) -[:NEXT_CHUNK]-> (:Chunk)
-```
+Six notebooks covering data loading, embeddings, vector retrieval, graph-enhanced retrieval, full-text search, and hybrid search. Uses a forked neo4j-graphrag with Bedrock support (`neo4j-graphrag[bedrock]` from `neo4j-partners/neo4j-graphrag-python@bedrock-embeddings`).
 
 ### Lab 7 - MCP Agent
 Location: `Lab_7_Neo4j_MCP_Agent/`
 
-Two implementations:
-- `neo4j_langgraph_mcp_agent.ipynb`: LangGraph + langchain-mcp-adapters
-- `neo4j_strands_mcp_agent.ipynb`: Alternative using Strands framework
-
-MCP connection pattern:
-```python
-from mcp.client.streamable_http import streamablehttp_client
-from langchain_mcp_adapters.tools import load_mcp_tools
-```
+Two implementations (may be removed — largely redundant with Lab 4): one using LangGraph + langchain-mcp-adapters, one using Strands.
 
 ### Lab 8 - Aura Agents API
 Location: `Lab_8_Aura_Agents_API/aura_agent_client.ipynb`
 
-Contains `AuraAgentClient` class for OAuth2 authentication and agent invocation:
-- Token URL: `https://api.neo4j.io/oauth/token`
-- Uses client credentials flow with Basic Auth
-- Tokens cached and auto-refreshed on 401
+Contains `AuraAgentClient` class for OAuth2 authentication (client credentials flow) and agent invocation against `api.neo4j.io`.
+
+## Shared Utilities
+
+`lib/data_utils.py`: `Neo4jConfig`, `BedrockConfig` (pydantic-settings), `Neo4jConnection`, `DataLoader`, `get_embedder()`, `get_llm()`, `get_embedding()`, `get_schema()`, `split_text()`.
+
+`lib/mcp_utils.py`: `MCPConnection` — wraps raw MCP `ClientSession` over Streamable HTTP for persistent connections and `execute_query(cypher)`.
 
 ## Knowledge Graph Schema
 
-The SEC financial dataset includes:
 - **Nodes**: Company, Product, RiskFactor, AssetManager, Document, Chunk
 - **Relationships**: OFFERS, FACES_RISK, COMPETES_WITH, PARTNERS_WITH, OWNS, FILED, FROM_DOCUMENT, NEXT_CHUNK, FROM_CHUNK
 - **Vector Index**: `chunkEmbeddings` on Chunk.embedding (1024 dims for Nova)
@@ -123,10 +63,7 @@ The SEC financial dataset includes:
 
 ## Financial Data
 
-Structured CSV seed data lives in `setup/seed-data/`:
-- `companies.csv`, `products.csv`, `risk_factors.csv`, `asset_managers.csv` — Entity data
-- `company_products.csv`, `company_risk_factors.csv`, `asset_manager_companies.csv` — Junction tables
-- `company_competitors.csv`, `company_partners.csv` — Company-to-Company relationships
+Structured CSV seed data lives in `setup/seed-data/`: entity tables (companies, products, risk_factors, asset_managers), junction tables (company_products, company_risk_factors, asset_manager_companies), and relationship tables (company_competitors, company_partners).
 
 ## Running Notebooks
 
@@ -137,7 +74,4 @@ The notebooks are designed for AWS SageMaker Studio but work locally with:
 
 ## Dependencies
 
-Lab 6 uses `pyproject.toml` at `Lab_6_GraphRAG/src/pyproject.toml`:
-- Python 3.11+
-- neo4j-graphrag[bedrock] (from neo4j-partners fork)
-- python-dotenv, pydantic-settings, nest-asyncio
+Lab 6 uses `pyproject.toml` at `Lab_6_GraphRAG/src/pyproject.toml`: Python 3.11+, neo4j-graphrag[bedrock] (from neo4j-partners fork), python-dotenv, pydantic-settings, nest-asyncio.

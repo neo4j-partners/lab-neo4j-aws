@@ -278,6 +278,15 @@ def cmd_apply_cleanse(args):
         apply_cleanse(driver, plan_path, skip_normalize=args.skip_normalize)
 
 
+def cmd_normalize(args):
+    """Run normalization standalone (rewrite descriptions/fields via LLM)."""
+    from src.config import connect
+    from src.normalize import normalize_entities
+
+    with connect() as driver:
+        normalize_entities(driver)
+
+
 def cmd_finalize(args):
     """Run post-resolution steps: constraints → indexes → asset managers → verify."""
     from src.config import connect
@@ -638,6 +647,11 @@ def main():
         "--skip-normalize", action="store_true",
         help="Skip the normalization phase")
     p_apply_cleanse.set_defaults(func=cmd_apply_cleanse)
+
+    # normalize
+    p_normalize = subparsers.add_parser(
+        "normalize", help="Run normalization standalone (rewrite descriptions/fields via LLM)")
+    p_normalize.set_defaults(func=cmd_normalize)
 
     # finalize
     p_finalize = subparsers.add_parser(

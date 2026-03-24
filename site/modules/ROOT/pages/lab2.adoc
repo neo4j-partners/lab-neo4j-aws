@@ -53,22 +53,37 @@ Text2Cypher translates arbitrary natural language questions into Cypher queries 
 
 == Tool Type Comparison
 
-[cols="1,2,2"]
+[cols="1,2,2,1"]
 |===
-| Tool Type | Purpose | Best For
+| Tool Type | Purpose | Best For | Reliability
 
 | **Cypher Templates**
 | Controlled, precise graph traversals
 | Specific lookups, comparisons
+| Deterministic
 
 | **Similarity Search**
 | Semantic retrieval over filing text
 | Finding relevant content by meaning
+| Grounded
 
 | **Text2Cypher**
 | Flexible natural language to Cypher
 | Ad-hoc questions about the data
+| Variable
 |===
+
+== Tool Reliability
+
+The three tool types form a reliability spectrum. Cypher Templates produce deterministic results: the same input always generates the same query, which always returns the same data. Similarity Search is grounded in vector similarity scores; results vary only when the underlying embeddings or index change. Text2Cypher is the most flexible but the least predictable, because the LLM generates a different Cypher query each time.
+
+.Why Text2Cypher needs cross-checking
+[%collapsible]
+====
+Because Text2Cypher generates a different query each invocation, subtle variations can produce incorrect answers silently. A query that filters on `"cybersecurity"` instead of `"Cybersecurity Threats"` returns no results for case-sensitive property values, and the agent may present that empty result confidently rather than flagging a possible query issue.
+
+This is why all three tool types exist rather than just Text2Cypher. Templates cover known patterns deterministically. Similarity Search bridges the gap for semantic questions where exact Cypher is unnecessary. Text2Cypher handles the long tail of ad-hoc questions that templates did not anticipate. Running the same question twice and comparing results is a practical way to spot generated-query variability.
+====
 
 == Connection to Later Labs
 

@@ -1,13 +1,13 @@
 # Lab 3 - Building AI Agents with Amazon Bedrock and SageMaker
 
-This lab sets up your SageMaker development environment and walks through building a basic AI agent with LangGraph and Amazon Bedrock, then deploys it to AgentCore Runtime.
+This lab sets up your SageMaker development environment and walks through building a basic AI agent with the Strands Agents SDK and Amazon Bedrock, then deploys it to AgentCore Runtime.
 
 ## What You'll Learn
 
 - **Amazon Bedrock**: Configure and invoke foundation models from SageMaker notebooks
-- **LangGraph Architecture**: Build agents with nodes, edges, and state
+- **Strands Agents SDK**: Build agents with AWS's open-source, model-first agent framework
 - **Tool Definition**: Define Python functions that an LLM can call with the `@tool` decorator
-- **ReAct Pattern**: Reason, act, observe, and repeat in a loop
+- **ReAct Pattern**: Reason, act, observe, and repeat — handled automatically by the Strands agent loop
 - **AgentCore Deployment**: Package and deploy an agent to managed AWS runtime
 - **Agent Invocation**: Call a deployed agent via CLI and boto3
 
@@ -87,12 +87,12 @@ This lab sets up your SageMaker development environment and walks through buildi
 
 ## Run the Agent Notebook
 
-1. Open [basic_langgraph_agent.ipynb](basic_langgraph_agent.ipynb) in this lab folder
+1. Open [01_basic_strands_agent.ipynb](01_basic_strands_agent.ipynb) in this lab folder
 2. The notebook loads configuration from `../CONFIG.txt` (MODEL_ID and REGION)
 3. Run through the cells to:
    - Install required packages
    - Define simple tools (get_current_time, add_numbers)
-   - Build and compile the LangGraph agent
+   - Create a Strands agent with BedrockModel
    - Test the agent with sample queries
    - Ask questions about sample SEC financial filing data
    - Package and deploy the agent to AgentCore Runtime

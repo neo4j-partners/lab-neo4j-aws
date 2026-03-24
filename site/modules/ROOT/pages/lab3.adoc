@@ -67,6 +67,16 @@ ReAct stands for Reason + Act. The loop works as follows:
 3. **Observe** — The tool executes and the result is appended to the message history.
 4. **Repeat** — The LLM sees the tool result and decides whether to call another tool or finish.
 
+.A multi-cycle example with SEC data
+[%collapsible]
+====
+A user asks: "What risks does NVIDIA face and which asset managers are exposed?"
+
+The agent reasons that it needs NVIDIA's risk factors first and calls a graph query tool. The result returns risk factors like "Supply Chain Disruption" and "Cybersecurity Threats." The agent then reasons that it needs to find asset managers who hold NVIDIA, calls the tool again with a different query, and observes that BlackRock, Vanguard, and State Street all hold positions. The agent synthesizes both results: "NVIDIA faces supply chain and cybersecurity risks. BlackRock, Vanguard, and State Street hold positions in NVIDIA, making their portfolios exposed to these risks."
+
+Each cycle follows the same pattern: reason about what information is missing, act by calling a tool, observe the result. The number of cycles depends on the question's complexity, not on a predetermined plan.
+====
+
 This loop is the foundation for every agent in the workshop. Labs 4 and 6 add retrieval tools (vector search, graph traversal). Lab 7 connects tools through the Model Context Protocol. The orchestration pattern stays the same.
 
 == AgentCore Deployment

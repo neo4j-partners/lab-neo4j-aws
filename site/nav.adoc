@@ -1,4 +1,5 @@
 * xref:index.adoc[Home]
+* xref:sample-queries.adoc[Sample Queries]
 * Part 1: No-Code Track
 ** xref:lab0.adoc[Lab 0: Sign In to AWS]
 *** xref:lab0-instructions.adoc[Instructions]
@@ -17,5 +18,3 @@
 * Part 3: Advanced Agents
 ** xref:lab7.adoc[Lab 7: MCP Agent]
 *** xref:lab7-instructions.adoc[Instructions]
-** xref:lab8.adoc[Lab 8: Aura Agents API]
-*** xref:lab8-instructions.adoc[Instructions]

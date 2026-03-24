@@ -100,10 +100,10 @@ async def main():
     # -------------------------------------------------------------------------
     # 1. Configuration and Setup
     # -------------------------------------------------------------------------
-    config_path = os.path.join(PROJECT_ROOT, 'CONFIG.txt')
-    load_dotenv(config_path)
-    MODEL_ID = os.getenv('MODEL_ID')
-    REGION = os.getenv('REGION', 'us-east-1')
+    env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+    load_dotenv(env_path)
+    MODEL_ID = os.getenv('MODEL_ID', 'us.anthropic.claude-sonnet-4-6')
+    REGION = os.getenv('AWS_REGION', os.getenv('REGION', 'us-east-1'))
     MCP_GATEWAY_URL = os.getenv('MCP_GATEWAY_URL')
     MCP_ACCESS_TOKEN = os.getenv('MCP_ACCESS_TOKEN')
 
@@ -183,7 +183,7 @@ async def main():
     # -------------------------------------------------------------------------
     # 5. Agent-Driven Hybrid Search with @tool Wrappers
     # -------------------------------------------------------------------------
-    mcp_conn = await MCPConnection.create(config_path)
+    mcp_conn = await MCPConnection.create(env_path)
 
     @tool
     async def vector_search(query: str, top_k: int = 5) -> str:

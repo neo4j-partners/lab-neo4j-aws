@@ -13,9 +13,10 @@ TIP: For concepts and background, see xref:lab4.adoc[Lab 4: MCP Retrieval].
 == Prerequisites
 
 * Completed **Lab 1** (Neo4j Aura instance created and running)
-* Data loaded into Neo4j with embeddings, entity nodes, and fulltext indexes (from the data loading pipeline)
 * `CONFIG.txt` at the project root filled in with Neo4j credentials, `MCP_GATEWAY_URL`, and `MCP_ACCESS_TOKEN`
 * A running environment (SageMaker Studio or GitHub Codespace)
+
+NOTE: The Neo4j MCP Server used in this lab connects to a database that has been pre-loaded with Document and Chunk nodes, vector embeddings, and fulltext indexes. The workshop admin set this up before the workshop using the data loading pipeline. You do not need to load this data yourself — the MCP Server's database is ready to query.
 
 == Notebooks
 
@@ -38,4 +39,4 @@ TIP: For concepts and background, see xref:lab4.adoc[Lab 4: MCP Retrieval].
 
 == Next Steps
 
-After completing these notebooks, continue to xref:lab6.adoc[Lab 6: GraphRAG] for direct library-based retrieval using the neo4j-graphrag Python library.
+After completing these notebooks, continue to xref:lab5.adoc[Lab 5: GraphRAG] for direct library-based retrieval using the neo4j-graphrag Python library.

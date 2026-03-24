@@ -6,20 +6,20 @@ TIP: Ready to start? Jump to the xref:lab2-instructions.adoc[Lab 2 Instructions]
 
 .**At a Glance**
 
-* **Aura Agents** — combine semantic search, graph traversal, and natural language queries in one conversational interface
+* **Aura Agents** — combine graph traversal and natural language queries in one conversational interface
 * **"Create with AI"** — analyzes your graph schema and auto-generates tools with no Cypher to write manually
-* **Three retrieval patterns** — Cypher Templates (deterministic traversals), Similarity Search (semantic vector retrieval), and Text2Cypher (ad-hoc natural language queries)
+* **Two retrieval patterns** — Cypher Templates (deterministic traversals) and Text2Cypher (ad-hoc natural language queries)
 * **Optional deployment** — expose the agent as a REST API endpoint or MCP server for integration with external clients
 
 == What Are Aura Agents?
 
-Aura Agents is Neo4j's no-code platform for building conversational AI interfaces grounded in graph data. Rather than writing retrieval logic by hand, you describe a use case in natural language and the platform generates an agent with tools tailored to your graph's schema. The agent then uses those tools to answer questions by combining graph traversals, vector similarity search, and dynamically generated Cypher queries.
+Aura Agents is Neo4j's no-code platform for building conversational AI interfaces grounded in graph data. Rather than writing retrieval logic by hand, you describe a use case in natural language and the platform generates an agent with tools tailored to your graph's schema. The agent then uses those tools to answer questions by combining graph traversals and dynamically generated Cypher queries.
 
 The "Create with AI" workflow inspects the node labels, relationship types, and indexes in your knowledge graph and produces a fully configured agent. For the SEC financial dataset, this means the agent automatically understands how to look up company details, traverse ownership chains, compare risk factors, and search filing text — all without manual configuration.
 
-== Three Retrieval Patterns
+== Two Retrieval Patterns
 
-The generated agent uses three categories of tools, each suited to different question types.
+The generated agent uses two categories of tools, each suited to different question types.
 
 === Cypher Templates
 
@@ -29,16 +29,6 @@ Cypher Templates are pre-built graph traversal patterns mapped to specific quest
 [%collapsible]
 ====
 "What products does NVIDIA Corporation offer?" triggers a template that traverses `(Company)-[:OFFERS]->(Product)` and returns the product list. No query generation is needed — the template maps directly to the graph pattern.
-====
-
-=== Similarity Search
-
-Similarity Search performs semantic retrieval over embedded filing text using the `chunkEmbeddings` vector index. Given a question, the agent generates an embedding and finds the most relevant passages by meaning rather than keyword matching. This is how the agent handles open-ended questions about topics discussed across filings.
-
-.Example
-[%collapsible]
-====
-"What do the filings say about AI and machine learning?" searches the vector index for passages semantically related to AI, returning relevant excerpts from multiple companies' 10-K filings.
 ====
 
 === Text2Cypher
@@ -62,11 +52,6 @@ Text2Cypher translates arbitrary natural language questions into Cypher queries 
 | Specific lookups, comparisons
 | Deterministic
 
-| **Similarity Search**
-| Semantic retrieval over filing text
-| Finding relevant content by meaning
-| Grounded
-
 | **Text2Cypher**
 | Flexible natural language to Cypher
 | Ad-hoc questions about the data
@@ -75,19 +60,19 @@ Text2Cypher translates arbitrary natural language questions into Cypher queries 
 
 == Tool Reliability
 
-The three tool types form a reliability spectrum. Cypher Templates produce deterministic results: the same input always generates the same query, which always returns the same data. Similarity Search is grounded in vector similarity scores; results vary only when the underlying embeddings or index change. Text2Cypher is the most flexible but the least predictable, because the LLM generates a different Cypher query each time.
+The two tool types form a reliability spectrum. Cypher Templates produce deterministic results: the same input always generates the same query, which always returns the same data. Text2Cypher is the most flexible but the least predictable, because the LLM generates a different Cypher query each time.
 
 .Why Text2Cypher needs cross-checking
 [%collapsible]
 ====
 Because Text2Cypher generates a different query each invocation, subtle variations can produce incorrect answers silently. A query that filters on `"cybersecurity"` instead of `"Cybersecurity Threats"` returns no results for case-sensitive property values, and the agent may present that empty result confidently rather than flagging a possible query issue.
 
-This is why all three tool types exist rather than just Text2Cypher. Templates cover known patterns deterministically. Similarity Search bridges the gap for semantic questions where exact Cypher is unnecessary. Text2Cypher handles the long tail of ad-hoc questions that templates did not anticipate. Running the same question twice and comparing results is a practical way to spot generated-query variability.
+This is why both tool types exist rather than just Text2Cypher. Templates cover known patterns deterministically. Text2Cypher handles the long tail of ad-hoc questions that templates did not anticipate. Running the same question twice and comparing results is a practical way to spot generated-query variability.
 ====
 
 == Connection to Later Labs
 
-Labs 6 and 7 implement these same three retrieval patterns programmatically using Python and the neo4j-graphrag library. The no-code agent you build here provides a reference point: when you write vector search, graph-enriched retrieval, and text-to-Cypher pipelines in code, you will already understand how each pattern behaves and what kinds of questions it handles well.
+Labs 5 and 6 implement these retrieval patterns — and more, including vector similarity search — programmatically using Python and the neo4j-graphrag library. The no-code agent you build here provides a reference point: when you write graph-enriched retrieval and text-to-Cypher pipelines in code, you will already understand how each pattern behaves and what kinds of questions it handles well.
 
 == Next Steps
 

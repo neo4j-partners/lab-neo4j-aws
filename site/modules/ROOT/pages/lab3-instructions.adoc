@@ -1,6 +1,6 @@
 = Lab 3 Instructions: Bedrock and Agents
 
-Follow these steps to set up SageMaker Studio, clone the workshop repository, and run the LangGraph agent notebook.
+Follow these steps to set up SageMaker Studio, clone the workshop repository, and run the Strands agent notebook.
 
 TIP: For concepts and background, see xref:lab3.adoc[Lab 3: Bedrock and Agents].
 
@@ -13,7 +13,7 @@ TIP: For concepts and background, see xref:lab3.adoc[Lab 3: Bedrock and Agents].
 == What You'll Learn
 
 * **Amazon Bedrock**: Configure and invoke foundation models from SageMaker notebooks
-* **LangGraph Architecture**: Build agents with nodes, edges, and state
+* **Strands Agent Architecture**: Build agents with a model, tools, and a system prompt
 * **Tool Definition**: Define Python functions that an LLM can call with the `@tool` decorator
 * **ReAct Pattern**: Reason, act, observe, and repeat in a loop
 * **AgentCore Deployment**: Package and deploy an agent to managed AWS runtime
@@ -104,12 +104,12 @@ git clone https://github.com/neo4j-partners/lab-neo4j-aws.git
 == Run the Agent Notebook
 
 1. In the file browser, navigate to `Lab_3_Intro_to_Bedrock_and_Agents/`
-2. Open `01_basic_langgraph_agent.ipynb`
+2. Open `01_basic_strands_agent.ipynb`
 3. The notebook loads configuration from `../CONFIG.txt` (MODEL_ID and REGION)
 4. Run through the cells to:
 ** Install required packages
 ** Define simple tools (`get_current_time`, `add_numbers`)
-** Build and compile the LangGraph agent
+** Build and run the Strands agent
 ** Test the agent with sample queries
 ** Ask questions about sample SEC financial filing data
 ** Package and deploy the agent to AgentCore Runtime

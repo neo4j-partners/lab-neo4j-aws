@@ -1,6 +1,6 @@
 = Lab 1: Neo4j Aura Setup
 
-This is Lab 1 of the workshop. The graph database you provision here is the foundation for everything that follows: the agents in Lab 2 query it through a no-code interface, Labs 3-4 build retrieval pipelines against it, Lab 6 adds embeddings and GraphRAG retrieval, and Lab 7 connects MCP agents. Getting Aura running and understanding what the graph contains is the starting point.
+This is Lab 1 of the workshop. The graph database you provision here is the foundation for everything that follows: the agents in Lab 2 query it through a no-code interface, Labs 3-4 build retrieval pipelines against it, Lab 5 adds embeddings and GraphRAG retrieval, and Lab 6 connects MCP agents. Getting Aura running and understanding what the graph contains is the starting point.
 
 TIP: Ready to start? Jump to the xref:lab1-instructions.adoc[Lab 1 Instructions] for step-by-step setup.
 
@@ -111,7 +111,7 @@ Neo4j Aura is a fully managed cloud graph database service available through the
 .Vector search, Graph Data Science, and AI capabilities
 [%collapsible]
 ====
-Aura provides capabilities beyond the core graph engine that support AI retrieval pipelines. Built-in vector indexes store embeddings alongside graph data, enabling semantic similarity search without a separate vector store. Cypher queries can combine vector search with graph traversal in a single operation. Graph Data Science algorithms like PageRank and community detection run directly within Aura. These capabilities come together in Lab 6 (GraphRAG retrieval) and Lab 7 (MCP agents).
+Aura provides capabilities beyond the core graph engine that support AI retrieval pipelines. Built-in vector indexes store embeddings alongside graph data, enabling semantic similarity search without a separate vector store. Cypher queries can combine vector search with graph traversal in a single operation. Graph Data Science algorithms like PageRank and community detection run directly within Aura. These capabilities come together in Lab 5 (GraphRAG retrieval) and Lab 6 (MCP agents).
 ====
 
 .Aura Agents — no-code agent platform

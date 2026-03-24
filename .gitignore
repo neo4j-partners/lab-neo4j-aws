@@ -131,3 +131,4 @@ credentials.json
 secrets.json
 .env.gold
 .env.gold.copy
+.env.final

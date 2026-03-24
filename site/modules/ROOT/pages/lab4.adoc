@@ -15,7 +15,9 @@ TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions]
 
 Instead of connecting to Neo4j with a driver and using retriever classes directly, an AI agent uses MCP tools to execute Cypher queries against the database. The agent sends Cypher through an `execute-query` tool exposed by the Neo4j MCP Server. The server handles the connection, runs the query, and returns structured results that the agent can reason over.
 
-MCP (Model Context Protocol) is an open standard for agent-to-tool communication. It defines how an agent discovers available tools, calls them with structured inputs, and receives structured outputs. In this lab you use it as a transport layer for Cypher queries. For a deeper look at how MCP works and how to build full MCP agents, see xref:lab7.adoc[Lab 7].
+MCP (Model Context Protocol) is an open standard for agent-to-tool communication. It defines how an agent discovers available tools, calls them with structured inputs, and receives structured outputs. In this lab you use it as a transport layer for Cypher queries. For a deeper look at how MCP works and how to build full MCP agents, see xref:lab6.adoc[Lab 6].
+
+NOTE: The Neo4j MCP Server used in this lab connects to a database that has been pre-loaded with Document and Chunk nodes, vector embeddings (`chunkEmbeddings` index), and fulltext indexes (`search_chunks`, `search_entities`). The workshop admin set this up before the workshop. You do not need to create these data structures yourself — the MCP Server's database is ready to query.
 
 == Three Retrieval Strategies
 
@@ -33,17 +35,13 @@ Notebook 02 extends vector search by adding graph traversal. After finding seman
 
 Notebook 03 introduces an alternative search method: fulltext keyword search using Lucene operators against the `search_chunks` and `search_entities` indexes. It then combines both approaches for agent-driven hybrid search using custom `@tool` wrappers that encapsulate embedding generation.
 
-== How the Notebooks Connect
-
-Notebook 01 introduces the basic pattern: embed a query, pass the embedding to the agent, and let the agent execute vector search Cypher through MCP. Notebook 02 extends this by adding graph traversal that pulls in document metadata, neighboring chunks, and connected entities. Notebook 03 introduces fulltext keyword search as an alternative and then combines both approaches, giving the agent the ability to choose the right retrieval strategy for a given question.
-
 == MCP vs Direct Library
 
-All three notebooks use the same underlying Neo4j indexes and graph structure as Lab 6. The difference is in how the search is executed.
+All three notebooks use the same underlying Neo4j indexes and graph structure as Lab 5. The difference is in how the search is executed.
 
 [cols="1,2,2"]
 |===
-| Aspect | Lab 4 (MCP) | Lab 6 (Library)
+| Aspect | Lab 4 (MCP) | Lab 5 (Library)
 
 | **Connection**
 | MCP server via AgentCore Gateway
@@ -66,9 +64,9 @@ All three notebooks use the same underlying Neo4j indexes and graph structure as
 | `retrieval_query` parameter on retriever classes
 |===
 
-== What Is Covered Here vs Lab 6
+== What Is Covered Here vs Lab 5
 
-This lab focuses on MCP-based retrieval: using an agent to execute search queries through MCP tools. For the following topics, see xref:lab6.adoc[Lab 6]:
+This lab focuses on MCP-based retrieval: using an agent to execute search queries through MCP tools. For the following topics, see xref:lab5.adoc[Lab 5]:
 
 * **Direct driver connections** — `neo4j.GraphDatabase.driver()` for direct access
 * **neo4j-graphrag retriever classes** — `VectorRetriever`, `VectorCypherRetriever`, `HybridRetriever`, `HybridCypherRetriever`
@@ -78,4 +76,4 @@ This lab focuses on MCP-based retrieval: using an agent to execute search querie
 
 == Next Steps
 
-Continue to xref:lab4-instructions.adoc[Lab 4 Instructions] to work through the notebooks. After completing this lab, proceed to xref:lab6.adoc[Lab 6: GraphRAG] for direct library-based retrieval, or to xref:lab7.adoc[Lab 7: MCP Agent] to build full MCP agents.
+Continue to xref:lab4-instructions.adoc[Lab 4 Instructions] to work through the notebooks. After completing this lab, proceed to xref:lab5.adoc[Lab 5: GraphRAG] for direct library-based retrieval, or to xref:lab6.adoc[Lab 6: MCP Agent] to build full MCP agents.

@@ -1,55 +1,69 @@
-= Lab 6 Instructions: GraphRAG
+= Lab 6 Instructions: Neo4j MCP Agent
 
-TIP: For concepts and background, see xref:lab6.adoc[Lab 6: GraphRAG].
+TIP: For concepts and background, see xref:lab6.adoc[Lab 6: Neo4j MCP Agent].
 
 == What You'll Learn
 
-* **Data Loading**: Build Document and Chunk nodes linked by graph relationships
-* **Embeddings**: Generate vector embeddings with Amazon Nova and create a vector index
-* **VectorRetriever**: Pure semantic similarity search over embedded chunks
-* **VectorCypherRetriever**: Vector search enriched with graph traversal to connected entities
-* **Fulltext Search**: Keyword-based search with fuzzy, wildcard, and boolean operators
-* **HybridRetriever**: Combined vector and fulltext search with tunable alpha parameter
+* **Model Context Protocol**: How MCP connects AI agents to external data sources
+* **Neo4j MCP Server**: Graph operations exposed as discoverable agent tools
+* **Schema-First Queries**: Why the agent retrieves the graph schema before writing Cypher
+* **Two Frameworks**: LangGraph (complex workflows) and Strands (lightweight, AWS-native)
 
 == Prerequisites
 
-* Completed **Lab 1** (Neo4j Aura instance created and running)
-* Filled in your credentials in `CONFIG.txt` at the project root
-* A running environment (SageMaker Studio or GitHub Codespace)
+* Completed **Lab 1** (Neo4j Aura instance with SEC financial data loaded)
+* Your `CONFIG.txt` file updated with MCP Gateway credentials (`MCP_GATEWAY_URL` and `MCP_ACCESS_TOKEN`)
+* AWS credentials configured for Amazon Bedrock access
 
 == Notebooks
 
-Open each notebook in order. Each one builds on the graph state left by the previous notebook.
+This lab provides two notebook options. Both connect to the same MCP server and produce the same results.
 
-[cols="1,2,3"]
+[cols="1,1,3"]
 |===
-| Notebook | Title | What You Build
+| Notebook | Framework | Description
 
-| `01_data_loading.ipynb`
-| Data Loading
-| Document and Chunk nodes linked by `FROM_DOCUMENT` and `NEXT_CHUNK` relationships
+| `neo4j_langgraph_mcp_agent.ipynb`
+| LangGraph
+| Full-featured agent with LangChain MCP adapters. Better for complex, multi-step workflows with fine-grained control over the agent loop.
 
-| `02_embeddings.ipynb`
-| Embeddings
-| Vector embeddings on every Chunk node, plus a `chunkEmbeddings` vector index
+| `neo4j_strands_mcp_agent.ipynb`
+| Strands
+| Lightweight agent using the AWS-native Strands SDK. Fewer lines of code, built-in MCP support, simpler API.
+|===
 
-| `03_vector_retriever.ipynb`
-| Vector Retriever
-| A `VectorRetriever` wired into a `GraphRAG` pipeline for semantic Q&A
+Open either notebook in the `Lab_7_Neo4j_MCP_Agent/` directory and follow the instructions within.
 
-| `04_vector_cypher_retriever.ipynb`
-| VectorCypher Retriever
-| A `VectorCypherRetriever` that enriches each vector match with neighboring chunks and document metadata via Cypher
+== Sample Queries
 
-| `05_fulltext_search.ipynb`
-| Fulltext Search
-| A fulltext index on Chunk text with fuzzy, wildcard, and boolean search operators
+Once your agent is running, try these questions about the SEC financial data:
 
-| `06_hybrid_search.ipynb`
-| Hybrid Search
-| `HybridRetriever` and `HybridCypherRetriever` combining vector and fulltext search with tunable alpha
+[cols="1,3"]
+|===
+| Category | Example Question
+
+| **Exploration**
+| "How many companies are in the database?"
+
+| **Products**
+| "What products does Apple offer?"
+
+| **Ownership**
+| "Which asset managers own stakes in NVIDIA?"
+
+| **Risk**
+| "What risk factors does Microsoft face?"
+
+| **Financials**
+| "Show me the financial metrics for Tesla."
+
+| **Executives**
+| "Who are the executives at Amazon?"
+
+| **Cross-entity**
+| "Which companies face risk factors related to cybersecurity?"
 |===
 
 == Next Steps
 
-Continue to xref:lab7.adoc[Lab 7: MCP Agent] to build agents that use these retrieval patterns as tools.
+Congratulations — you have completed the workshop! You've built GraphRAG pipelines from no-code tools through custom Python agents, and connected AI agents to Neo4j through the Model Context Protocol.

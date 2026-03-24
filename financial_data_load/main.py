@@ -450,8 +450,8 @@ SOLUTIONS = [
     ("solution_srcs.02_02_vector_cypher_retriever", "Vector Cypher Retriever", False, "main"),
     ("solution_srcs.02_03_text2cypher_retriever", "Text2Cypher Retriever", False, "main"),
     ("solution_srcs.03_01_basic_strands_agent", "Basic Strands Agent (Lab 3)", False, "main"),
-    ("solution_srcs.04_01_vector_search_mcp", "Vector Search via MCP (Lab 4)", True, "main"),
-    ("solution_srcs.04_02_graph_enriched_search_mcp", "Graph-Enriched Search via MCP (Lab 4)", True, "main"),
+    ("solution_srcs.04_01_vector_search_mcp", "Vector Search via MCP (Lab 4)", False, "main"),
+    ("solution_srcs.04_02_graph_enriched_search_mcp", "Graph-Enriched Search via MCP (Lab 4)", False, "main"),
     ("solution_srcs.04_03_fulltext_hybrid_search_mcp", "Fulltext & Hybrid Search via MCP (Lab 4)", True, "main"),
     ("solution_srcs.05_01_simple_agent", "Simple Agent", True, "run_agent"),
     ("solution_srcs.05_02_context_provider", "Context Provider Intro", True, "run_agent"),
@@ -492,7 +492,7 @@ def _print_solutions_menu():
     print("  6. Vector Cypher Retriever")
     print("  7. Text2Cypher Retriever")
     print("\nLab 3 - Basic Agent:")
-    print("  8. Basic LangGraph Agent")
+    print("  8. Basic Strands Agent")
     print("\nLab 4 - MCP Retrieval:")
     print("  9. Vector Search via MCP")
     print(" 10. Graph-Enriched Search via MCP")

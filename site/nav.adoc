@@ -15,9 +15,9 @@
 *** xref:lab3-instructions.adoc[Instructions]
 ** xref:lab4.adoc[Lab 4: MCP Retrieval]
 *** xref:lab4-instructions.adoc[Instructions]
-** xref:lab6.adoc[Lab 6: GraphRAG]
-*** xref:lab6-instructions.adoc[Instructions]
+** xref:lab5.adoc[Lab 5: GraphRAG]
+*** xref:lab5-instructions.adoc[Instructions]
 * Part 3: Advanced Agents
-** xref:lab7.adoc[Lab 7: MCP Agent]
-*** xref:lab7-instructions.adoc[Instructions]
+** xref:lab6.adoc[Lab 6: MCP Agent]
+*** xref:lab6-instructions.adoc[Instructions]
 * xref:admin-setup.adoc[Admin Setup]

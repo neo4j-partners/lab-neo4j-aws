@@ -14,7 +14,7 @@ lab-neo4j-aws/
       01_data_loading.ipynb        <-- reads ../../CONFIG.txt
 ----
 
-Each notebook resolves the path relative to its own location. Lab 6 notebooks are one level deeper (`Lab_6_GraphRAG/src/`), so they use `../../CONFIG.txt`.
+Each notebook resolves the path relative to its own location. Lab 5 notebooks are one level deeper (`Lab_6_GraphRAG/src/`), so they use `../../CONFIG.txt`.
 
 == Fields
 
@@ -50,27 +50,12 @@ Each notebook resolves the path relative to its own location. Lab 6 notebooks ar
 | `MCP_GATEWAY_URL`
 | AgentCore Gateway URL for the Neo4j MCP Server
 | Provided by workshop admin or MCP server deployment
-| Labs 4, 7
+| Labs 4, 6
 
 | `MCP_ACCESS_TOKEN`
 | Authentication token for the MCP Gateway
 | Provided by workshop admin or MCP server deployment
-| Labs 4, 7
-
-| `NEO4J_CLIENT_ID`
-| OAuth2 client ID for the Aura Agents API
-| Lab 8 — Aura Agent API credential setup
-| Lab 8
-
-| `NEO4J_CLIENT_SECRET`
-| OAuth2 client secret for the Aura Agents API
-| Lab 8 — Aura Agent API credential setup
-| Lab 8
-
-| `NEO4J_AGENT_ENDPOINT`
-| Aura Agents API endpoint URL
-| Lab 8 — Aura Agent deployment
-| Lab 8
+| Labs 4, 6
 |===
 
 == Example File
@@ -82,18 +67,13 @@ NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your_password_here
 
-# MCP Gateway (Labs 4 and 7)
+# MCP Gateway (Labs 4 and 6)
 MCP_GATEWAY_URL=your-gateway-url-here
 MCP_ACCESS_TOKEN=your-access-token-here
 
 # AWS Bedrock Settings (pre-configured defaults)
 MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0
 REGION=us-east-1
-
-# Aura Agent API (Lab 8)
-NEO4J_CLIENT_ID=your-client-id-here
-NEO4J_CLIENT_SECRET=your-client-secret-here
-NEO4J_AGENT_ENDPOINT=your-agent-endpoint-here
 ----
 
 == How Notebooks Load Configuration
@@ -113,7 +93,7 @@ MODEL_ID = os.getenv("MODEL_ID")
 REGION = os.getenv("REGION")
 ----
 
-Lab 6 notebooks use `pydantic-settings` through the shared `lib/data_utils.py` module, which defines `Neo4jConfig` and `BedrockConfig` classes that read from `CONFIG.txt` with validation.
+Lab 5 notebooks use `pydantic-settings` through the shared `lib/data_utils.py` module, which defines `Neo4jConfig` and `BedrockConfig` classes that read from `CONFIG.txt` with validation.
 
 == Model ID Notes
 

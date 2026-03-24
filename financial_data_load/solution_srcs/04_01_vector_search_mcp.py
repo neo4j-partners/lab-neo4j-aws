@@ -21,12 +21,12 @@ from strands.tools.mcp import MCPClient
 # 1. Configuration
 # ---------------------------------------------------------------------------
 
-# Load configuration from CONFIG.txt at project root
-_config_path = os.path.join(os.path.dirname(__file__), "..", "..", "CONFIG.txt")
-load_dotenv(_config_path)
+# Load .env from financial_data_load directory (same as config.py)
+_env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+load_dotenv(_env_path)
 
-MODEL_ID = os.getenv("MODEL_ID")
-REGION = os.getenv("REGION", "us-east-1")
+MODEL_ID = os.getenv("MODEL_ID", "us.anthropic.claude-sonnet-4-6")
+REGION = os.getenv("AWS_REGION", os.getenv("REGION", "us-east-1"))
 MCP_GATEWAY_URL = os.getenv("MCP_GATEWAY_URL")
 MCP_ACCESS_TOKEN = os.getenv("MCP_ACCESS_TOKEN")
 

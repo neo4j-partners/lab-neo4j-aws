@@ -2,7 +2,7 @@
 
 Copy and paste these queries into the https://console.neo4j.io[Neo4j Aura Query interface] to explore the SEC financial knowledge graph. Queries are organized by retrieval strategy, progressing from direct graph traversals through vector and fulltext search to graph-enriched retrieval.
 
-TIP: Queries in Sections 2 and 3 require the data loaded in Lab 6 (Document/Chunk nodes, embeddings, and fulltext indexes). They will not return results until those notebooks have been run.
+TIP: Queries in Sections 2 and 3 require the data loaded in Lab 5 (Document/Chunk nodes, embeddings, and fulltext indexes). They will not return results until those notebooks have been run.
 
 == Cypher Quick Reference
 
@@ -144,14 +144,14 @@ Which companies face cybersecurity risks and who owns them?
 
 [source,cypher]
 ----
-MATCH (r:RiskFactor)-[:FACES_RISK]-(c:Company)<-[:OWNS]-(am:AssetManager)
+MATCH (c:Company)-[:FACES_RISK]->(r:RiskFactor), (am:AssetManager)-[:OWNS]->(c)
 WHERE r.name CONTAINS 'Cybersecurity'
 WITH c, r, collect(am.name) AS owners
 RETURN c.name, c.ticker, r.name AS risk, owners
 ORDER BY c.name
 ----
 
-NOTE: Pattern matching with an undirected relationship `[:FACES_RISK]` for the risk factor, then a directed `[:OWNS]` for ownership. `collect()` gathers all asset managers owning each company into a single row.
+NOTE: Pattern matching with directed relationships following the schema: Company to RiskFactor via FACES_RISK, and AssetManager to Company via OWNS. `collect()` gathers all asset managers owning each company into a single row.
 
 === Schema Introspection
 
@@ -183,7 +183,7 @@ ORDER BY label
 
 == Section 2: Fulltext and Vector Search
 
-These queries require the data structures built in Lab 6: Document and Chunk nodes, the `chunkEmbeddings` vector index, and the `search_chunks` and `search_entities` fulltext indexes.
+These queries require the data structures built in Lab 5: Document and Chunk nodes, the `chunkEmbeddings` vector index, and the `search_chunks` and `search_entities` fulltext indexes.
 
 '''
 
@@ -330,7 +330,7 @@ RETURN substring(seed.text, 0, 80) AS seedText,
        substring(node.text, 0, 80) AS matchText
 ----
 
-NOTE: Enriches vector results by traversing FROM_DOCUMENT to include the source filing. This is the same pattern used by the VectorCypherRetriever in Lab 6: vector search finds the chunk, then graph traversal gathers context.
+NOTE: Enriches vector results by traversing FROM_DOCUMENT to include the source filing. This is the same pattern used by the VectorCypherRetriever in Lab 5: vector search finds the chunk, then graph traversal gathers context.
 
 '''
 
@@ -447,4 +447,4 @@ RETURN name, type, labelsOrTypes, properties
 ORDER BY type, name
 ----
 
-NOTE: Run this to verify that vector and fulltext indexes were created successfully in Lab 6. Expected indexes include `chunkEmbeddings` (VECTOR), `search_chunks` (FULLTEXT), and `search_entities` (FULLTEXT).
+NOTE: Run this to verify that vector and fulltext indexes were created successfully in Lab 5. Expected indexes include `chunkEmbeddings` (VECTOR), `search_chunks` (FULLTEXT), and `search_entities` (FULLTEXT).

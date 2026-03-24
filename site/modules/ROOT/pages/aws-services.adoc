@@ -24,12 +24,12 @@ For agent architectures, the critical capability is tool use. Tool definitions g
 
 [source,python]
 ----
-# LangChain wraps the Converse API in ChatBedrockConverse
-llm = ChatBedrockConverse(model=MODEL_ID, region_name=REGION)
-llm_with_tools = llm.bind_tools(tools)
+# Strands wraps the Converse API in BedrockModel
+from strands.models import BedrockModel
+bedrock_model = BedrockModel(model_id=MODEL_ID, region_name=REGION)
 ----
 
-LangChain's `ChatBedrockConverse` and the Strands SDK's `BedrockModel` both wrap the Converse API. They handle serialization of tool definitions, parsing of tool call responses, and the message history that maintains conversation context. The wrapper differs; the underlying protocol does not.
+The Strands SDK's `BedrockModel` wraps the Converse API, handling serialization of tool definitions, parsing of tool call responses, and the message history that maintains conversation context.
 
 .How tool use flows through the Converse API
 [%collapsible]
@@ -131,7 +131,7 @@ Each user session runs in a dedicated microVM with isolated CPU, memory, and fil
 
 === Framework and Protocol Support
 
-AgentCore is framework agnostic. It works with LangGraph, Strands Agents SDK, CrewAI, and custom agent code without a specific framework. It also supports MCP (Model Context Protocol) and A2A (Agent-to-Agent) protocols for inter-agent and agent-to-tool communication. In this workshop, Lab 3 deploys a Strands agent to AgentCore, and Labs 4 and 7 connect to Neo4j MCP Servers hosted on AgentCore.
+AgentCore is framework agnostic. It works with LangGraph, Strands Agents SDK, CrewAI, and custom agent code without a specific framework. It also supports MCP (Model Context Protocol) and A2A (Agent-to-Agent) protocols for inter-agent and agent-to-tool communication. In this workshop, Lab 3 deploys a Strands agent to AgentCore, and Labs 4 and 6 connect to Neo4j MCP Servers hosted on AgentCore.
 
 == Amazon SageMaker Studio
 
@@ -191,13 +191,13 @@ During development, notebooks call Bedrock directly and iterate on the agent loo
 | xref:lab4.adoc[Lab 4]
 | Bedrock (Nova embeddings, Claude reasoning), AgentCore (MCP Server hosting)
 
-| xref:lab6.adoc[Lab 6]
+| xref:lab5.adoc[Lab 5]
 | Bedrock (Nova embeddings, Claude reasoning)
 
-| xref:lab7.adoc[Lab 7]
+| xref:lab6.adoc[Lab 6]
 | Bedrock (Claude reasoning), AgentCore (MCP Server hosting)
 |===
 
 == Next Steps
 
-Continue to xref:lab0.adoc[Lab 0: Sign In to AWS] to configure your AWS account and verify Bedrock model access, or proceed directly to xref:lab3.adoc[Lab 3: Bedrock and Agents] if your environment is already set up.
+Continue to xref:lab0.adoc[Lab 0: Sign In to AWS] to configure your AWS account and verify Bedrock model access. Labs 1 and 2 set up the Neo4j database that all subsequent labs depend on.

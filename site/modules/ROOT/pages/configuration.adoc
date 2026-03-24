@@ -22,7 +22,7 @@ These credentials are displayed once when you create your Neo4j Aura instance in
 | Database password — shown once during instance creation
 |===
 
-=== MCP Gateway (Labs 4 and 6)
+=== MCP Gateway (Labs 4 and 7)
 
 These credentials connect to the Neo4j MCP Server hosted on Amazon Bedrock AgentCore. Your instructor will provide both values during the workshop.
 

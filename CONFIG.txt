@@ -33,12 +33,3 @@ REGION=us-east-1
 # MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
 # MODEL_ID=global.anthropic.claude-sonnet-4-5-20250929-v1:0
 
-
-
-
-# -----------------------------------------------------------------------------
-# Neo4j Aura Agent API (Advanced - Lab 8 Aura Agent setup)
-# -----------------------------------------------------------------------------
-NEO4J_CLIENT_ID=your-client-id-here
-NEO4J_CLIENT_SECRET=your-client-secret-here
-NEO4J_AGENT_ENDPOINT=your-agent-endpoint-here

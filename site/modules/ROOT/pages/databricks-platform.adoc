@@ -20,7 +20,7 @@ The rule of thumb: if you're counting things, stay in SQL. If you're following c
 
 image::dual-database-architecture.png[Dual Database Architecture,align=center]
 
-The diagram shows how the SEC 10-K financial data splits across both platforms. Databricks holds the `companies` table (the shared entity) and `daily_prices` — roughly 25,200 rows of daily OHLCV data partitioned by ticker, rolled up into weekly and monthly aggregations. Neo4j holds the knowledge graph: Company, Product, RiskFactor, and AssetManager nodes connected by OFFERS, FACES_RISK, COMPETES_WITH, PARTNERS_WITH, and OWNS relationships, plus Document and Chunk nodes for GraphRAG retrieval over the 10-K filings.
+The diagram shows how the SEC 10-K financial data splits across both platforms. Databricks holds the `companies` table (the shared entity) and `daily_prices`, roughly 25,200 rows of daily OHLCV data partitioned by ticker, rolled up into weekly and monthly aggregations. Neo4j holds the knowledge graph: Company, Product, RiskFactor, and AssetManager nodes connected by OFFERS, FACES_RISK, COMPETES_WITH, PARTNERS_WITH, and OWNS relationships, plus Document and Chunk nodes for GraphRAG retrieval over the 10-K filings.
 
 Company (identified by ticker) is the join point between both platforms. The Spark Connector syncs governed Delta tables to graph nodes.
 

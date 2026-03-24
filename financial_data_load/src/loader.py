@@ -173,6 +173,10 @@ def _reconstruct_entity_relationships(driver: Driver) -> None:
 
     Path: Entity -[:FROM_CHUNK]-> Chunk -[:FROM_DOCUMENT]-> Document
     Then match Company by Document.name and MERGE the schema relationship.
+
+    MERGE is idempotent so no pre-check needed — it finds or creates.
+    Uses DISTINCT to avoid redundant MERGE calls when an entity appears
+    in multiple chunks from the same document.
     """
     entity_rels = [
         ("Executive", "HAS_EXECUTIVE"),
@@ -183,10 +187,10 @@ def _reconstruct_entity_relationships(driver: Driver) -> None:
 
     for label, rel_type in entity_rels:
         result, _, _ = driver.execute_query(
-            f"MATCH (e:{label})-[:FROM_CHUNK]->(ch:Chunk)-[:FROM_DOCUMENT]->(d:Document) "
+            f"MATCH (e:{label})-[:FROM_CHUNK]->()-[:FROM_DOCUMENT]->(d:Document) "
             f"WHERE d.name IS NOT NULL "
-            f"MATCH (c:Company {{name: d.name}}) "
-            f"WHERE NOT (c)-[:{rel_type}]->(e) "
+            f"WITH DISTINCT e, d.name AS company_name "
+            f"MATCH (c:Company {{name: company_name}}) "
             f"MERGE (c)-[:{rel_type}]->(e) "
             f"RETURN count(*) AS created"
         )
@@ -197,11 +201,10 @@ def _reconstruct_entity_relationships(driver: Driver) -> None:
     # COMPETES_WITH: Company nodes extracted from another company's filing
     # are competitors of the filing company.
     result, _, _ = driver.execute_query(
-        "MATCH (competitor:Company)-[:FROM_CHUNK]->(ch:Chunk)"
-        "-[:FROM_DOCUMENT]->(d:Document) "
+        "MATCH (competitor:Company)-[:FROM_CHUNK]->()-[:FROM_DOCUMENT]->(d:Document) "
         "WHERE d.name IS NOT NULL AND competitor.name <> d.name "
-        "MATCH (filing_company:Company {name: d.name}) "
-        "WHERE NOT (filing_company)-[:COMPETES_WITH]->(competitor) "
+        "WITH DISTINCT competitor, d.name AS filing_name "
+        "MATCH (filing_company:Company {name: filing_name}) "
         "MERGE (filing_company)-[:COMPETES_WITH]->(competitor) "
         "RETURN count(*) AS created"
     )

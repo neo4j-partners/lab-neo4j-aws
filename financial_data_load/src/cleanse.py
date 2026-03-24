@@ -273,19 +273,26 @@ def apply_cleanse(
 
 
 def _execute_removals(driver: Driver, removals: list[RemovalDecision]) -> None:
-    """Delete entities marked for removal."""
+    """Delete entities marked for removal using batched UNWIND."""
+    _BATCH_SIZE = 200
+    eids = [r.element_id for r in removals]
     ok = 0
     fail = 0
-    for r in removals:
+
+    for i in range(0, len(eids), _BATCH_SIZE):
+        batch = eids[i : i + _BATCH_SIZE]
         try:
-            driver.execute_query(
-                "MATCH (n) WHERE elementId(n) = $eid DETACH DELETE n",
-                eid=r.element_id,
+            result, _, _ = driver.execute_query(
+                "UNWIND $eids AS eid "
+                "MATCH (n) WHERE elementId(n) = eid "
+                "DETACH DELETE n "
+                "RETURN count(*) AS removed",
+                eids=batch,
             )
-            ok += 1
+            ok += result[0]["removed"]
         except Exception as e:
-            fail += 1
-            logger.error(f"Failed to remove {r.name} ({r.entity_type}): {e}")
+            fail += len(batch)
+            logger.error(f"Failed batch removal ({len(batch)} entities): {e}")
 
     print(f"  Removals: {ok} OK, {fail} failed")
 

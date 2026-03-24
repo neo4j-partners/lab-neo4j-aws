@@ -10,7 +10,7 @@
       "y": 10,
       "width": 400,
       "height": 30,
-      "text": "Lab 6: Advanced Agents — MCP Architecture",
+      "text": "MCP Agent Architecture",
       "fontSize": 24,
       "fontFamily": 5,
       "textAlign": "center",
@@ -36,7 +36,7 @@
       "frameId": null,
       "roundness": null,
       "containerId": null,
-      "originalText": "Lab 6: Advanced Agents — MCP Architecture",
+      "originalText": "MCP Agent Architecture",
       "autoResize": true,
       "lineHeight": 1.25
     },

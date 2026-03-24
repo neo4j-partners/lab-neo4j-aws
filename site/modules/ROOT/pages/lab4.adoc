@@ -10,7 +10,7 @@ TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions]
 * **Graph-enriched search** — after finding matching passages, follow graph relationships to pull in the companies, products, and risk factors connected to them
 * **Hybrid search** — combine keyword matching with semantic similarity for broader recall
 
-image::lab4-mcp-retrieval-architecture.png[Graph-Enriched Search Architecture,700]
+image::mcp-retrieval-architecture.png[Graph-Enriched Search Architecture,700]
 
 == From Filings to Searchable Knowledge
 
@@ -48,7 +48,7 @@ Notebook 01 introduces the basic pattern. A custom `@tool` function embeds the n
 
 Notebook 02 extends vector search by adding graph traversal. After finding semantically similar chunks, the agent follows relationships to pull in document metadata, neighboring chunks (via `NEXT_CHUNK`), and connected entities — companies, products, and risk factors. This context enrichment gives the agent more information to work with when generating answers.
 
-image::lab4-graph-enriched-retrieval.png[Graph-Enriched Retrieval Flow,700]
+image::graph-enriched-retrieval.png[Graph-Enriched Retrieval Flow,700]
 
 === Hybrid Search
 

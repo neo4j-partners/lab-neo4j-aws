@@ -63,7 +63,7 @@ The workshop sidesteps extraction because the SEC dataset already provides clean
 
 The six notebooks form a single arc: create the graph, generate embeddings, then layer increasingly sophisticated retrieval strategies on top. Notebooks 01 and 02 build the data foundation. Notebooks 03 through 06 each demonstrate a different retriever that queries the same graph.
 
-image::lab5-data-pipeline.png[Data Pipeline,700]
+image::data-pipeline.png[Data Pipeline,700]
 
 By the end, you will have built four different retriever configurations and understand when each one applies.
 
@@ -79,7 +79,7 @@ Every notebook from 03 onward queries that same graph using a different retrieva
 
 **VectorCypherRetriever** adds a graph traversal step after vector search. It finds semantically similar chunks the same way VectorRetriever does, then executes a custom Cypher `retrieval_query` that traverses from each matched chunk to related entities in the graph. The chunk acts as an anchor: vector search determines relevance, then Cypher gathers the structured context around it. A typical traversal follows FROM_DOCUMENT to the source Document, then FILED back to the Company, and from there to OFFERS, FACES_RISK, or other relationships. The LLM receives both the chunk text and the connected entities. This retriever works best when the answer needs filing context alongside the text, such as "What risks does Apple face and what document are they from?"
 
-image::lab5-retriever-comparison.png[Retriever Comparison: VectorRetriever vs VectorCypherRetriever,700]
+image::retriever-comparison.png[Retriever Comparison: VectorRetriever vs VectorCypherRetriever,700]
 
 .The chunk-as-anchor constraint
 [%collapsible]

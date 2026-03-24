@@ -78,11 +78,14 @@ FOR (r:RiskFactor) REQUIRE r.riskId IS UNIQUE;
 
 CREATE CONSTRAINT manager_id IF NOT EXISTS
 FOR (m:AssetManager) REQUIRE m.managerId IS UNIQUE;
+
+CREATE CONSTRAINT document_id IF NOT EXISTS
+FOR (d:Document) REQUIRE d.documentId IS UNIQUE;
 ```
 
 ### Step 2: Load Nodes
 
-Each statement reads a CSV file and creates (or updates) the corresponding nodes: Companies, Products, Risk Factors, and Asset Managers.
+Each statement reads a CSV file and creates (or updates) the corresponding nodes: Companies, Products, Risk Factors, Asset Managers, and Documents.
 
 ```cypher
 LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/companies.csv' AS row
@@ -101,11 +104,15 @@ SET r.name = row.name, r.description = row.description;
 LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/asset_managers.csv' AS row
 MERGE (m:AssetManager {managerId: row.manager_id})
 SET m.name = row.name;
+
+LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/documents.csv' AS row
+MERGE (d:Document {documentId: row.document_id})
+SET d.accessionNumber = row.accession_number, d.filingType = row.filing_type;
 ```
 
 ### Step 3: Load Relationships
 
-Creates relationships between nodes: OFFERS (Company→Product), FACES_RISK (Company→RiskFactor), OWNS (AssetManager→Company), COMPETES_WITH and PARTNERS_WITH (Company→Company). The last two use MERGE on the target company name since competitors and partners may be companies mentioned in filings that aren't in the primary dataset.
+Creates relationships between nodes: OFFERS (Company→Product), FACES_RISK (Company→RiskFactor), OWNS (AssetManager→Company), COMPETES_WITH and PARTNERS_WITH (Company→Company), and FILED (Company→Document). The competitor and partner loads use MERGE on the target company name since they may reference companies mentioned in filings that aren't in the primary dataset.
 
 ```cypher
 LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/company_products.csv' AS row
@@ -132,6 +139,11 @@ LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/com
 MATCH (a:Company {companyId: row.source_company_id})
 MERGE (b:Company {name: row.target_company_name})
 MERGE (a)-[:PARTNERS_WITH]->(b);
+
+LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/company_documents.csv' AS row
+MATCH (c:Company {companyId: row.company_id})
+MATCH (d:Document {documentId: row.document_id})
+MERGE (c)-[:FILED]->(d);
 ```
 
 ### Step 4: Create Fulltext Index
@@ -160,6 +172,7 @@ You should see approximately:
 |---|---|
 | AssetManager | 15 |
 | Company | ~73 |
+| Document | 7 |
 | Product | 91 |
 | RiskFactor | 57 |
 

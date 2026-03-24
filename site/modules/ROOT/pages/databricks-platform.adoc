@@ -16,6 +16,8 @@ Most real-world problems have both: numbers that need crunching and relationship
 
 The rule of thumb: if you're counting things, stay in SQL. If you're following connections, move to the graph. If you need both, route to specialized agents.
 
+=== Dual Database Architecture
+
 image::dual-database-architecture.png[Dual Database Architecture,align=center]
 
 The diagram shows how the SEC 10-K financial data splits across both platforms. Databricks holds the `companies` table (the shared entity) and `daily_prices` — roughly 25,200 rows of daily OHLCV data partitioned by ticker, rolled up into weekly and monthly aggregations. Neo4j holds the knowledge graph: Company, Product, RiskFactor, and AssetManager nodes connected by OFFERS, FACES_RISK, COMPETES_WITH, PARTNERS_WITH, and OWNS relationships, plus Document and Chunk nodes for GraphRAG retrieval over the 10-K filings.

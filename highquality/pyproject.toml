@@ -1,0 +1,9 @@
+[project]
+name = "highquality"
+version = "0.1.0"
+description = "Fix data quality issues in the Neo4j financial knowledge graph"
+requires-python = ">=3.12"
+dependencies = [
+    "neo4j>=5.0",
+    "python-dotenv>=1.0",
+]

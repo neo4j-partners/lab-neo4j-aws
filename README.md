@@ -14,18 +14,18 @@ A hands-on workshop teaching Graph Retrieval-Augmented Generation (GraphRAG) pat
 | [Lab 1](Lab_1_Aura_Setup/README.md) | Neo4j Aura Setup | Sign up for Neo4j Aura, load knowledge graph via Cypher, explore graph |
 | [Lab 2](Lab_2_Aura_Agents/README.md) | Aura Agents | Build a no-code AI agent using Neo4j Aura Agent platform |
 
-### Part 2: Building GraphRAG Agents (Labs 3-5)
+### Part 2: Building GraphRAG Agents (Labs 3-4)
 
 | Lab | Title | Description |
 |-----|-------|-------------|
 | [Lab 3](Lab_3_Intro_to_Bedrock_and_Agents/README.md) | Intro to Bedrock and Agents | SageMaker setup, LangGraph foundations, tool binding, ReAct pattern, AgentCore deployment |
 | [Lab 4](Lab_4_Graph_Enriched_Search/README.md) | Graph-Enriched Search | Vector, graph-enriched, and hybrid retrieval over a knowledge graph |
-| [Lab 5](Lab_5_GraphRAG/README.md) | GraphRAG | Six notebooks: data loading, embeddings, vector retrieval, vector-cypher retrieval, fulltext search, hybrid search |
 
-### Part 3: Schema-Aware Agents with MCP (Lab 6)
+### Part 3: Advanced GraphRAG Patterns (Labs 5-6)
 
 | Lab | Title | Description |
 |-----|-------|-------------|
+| [Lab 5](Lab_5_GraphRAG/README.md) | GraphRAG | Six notebooks: data loading, embeddings, vector retrieval, vector-cypher retrieval, fulltext search, hybrid search |
 | [Lab 6](Lab_6_Advanced_Agents/README.md) | Advanced Agents | Text2Cypher pattern: agents discover the graph schema via MCP and write their own Cypher queries (LangGraph and Strands implementations) |
 
 ## Prerequisites

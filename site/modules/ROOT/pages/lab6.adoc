@@ -176,4 +176,4 @@ This lab provides two notebook implementations. Both connect to the same MCP ser
 
 == Next Steps
 
-Continue to xref:lab6-instructions.adoc[Lab 6 Instructions] to run the notebooks and query the knowledge graph through MCP. This is the final lab in the workshop. You have progressed from no-code exploration (Labs 0-2) through Cypher Templates and Graph-Enhanced Vector Search (Labs 3-5) to building autonomous Text2Cypher agents that inspect schemas and write their own queries.
+Continue to xref:lab6-instructions.adoc[Lab 6 Instructions] to run the notebooks and query the knowledge graph through MCP. This is the final lab in the workshop. You have progressed from setup and visual exploration (Labs 0-2) through building GraphRAG agents (Labs 3-4) to advanced GraphRAG patterns including the neo4j-graphrag library (Lab 5) and autonomous Text2Cypher agents that inspect schemas and write their own queries.

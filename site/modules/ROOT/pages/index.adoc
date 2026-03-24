@@ -46,7 +46,7 @@ image::workshop-architecture.png[Workshop Architecture,800]
 
 == Labs
 
-=== Part 1: No-Code Track
+=== Part 1: Setup & Visual Exploration with Neo4j
 
 [cols="1,3,1"]
 |===
@@ -65,7 +65,7 @@ image::workshop-architecture.png[Workshop Architecture,800]
 | 20 min
 |===
 
-=== Part 2: GraphRAG with Python
+=== Part 2: Building GraphRAG Agents
 
 [cols="1,3,1"]
 |===
@@ -78,17 +78,17 @@ image::workshop-architecture.png[Workshop Architecture,800]
 | xref:lab4.adoc[Lab 4]
 | Graph-enriched search: vector, graph-traversal, and hybrid retrieval over a knowledge graph
 | 30 min
-
-| xref:lab5.adoc[Lab 5]
-| Complete GraphRAG pipeline with neo4j-graphrag: data loading, embeddings, and four retriever types
-| 45 min
 |===
 
-=== Part 3: Advanced Agents
+=== Part 3: Advanced GraphRAG Patterns
 
 [cols="1,3,1"]
 |===
 | Lab | Description | Duration
+
+| xref:lab5.adoc[Lab 5]
+| Complete GraphRAG pipeline with neo4j-graphrag: data loading, embeddings, and four retriever types
+| 45 min
 
 | xref:lab6.adoc[Lab 6]
 | Advanced Agents: Text2Cypher pattern — agents discover the graph schema via MCP and write their own Cypher queries

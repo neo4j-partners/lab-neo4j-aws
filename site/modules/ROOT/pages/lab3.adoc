@@ -48,7 +48,9 @@ The agent in this lab has two simple tools: one that returns the current time an
 
 == Strands Agent Architecture
 
-Unlike graph-based frameworks that require defining nodes, edges, and routing logic, Strands handles the ReAct loop internally. You provide a model, a system prompt, and a list of tools. The agent decides when to use tools and when to respond directly.
+Strands takes a model-driven approach: the model decides what to do at each step rather than following a developer-defined workflow. You provide a model, a system prompt, and a list of tools. The agent decides when to use tools and when to respond directly.
+
+Strands is model-agnostic, supporting Bedrock, Anthropic, OpenAI, Ollama, and other providers through swappable model classes. This workshop uses `BedrockModel` throughout, but the agent code itself is independent of the provider. Strands also has native support for MCP (Model Context Protocol), which Labs 4 and 6 use to connect agents to the Neo4j knowledge graph through MCP servers rather than locally defined tools.
 
 [source,python]
 ----
@@ -69,7 +71,15 @@ The `Agent` constructor wires up the full reasoning loop. When you invoke the ag
 3. Executes any requested tools and feeds results back
 4. Repeats until the model produces a final text response
 
-There is no explicit graph to define, no nodes to wire, no conditional edges to configure. Strands manages the orchestration internally, which makes it a good fit for straightforward agent patterns where the primary complexity is in the tools, not in the routing logic.
+Strands manages the orchestration internally, which makes it a good fit for agent patterns where the primary complexity is in the tools, not in the routing logic.
+
+.Why model-driven and why now
+[%collapsible]
+====
+Early agent frameworks (2023-era) compensated for weaker model capabilities with complex orchestration: hand-tuned prompt chains, custom response parsers, and explicit control flow graphs that routed the agent through predetermined steps. Building a production agent often took months of tuning.
+
+Current foundation models can plan multi-step tool use, recover from errors, and adapt their approach mid-task without developer-defined routing. The orchestration that earlier frameworks enforced in code is now handled by the model itself. Strands leans into this shift: rather than defining every possible execution path, the developer defines capabilities as tools and the model coordinates their use. The tradeoff is less fine-grained control over execution order in exchange for faster development and more adaptive behavior at runtime.
+====
 
 == The ReAct Pattern
 

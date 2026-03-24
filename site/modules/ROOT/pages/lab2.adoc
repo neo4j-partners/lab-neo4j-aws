@@ -60,14 +60,14 @@ Text2Cypher translates arbitrary natural language questions into Cypher queries 
 
 == Tool Reliability
 
-The two tool types form a reliability spectrum. Cypher Templates produce deterministic results: the same input always generates the same query, which always returns the same data. Text2Cypher is the most flexible but the least predictable, because the LLM generates a different Cypher query each time.
+Templates and Text2Cypher sit at opposite ends of a reliability spectrum. Templates always return the same result for the same input but only cover questions someone anticipated. Text2Cypher handles everything else at the cost of predictability. The agent uses both: templates for known patterns, Text2Cypher for the long tail.
 
 .Why Text2Cypher needs cross-checking
 [%collapsible]
 ====
 Because Text2Cypher generates a different query each invocation, subtle variations can produce incorrect answers silently. A query that filters on `"cybersecurity"` instead of `"Cybersecurity Threats"` returns no results for case-sensitive property values, and the agent may present that empty result confidently rather than flagging a possible query issue.
 
-This is why both tool types exist rather than just Text2Cypher. Templates cover known patterns deterministically. Text2Cypher handles the long tail of ad-hoc questions that templates did not anticipate. Running the same question twice and comparing results is a practical way to spot generated-query variability.
+Running the same question twice and comparing results is a practical way to spot this variability.
 ====
 
 == Connection to Later Labs

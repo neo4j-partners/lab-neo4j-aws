@@ -151,4 +151,4 @@ image::lab2-mcp-endpoint.png[MCP Endpoint]
 
 == Next Steps
 
-This completes Part 1 (No-Code Track) of the workshop. Continue to xref:lab3.adoc[Lab 3: Bedrock and Agents] to set up your development environment and learn how AI agents work with the Strands Agents SDK.
+This completes Part 1 (Setup & Visual Exploration with Neo4j) of the workshop. Continue to xref:lab3.adoc[Lab 3: Bedrock and Agents] to set up your development environment and learn how AI agents work with the Strands Agents SDK.

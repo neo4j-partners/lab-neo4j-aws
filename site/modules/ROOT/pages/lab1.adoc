@@ -52,7 +52,7 @@ RETURN p.name ORDER BY p.name LIMIT 10
 .How the query works
 [%collapsible]
 ====
-The query reads like the pattern it matches: start at a Company node with ticker NVDA, follow OFFERS relationships to Product nodes, and return the product names. Cypher handles multi-hop traversals and path-finding operations natively.
+`MATCH` finds nodes and relationships that fit the specified pattern. `(c:Company {ticker: 'NVDA'})` binds a Company node with the property `ticker = 'NVDA'` to the variable `c`. The `-[:OFFERS]\->` arrow follows outbound OFFERS relationships to `(p:Product)` nodes. `RETURN` selects which properties to include in the result set, and `LIMIT` caps the output. Cypher handles multi-hop traversals and path-finding operations natively.
 ====
 
 .Why constraints matter for data loading

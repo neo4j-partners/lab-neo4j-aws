@@ -141,6 +141,6 @@ The quick version:
 
 ## Next Steps
 
-**This completes Part 1 (No-Code Track) of the workshop.**
+**This completes Part 1 (Setup & Visual Exploration with Neo4j) of the workshop.**
 
 To continue with the coding labs, proceed to [Lab 3 - Intro to Bedrock and Agents](../Lab_3_Intro_to_Bedrock_and_Agents) to set up your development environment in Amazon SageMaker and learn how AI agents work with LangGraph.

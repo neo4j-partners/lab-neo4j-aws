@@ -98,6 +98,7 @@ cdk.context.json
 # Logs
 *.log
 logs/
+plans/
 
 # Local development
 *.local

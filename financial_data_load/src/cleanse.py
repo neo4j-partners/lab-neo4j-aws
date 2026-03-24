@@ -24,7 +24,7 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
-LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
+PLAN_DIR = Path(__file__).resolve().parent.parent / "plans"
 
 # Entity types to cleanse, in processing order.
 # Company last so validation removes noise in relationship targets first.
@@ -83,8 +83,6 @@ def cleanse(
     driver: Driver,
     phase: str | None = None,
     base_plan: Path | None = None,
-    skip_labels: list[str] | None = None,
-    only_labels: list[str] | None = None,
 ) -> Path:
     """Generate a cleanse plan. Does not modify Neo4j.
 
@@ -94,8 +92,6 @@ def cleanse(
         base_plan: Path to an existing plan to build on. Carries forward
             removals and dedup_sections from that plan so you can run
             phases incrementally.
-        skip_labels: Entity labels to skip during dedup (e.g. ["RiskFactor"]).
-        only_labels: If set, only dedup these labels (e.g. ["RiskFactor"]).
 
     Returns:
         Path to the cleanse plan JSON file.
@@ -103,10 +99,10 @@ def cleanse(
     from .entity_resolution import resolve_entities
     from .validate import validate_entities
 
-    LOG_DIR.mkdir(exist_ok=True)
+    PLAN_DIR.mkdir(exist_ok=True)
 
     plan_path = (
-        LOG_DIR / f"cleanse_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        PLAN_DIR / f"cleanse_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     )
 
     # Load base plan if provided
@@ -167,17 +163,10 @@ def cleanse(
 
     # Determine which labels to dedup
     dedup_labels = list(ENTITY_LABELS)
-    if only_labels:
-        dedup_labels = [l for l in dedup_labels if l in only_labels]
-    elif skip_labels:
-        dedup_labels = [l for l in dedup_labels if l not in skip_labels]
 
     # Phase 2: Deduplication
     if phase is None or phase == "dedup":
         print("\n--- Phase 2: Deduplication ---")
-        skipped = set(ENTITY_LABELS) - set(dedup_labels)
-        if skipped:
-            print(f"  Skipping: {', '.join(sorted(skipped))}")
         for label in dedup_labels:
             entities = snapshots[label]
             if not entities:
@@ -363,7 +352,7 @@ def _execute_merges(driver: Driver, label: str, section: DedupSection) -> None:
 
 def latest_cleanse_plan() -> Path | None:
     """Find the most recent cleanse plan file."""
-    if not LOG_DIR.exists():
+    if not PLAN_DIR.exists():
         return None
-    files = sorted(LOG_DIR.glob("cleanse_plan_*.json"), reverse=True)
+    files = sorted(PLAN_DIR.glob("cleanse_plan_*.json"), reverse=True)
     return files[0] if files else None

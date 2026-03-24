@@ -4,6 +4,12 @@ Follow these notebooks to search a Neo4j knowledge graph through the Model Conte
 
 TIP: For concepts and background, see xref:lab4.adoc[Lab 4: MCP Retrieval].
 
+== What You'll Learn
+
+* **Vector Search via MCP**: Embed queries and execute semantic search through an MCP agent
+* **Graph-Enriched Retrieval**: Follow relationships from matched chunks to documents, companies, and risk factors
+* **Hybrid Search**: Combine fulltext keyword search with vector similarity using custom `@tool` wrappers
+
 == Prerequisites
 
 * Completed **Lab 1** (Neo4j Aura instance created and running)

@@ -22,7 +22,7 @@ from .models import EntitySnapshot, MergeDecision, ResolutionResult, SnapshotEnt
 
 logger = logging.getLogger(__name__)
 
-LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
+PLAN_DIR = Path(__file__).resolve().parent.parent / "plans"
 
 
 # ---------------------------------------------------------------------------
@@ -517,7 +517,7 @@ def resolve(snapshot_path: Path | str, config_overrides: dict | None = None) -> 
     snapshot = EntitySnapshot.model_validate_json(snapshot_path.read_text())
     config = EntityResolutionConfig(**(config_overrides or {}))
 
-    LOG_DIR.mkdir(exist_ok=True)
+    PLAN_DIR.mkdir(exist_ok=True)
 
     print(f"Loaded snapshot: {snapshot.entity_count} {snapshot.label} entities")
     print(
@@ -591,7 +591,7 @@ def resolve(snapshot_path: Path | str, config_overrides: dict | None = None) -> 
         merge_groups=all_groups,
     )
 
-    plan_path = LOG_DIR / f"merge_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    plan_path = PLAN_DIR / f"merge_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     plan_path.write_text(plan.model_dump_json(indent=2))
     print(f"\nMerge plan: {plan_path}")
 
@@ -704,7 +704,7 @@ def _write_empty_plan(
     entity_count: int,
 ) -> Path:
     """Write an empty merge plan when there are no candidates."""
-    LOG_DIR.mkdir(exist_ok=True)
+    PLAN_DIR.mkdir(exist_ok=True)
     plan = MergePlan(
         created_at=datetime.now().isoformat(),
         snapshot_path=str(snapshot_path),
@@ -714,7 +714,7 @@ def _write_empty_plan(
         decisions=[],
         merge_groups=[],
     )
-    plan_path = LOG_DIR / f"merge_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    plan_path = PLAN_DIR / f"merge_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     plan_path.write_text(plan.model_dump_json(indent=2))
     print(f"Merge plan: {plan_path}")
     return plan_path
@@ -809,9 +809,9 @@ def apply_merge_plan(driver, plan_path: Path | str) -> None:
 
 def latest_merge_plan() -> Path | None:
     """Find the most recent merge plan file."""
-    if not LOG_DIR.exists():
+    if not PLAN_DIR.exists():
         return None
-    files = sorted(LOG_DIR.glob("merge_plan_*.json"), reverse=True)
+    files = sorted(PLAN_DIR.glob("merge_plan_*.json"), reverse=True)
     return files[0] if files else None
 
 
@@ -823,9 +823,9 @@ def latest_merge_plan() -> Path | None:
 LABEL_CONFIGS: dict[str, dict[str, Any]] = {
     "Company": {"pre_filter_strategy": "prefix", "pre_filter_threshold": 0.3},
     "Executive": {"pre_filter_strategy": "honorific", "pre_filter_threshold": 0.5},
-    "Product": {"pre_filter_strategy": "fuzzy", "pre_filter_threshold": 0.6},
-    "RiskFactor": {"pre_filter_strategy": "fuzzy", "pre_filter_threshold": 0.85},
-    "FinancialMetric": {"pre_filter_strategy": "fuzzy", "pre_filter_threshold": 0.85},
+    "Product": {"pre_filter_strategy": "fuzzy", "pre_filter_threshold": 0.85},
+    "RiskFactor": {"pre_filter_strategy": "fuzzy", "pre_filter_threshold": 0.95},
+    "FinancialMetric": {"pre_filter_strategy": "fuzzy", "pre_filter_threshold": 0.95},
 }
 
 EXECUTIVE_SYSTEM_PROMPT = """\

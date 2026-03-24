@@ -2,7 +2,7 @@
 
 Called by apply_cleanse() after removals and merges are applied.
 Operates directly on Neo4j — rewrites descriptions in place.
-Logs all rewrites to logs/cleanse_normalize_*.json.
+Logs all rewrites to plans/cleanse_normalize_*.json.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from .config import get_llm_deterministic
 
 logger = logging.getLogger(__name__)
 
-LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
+PLAN_DIR = Path(__file__).resolve().parent.parent / "plans"
 
 BATCH_SIZE = 20  # entities per LLM call
 
@@ -228,107 +228,127 @@ def _call_llm_batch(
 # ---------------------------------------------------------------------------
 
 
-def normalize_entities(driver: Driver) -> None:
-    """Normalize descriptions and fields for all entity types.
-
-    Queries Neo4j for entities with non-empty target fields, sends batches
-    to the LLM for normalization, and updates entities in place.
-    """
-    LOG_DIR.mkdir(exist_ok=True)
-
+def _normalize_entity_type(
+    driver: Driver,
+    entity_type: str,
+    fields: list[str],
+    instruction: str,
+) -> list[dict[str, Any]]:
+    """Normalize one entity type. Returns list of rewrite records."""
     client = get_llm_deterministic()
-    all_rewrites: list[dict[str, Any]] = []
 
-    for entity_type, target in NORMALIZATION_TARGETS.items():
-        fields: list[str] = target["fields"]
-        instruction: str = target["instruction"]
+    print(f"  Normalizing {entity_type} ({', '.join(fields)})...")
 
-        print(f"  Normalizing {entity_type} ({', '.join(fields)})...")
+    entities = _query_entities(driver, entity_type, fields)
+    if not entities:
+        print(f"    No {entity_type} entities to normalize.")
+        return []
 
-        # Query entities with non-empty target fields
-        entities = _query_entities(driver, entity_type, fields)
-        if not entities:
-            print(f"    No {entity_type} entities to normalize.")
+    print(f"    Found {len(entities)} entities")
+
+    batches = [
+        entities[i : i + BATCH_SIZE]
+        for i in range(0, len(entities), BATCH_SIZE)
+    ]
+
+    rewrites: list[dict[str, Any]] = []
+
+    for batch_num, batch in enumerate(batches, 1):
+        print(
+            f"    [{entity_type}] Batch {batch_num}/{len(batches)} "
+            f"({len(batch)} entities)..."
+        )
+
+        normalized = _call_llm_batch(batch, fields, instruction, client)
+        if normalized is None:
+            logger.error(
+                f"    Skipping batch {batch_num} for {entity_type} "
+                f"due to LLM error"
+            )
             continue
 
-        print(f"    Found {len(entities)} entities")
-
-        # Process in batches
-        batches = [
-            entities[i : i + BATCH_SIZE]
-            for i in range(0, len(entities), BATCH_SIZE)
-        ]
-
-        type_rewrite_count = 0
-
-        for batch_num, batch in enumerate(batches, 1):
-            print(
-                f"    Batch {batch_num}/{len(batches)} "
-                f"({len(batch)} entities)..."
-            )
-
-            normalized = _call_llm_batch(batch, fields, instruction, client)
-            if normalized is None:
-                logger.error(
-                    f"    Skipping batch {batch_num} for {entity_type} "
-                    f"due to LLM error"
+        for item in normalized:
+            index = item.get("index")
+            if not isinstance(index, int) or index < 1 or index > len(batch):
+                logger.warning(
+                    f"    Invalid index {index} in LLM response, skipping"
                 )
                 continue
 
-            # Process each normalized entity in the response
-            for item in normalized:
-                index = item.get("index")
-                if not isinstance(index, int) or index < 1 or index > len(batch):
-                    logger.warning(
-                        f"    Invalid index {index} in LLM response, skipping"
+            entity = batch[index - 1]
+            changed = item.get("changed", False)
+            new_fields = item.get("fields", {})
+
+            if not changed:
+                continue
+
+            for field in fields:
+                new_value = new_fields.get(field)
+                if new_value is None:
+                    continue
+
+                old_value = entity.get(field, "")
+
+                if str(new_value).strip() == str(old_value).strip():
+                    continue
+
+                try:
+                    _update_entity(
+                        driver, entity["element_id"], field, new_value
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"    Failed to update {entity_type} "
+                        f"'{entity['name']}' field '{field}': {e}"
                     )
                     continue
 
-                entity = batch[index - 1]
-                changed = item.get("changed", False)
-                new_fields = item.get("fields", {})
+                rewrites.append(
+                    {
+                        "entity_type": entity_type,
+                        "element_id": entity["element_id"],
+                        "name": entity["name"],
+                        "field": field,
+                        "before": old_value,
+                        "after": new_value,
+                    }
+                )
 
-                if not changed:
-                    continue
+    print(f"  {entity_type}: {len(rewrites)} fields rewritten")
+    return rewrites
 
-                # Update each changed field
-                for field in fields:
-                    new_value = new_fields.get(field)
-                    if new_value is None:
-                        continue
 
-                    old_value = entity.get(field, "")
+def normalize_entities(driver: Driver) -> None:
+    """Normalize descriptions and fields for all entity types in parallel.
 
-                    # Only update if the value actually differs
-                    if str(new_value).strip() == str(old_value).strip():
-                        continue
+    Each entity type runs in its own thread (LLM calls are I/O-bound).
+    Neo4j writes are safe because each type touches different nodes.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
-                    # Write to Neo4j
-                    try:
-                        _update_entity(
-                            driver, entity["element_id"], field, new_value
-                        )
-                    except Exception as e:
-                        logger.error(
-                            f"    Failed to update {entity_type} "
-                            f"'{entity['name']}' field '{field}': {e}"
-                        )
-                        continue
+    PLAN_DIR.mkdir(exist_ok=True)
 
-                    # Record the rewrite
-                    all_rewrites.append(
-                        {
-                            "entity_type": entity_type,
-                            "element_id": entity["element_id"],
-                            "name": entity["name"],
-                            "field": field,
-                            "before": old_value,
-                            "after": new_value,
-                        }
-                    )
-                    type_rewrite_count += 1
+    tasks = {
+        entity_type: target
+        for entity_type, target in NORMALIZATION_TARGETS.items()
+    }
 
-        print(f"    {type_rewrite_count} fields rewritten for {entity_type}")
+    all_rewrites: list[dict[str, Any]] = []
+
+    with ThreadPoolExecutor(max_workers=len(tasks)) as pool:
+        futures = {
+            pool.submit(
+                _normalize_entity_type,
+                driver,
+                entity_type,
+                target["fields"],
+                target["instruction"],
+            ): entity_type
+            for entity_type, target in tasks.items()
+        }
+        for future in as_completed(futures):
+            rewrites = future.result()
+            all_rewrites.extend(rewrites)
 
     # Write log file
     log_entry = {
@@ -336,7 +356,7 @@ def normalize_entities(driver: Driver) -> None:
         "rewrites": all_rewrites,
     }
     log_path = (
-        LOG_DIR
+        PLAN_DIR
         / f"cleanse_normalize_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     )
     log_path.write_text(json.dumps(log_entry, indent=2))

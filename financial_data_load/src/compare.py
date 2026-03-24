@@ -17,7 +17,7 @@ from pydantic import BaseModel
 
 from .models import GroundTruthResult
 
-LOG_DIR = Path(__file__).resolve().parent.parent / "logs"
+PLAN_DIR = Path(__file__).resolve().parent.parent / "plans"
 
 
 # ---------------------------------------------------------------------------
@@ -286,11 +286,11 @@ def summarize_plan(plan_path: Path) -> RunSummary:
 def compare_runs(plan_paths: list[Path] | None = None) -> Path:
     """Compare multiple merge plan runs. Returns path to comparison JSON."""
     if plan_paths is None:
-        plan_paths = sorted(LOG_DIR.glob("merge_plan_*.json"))
+        plan_paths = sorted(PLAN_DIR.glob("merge_plan_*.json"))
 
     if not plan_paths:
-        print("No merge plans found in logs/.")
-        return LOG_DIR / "comparison.json"
+        print("No merge plans found in plans/.")
+        return PLAN_DIR / "comparison.json"
 
     summaries = []
     for path in plan_paths:
@@ -301,7 +301,7 @@ def compare_runs(plan_paths: list[Path] | None = None) -> Path:
 
     if not summaries:
         print("No valid merge plans to compare.")
-        return LOG_DIR / "comparison.json"
+        return PLAN_DIR / "comparison.json"
 
     # Sort by overall score descending, then by timestamp
     summaries.sort(
@@ -318,7 +318,7 @@ def compare_runs(plan_paths: list[Path] | None = None) -> Path:
     )
 
     # Write comparison JSON
-    output_path = LOG_DIR / f"comparison_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    output_path = PLAN_DIR / f"comparison_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     output_path.write_text(comparison.model_dump_json(indent=2))
 
     # Print readable table

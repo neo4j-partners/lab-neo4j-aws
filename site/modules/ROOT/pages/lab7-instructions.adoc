@@ -4,10 +4,10 @@ TIP: For concepts and background, see xref:lab7.adoc[Lab 7: Neo4j MCP Agent].
 
 == What You'll Learn
 
-* What MCP is and how it connects AI agents to external data sources
-* How the Neo4j MCP Server exposes graph operations as discoverable tools
-* The schema-first approach: why the agent retrieves the graph schema before writing queries
-* Two agent framework implementations: LangGraph (complex workflows) and Strands (lightweight, AWS-native)
+* **Model Context Protocol**: How MCP connects AI agents to external data sources
+* **Neo4j MCP Server**: Graph operations exposed as discoverable agent tools
+* **Schema-First Queries**: Why the agent retrieves the graph schema before writing Cypher
+* **Two Frameworks**: LangGraph (complex workflows) and Strands (lightweight, AWS-native)
 
 == Prerequisites
 

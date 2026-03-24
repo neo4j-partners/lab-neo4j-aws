@@ -2,6 +2,12 @@
 
 Run three notebooks that search a Neo4j knowledge graph through the Model Context Protocol (MCP), progressing from vector search to graph-enriched retrieval to hybrid search.
 
+## What You'll Learn
+
+- **Vector Search via MCP**: Embed queries and execute semantic search through an MCP agent
+- **Graph-Enriched Retrieval**: Follow relationships from matched chunks to documents, companies, and risk factors
+- **Hybrid Search**: Combine fulltext keyword search with vector similarity using custom `@tool` wrappers
+
 ## Prerequisites
 
 Before starting this lab, make sure you have:

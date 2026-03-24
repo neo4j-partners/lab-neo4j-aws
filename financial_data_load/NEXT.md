@@ -1,23 +1,30 @@
 # Next Steps: Cleanse Pipeline
 
-## Workflow (after killing current run)
+## Run the full pipeline
 
 ```bash
-# 1. Validation only (fast, ~30-50 LLM calls)
-uv run python main.py cleanse --phase validate
-
-# 2. Dedup everything except RiskFactor, building on the validation plan
-uv run python main.py cleanse --phase dedup --base-plan logs/cleanse_plan_XXX.json --skip-labels RiskFactor
-
-# 3. Later, dedup just RiskFactor (after tuning threshold — current 0.6 generates 40k+ pairs)
-uv run python main.py cleanse --phase dedup --base-plan logs/cleanse_plan_YYY.json --only-labels RiskFactor
+cd financial_data_load
+./run_cleanse.sh
 ```
+
+## Resume from a specific step
+
+```bash
+./run_cleanse.sh 2    # start from dedup (skip validation)
+./run_cleanse.sh 3    # start from apply-cleanse (uses latest plan)
+./run_cleanse.sh 4    # just finalize
+```
+
+## What each step does
+
+1. **Validation** — parallel LLM validation across all entity types, removes non-entities
+2. **Dedup** — runs dedup sequentially across all entity types
+3. **Apply cleanse** — executes removals, merges, then normalization (parallel across entity types)
+4. **Finalize** — constraints, indexes, asset managers, verify
 
 ## Notes
 
-- Each step checkpoints after every completed label
-- `--base-plan` carries forward removals and dedup sections from a previous run
-- RiskFactor needs threshold tuned (0.85+) and/or batch_size increased before running
-- Remaining dedup labels after RiskFactor: FinancialMetric, Company
-- Company is fast (9 entities, proven prefix-0.3 config)
-- FinancialMetric at threshold 0.7 should be manageable
+- Each step checkpoints after every completed entity label
+- If a step fails, re-run from that step number — it picks up the latest plan from `plans/`
+- RiskFactor and FinancialMetric dedup thresholds are set to 0.85 to keep candidate pairs manageable
+- To review the plan before applying: `cat plans/cleanse_plan_*.json | python -m json.tool`

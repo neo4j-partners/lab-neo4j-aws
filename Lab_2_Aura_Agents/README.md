@@ -2,6 +2,14 @@
 
 In this lab, you will use Neo4j's "Create with AI" workflow to build a no-code agent that analyzes SEC 10-K filings.
 
+## What You'll Learn
+
+- **Create with AI**: Build a no-code agent by describing your use case to Neo4j
+- **Cypher Templates**: Controlled graph traversals for specific lookups and comparisons
+- **Similarity Search**: Semantic retrieval over embedded filing text using vector indexes
+- **Text2Cypher**: Natural language to Cypher translation for ad-hoc exploration
+- **Agent Testing**: Evaluate tool selection and response quality with sample questions
+
 ## Prerequisites
 
 - Completed **Lab 0** (AWS sign-in)

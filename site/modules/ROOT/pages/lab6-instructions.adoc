@@ -2,6 +2,15 @@
 
 TIP: For concepts and background, see xref:lab6.adoc[Lab 6: GraphRAG].
 
+== What You'll Learn
+
+* **Data Loading**: Build Document and Chunk nodes linked by graph relationships
+* **Embeddings**: Generate vector embeddings with Amazon Nova and create a vector index
+* **VectorRetriever**: Pure semantic similarity search over embedded chunks
+* **VectorCypherRetriever**: Vector search enriched with graph traversal to connected entities
+* **Fulltext Search**: Keyword-based search with fuzzy, wildcard, and boolean operators
+* **HybridRetriever**: Combined vector and fulltext search with tunable alpha parameter
+
 == Prerequisites
 
 * Completed **Lab 1** (Neo4j Aura instance created and running)

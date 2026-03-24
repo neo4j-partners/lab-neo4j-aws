@@ -4,12 +4,12 @@ This lab sets up your SageMaker development environment and walks through buildi
 
 ## What You'll Learn
 
-- How to configure and invoke Amazon Bedrock models from SageMaker notebooks
-- The basics of LangGraph agent architecture (nodes, edges, and state)
-- How to define tools that an LLM can call
-- The ReAct pattern: reasoning and acting in a loop
-- How to package and deploy an agent to AgentCore Runtime
-- How to invoke a deployed agent via CLI and boto3
+- **Amazon Bedrock**: Configure and invoke foundation models from SageMaker notebooks
+- **LangGraph Architecture**: Build agents with nodes, edges, and state
+- **Tool Definition**: Define Python functions that an LLM can call with the `@tool` decorator
+- **ReAct Pattern**: Reason, act, observe, and repeat in a loop
+- **AgentCore Deployment**: Package and deploy an agent to managed AWS runtime
+- **Agent Invocation**: Call a deployed agent via CLI and boto3
 
 ## SageMaker Studio Setup
 

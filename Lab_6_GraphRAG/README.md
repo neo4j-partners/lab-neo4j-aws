@@ -2,6 +2,15 @@
 
 Build a complete GraphRAG pipeline over SEC 10-K financial filing data using Neo4j and Amazon Bedrock. Six notebooks progress from data loading to hybrid retrieval.
 
+## What You'll Learn
+
+- **Data Loading**: Build Document and Chunk nodes linked by graph relationships
+- **Embeddings**: Generate vector embeddings with Amazon Nova and create a vector index
+- **VectorRetriever**: Pure semantic similarity search over embedded chunks
+- **VectorCypherRetriever**: Vector search enriched with graph traversal to connected entities
+- **Fulltext Search**: Keyword-based search with fuzzy, wildcard, and boolean operators
+- **HybridRetriever**: Combined vector and fulltext search with tunable alpha parameter
+
 ## Prerequisites
 
 Before starting this lab, make sure you have:

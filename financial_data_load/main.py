@@ -251,16 +251,12 @@ def cmd_cleanse(args):
     from src.cleanse import cleanse
 
     base_plan = Path(args.base_plan) if args.base_plan else None
-    skip_labels = args.skip_labels.split(",") if args.skip_labels else None
-    only_labels = args.only_labels.split(",") if args.only_labels else None
 
     with connect() as driver:
         cleanse(
             driver,
             phase=args.phase,
             base_plan=base_plan,
-            skip_labels=skip_labels,
-            only_labels=only_labels,
         )
 
 
@@ -630,12 +626,6 @@ def main():
     p_cleanse.add_argument(
         "--base-plan",
         help="Path to existing plan to build on (carries forward removals and dedup results)")
-    p_cleanse.add_argument(
-        "--skip-labels",
-        help="Comma-separated labels to skip during dedup (e.g. RiskFactor)")
-    p_cleanse.add_argument(
-        "--only-labels",
-        help="Comma-separated labels to dedup (e.g. RiskFactor,Company)")
     p_cleanse.set_defaults(func=cmd_cleanse)
 
     # apply-cleanse

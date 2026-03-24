@@ -83,7 +83,7 @@ uv run python main.py restore
 uv run python main.py cleanse
 
 # Review the plan (optional)
-cat logs/cleanse_plan_*.json
+cat plans/cleanse_plan_*.json
 
 # Apply plan: removals → merges → normalize
 uv run python main.py apply-cleanse
@@ -257,7 +257,8 @@ financial_data_load/
 │   └── form10k-sample/     # PDF files (8 companies)
 ├── backups/               # Full database backups (JSON, git-ignored)
 ├── snapshots/              # Entity snapshots (JSON, git-ignored)
-├── logs/                   # Cleanse plans, merge plans, normalization logs
+├── plans/                  # Cleanse plans, merge plans, normalization JSON
+├── logs/                   # Data load text logs
 ├── src/                    # Data loader modules
 │   ├── config.py           # Settings, Neo4j connection, Bedrock LLM/embedder factories
 │   ├── models.py           # Shared Pydantic models (entities, plans, decisions)

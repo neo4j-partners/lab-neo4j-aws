@@ -1,5 +1,7 @@
 # Neo4j and AWS Bedrock GraphRAG Workshop
 
+**[View the full workshop guide](https://neo4j-partners.github.io/lab-neo4j-aws)**
+
 A hands-on workshop teaching Graph Retrieval-Augmented Generation (GraphRAG) patterns using Neo4j Aura and Amazon Bedrock. You will build and query a knowledge graph of SEC 10-K financial filings, then connect AI agents that retrieve structured and unstructured data to answer questions about companies, risk factors, and institutional ownership.
 
 ## Workshop Structure

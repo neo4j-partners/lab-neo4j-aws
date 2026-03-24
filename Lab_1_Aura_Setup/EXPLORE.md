@@ -65,7 +65,7 @@ This creates the pattern: `Company — COMPETES_WITH → Company`
 
 The visualization shows which filing companies compete with which other companies. You'll see Microsoft with the most competitor edges, followed by NVIDIA and PG&E. The outer ring of smaller nodes are mentioned companies (Google, Oracle, Samsung, etc.) that appear in filings but aren't filing companies themselves.
 
-![Company Competes With](images/Company_Competes.png)
+
 
 ## Step 6: Apply Degree Centrality
 
@@ -73,7 +73,7 @@ The visualization shows which filing companies compete with which other companie
 
 With the competitive landscape still on the canvas, open the **Graph Data Science** panel by clicking the connected-nodes icon on the left toolbar.
 
-![Graph Data Science](images/gds_panel.png)
+![Company Competes With](images/Company_Competes.png)
 
 1. Click **+ Add**
 2. Select **Degree Centrality** from the Algorithm dropdown

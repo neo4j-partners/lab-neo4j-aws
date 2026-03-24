@@ -76,4 +76,4 @@ Labs 6 and 7 implement these same three retrieval patterns programmatically usin
 
 == Next Steps
 
-Continue to xref:lab2-instructions.adoc[Lab 2 Instructions] to create your Aura Agent, or proceed to xref:lab3.adoc[Lab 3: Intro to Bedrock and Agents] to begin the coding labs.
+Continue to xref:lab2-instructions.adoc[Lab 2 Instructions] to create your Aura Agent, or proceed to xref:lab3.adoc[Lab 3: Bedrock and Agents] to begin the coding labs.

@@ -47,6 +47,8 @@ The pipeline that builds the unstructured layer follows three stages:
 
 The structured and unstructured layers connect through the FILED relationship: a Company node links to the Document it filed via `(Company)-[:FILED]->(Document)`. This connection is what makes GraphRAG possible. Vector search finds a relevant Chunk, traversal follows FROM_DOCUMENT to the Document, then FILED to the Company, and from there to any structured relationship (OFFERS, FACES_RISK, OWNS). The unstructured text and the structured graph become one queryable system.
 
+image::graphrag-retrieval-flow.png[GraphRAG Retrieval Flow,700]
+
 .Entity extraction and resolution
 [%collapsible]
 ====
@@ -61,9 +63,7 @@ The workshop sidesteps extraction because the SEC dataset already provides clean
 
 The six notebooks form a single arc: create the graph, generate embeddings, then layer increasingly sophisticated retrieval strategies on top. Notebooks 01 and 02 build the data foundation. Notebooks 03 through 06 each demonstrate a different retriever that queries the same graph.
 
-----
-01 Data Loading → 02 Embeddings → 03 Vector → 04 Vector+Cypher → 05 Fulltext → 06 Hybrid
-----
+image::lab6-data-pipeline.png[Data Pipeline,700]
 
 By the end, you will have built four different retriever configurations and understand when each one applies.
 
@@ -78,6 +78,8 @@ Every notebook from 03 onward queries that same graph using a different retrieva
 **VectorRetriever** performs pure semantic similarity search. It finds chunks whose embeddings are closest to the query embedding. This retriever works best for open-ended questions where meaning matters more than exact wording, such as "What are the main risk factors?"
 
 **VectorCypherRetriever** adds a graph traversal step after vector search. It finds semantically similar chunks the same way VectorRetriever does, then executes a custom Cypher `retrieval_query` that traverses from each matched chunk to related entities in the graph. The chunk acts as an anchor: vector search determines relevance, then Cypher gathers the structured context around it. A typical traversal follows FROM_DOCUMENT to the source Document, then FILED back to the Company, and from there to OFFERS, FACES_RISK, or other relationships. The LLM receives both the chunk text and the connected entities. This retriever works best when the answer needs filing context alongside the text, such as "What risks does Apple face and what document are they from?"
+
+image::lab6-retriever-comparison.png[Retriever Comparison: VectorRetriever vs VectorCypherRetriever,700]
 
 .The chunk-as-anchor constraint
 [%collapsible]

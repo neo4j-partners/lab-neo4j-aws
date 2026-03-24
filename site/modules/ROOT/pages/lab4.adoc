@@ -11,6 +11,8 @@ TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions]
 * **Graph-enriched search** — follow relationships from matched chunks to connected entities like documents, companies, products, and risk factors
 * **Hybrid search** — combine keyword-based fulltext search with vector similarity for broader recall
 
+image::lab4-mcp-retrieval-architecture.png[MCP Retrieval Architecture,700]
+
 == What Is MCP Retrieval?
 
 Instead of connecting to Neo4j with a driver and using retriever classes directly, an AI agent uses MCP tools to execute Cypher queries against the database. The agent sends Cypher through an `execute-query` tool exposed by the Neo4j MCP Server. The server handles the connection, runs the query, and returns structured results that the agent can reason over.
@@ -30,6 +32,8 @@ Notebook 01 introduces the basic pattern. You embed a natural-language query usi
 === Graph-Enriched Search
 
 Notebook 02 extends vector search by adding graph traversal. After finding semantically similar chunks, the agent follows relationships to pull in document metadata, neighboring chunks (via NEXT_CHUNK), and connected entities — companies, products, and risk factors. This context enrichment gives the agent more information to work with when generating answers.
+
+image::lab4-graph-enriched-retrieval.png[Graph-Enriched Retrieval Flow,700]
 
 === Hybrid Search
 

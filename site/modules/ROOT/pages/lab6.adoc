@@ -20,10 +20,7 @@ The Model Context Protocol is an open standard that defines how AI agents discov
 
 MCP defines a three-component architecture:
 
-----
-AI Agent  <-->  MCP Server  <-->  Data Source
-(Client)       (Protocol)        (Neo4j, APIs, etc.)
-----
+image::lab7-mcp-agent-architecture.png[MCP Agent Architecture,700]
 
 **AI Agent (Client)**: The LLM-powered application that needs to access external data. It discovers available tools by asking the MCP server what operations are supported.
 

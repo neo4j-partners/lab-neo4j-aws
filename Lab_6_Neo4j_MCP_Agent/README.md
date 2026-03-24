@@ -1,4 +1,4 @@
-# Lab 7 - Neo4j MCP Agent
+# Lab 6 - Neo4j MCP Agent
 
 Connect AI agents to your Neo4j knowledge graph using the Model Context Protocol (MCP). Choose between LangGraph and Strands agent frameworks.
 
@@ -42,4 +42,4 @@ Once your agent is running, try these questions about the SEC financial data:
 
 ## Next Steps
 
-After completing this lab, continue to [Lab 8 - Aura Agents API](../Lab_8_Aura_Agents_API/) to interact with Neo4j Aura Agents through a REST API.
+Congratulations — you have completed all labs in the workshop!

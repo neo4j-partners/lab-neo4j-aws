@@ -47,17 +47,14 @@ Ensure the following fields are set in `CONFIG.txt` before distributing to parti
 
 | Field | Source | Required By |
 |-------|--------|-------------|
-| `NEO4J_URI` | Lab 1 — Aura instance creation | Labs 2, 6, 7, 8 |
-| `NEO4J_USERNAME` | Lab 1 — Aura instance creation | Labs 2, 6, 7, 8 |
-| `NEO4J_PASSWORD` | Lab 1 — Aura instance creation | Labs 2, 6, 7, 8 |
-| `MODEL_ID` | Pre-configured default | Labs 3, 4, 6, 7 |
-| `EMBEDDING_DIMENSIONS` | Pre-configured default (1024) | Labs 4, 6 |
-| `REGION` | Pre-configured default | Labs 3, 4, 6, 7 |
-| `MCP_GATEWAY_URL` | MCP server deployment | Labs 4, 7 |
-| `MCP_ACCESS_TOKEN` | MCP server deployment | Labs 4, 7 |
-| `NEO4J_CLIENT_ID` | Lab 8 — Aura Agent setup | Lab 8 |
-| `NEO4J_CLIENT_SECRET` | Lab 8 — Aura Agent setup | Lab 8 |
-| `NEO4J_AGENT_ENDPOINT` | Lab 8 — Aura Agent setup | Lab 8 |
+| `NEO4J_URI` | Lab 1 — Aura instance creation | Labs 2, 5, 6 |
+| `NEO4J_USERNAME` | Lab 1 — Aura instance creation | Labs 2, 5, 6 |
+| `NEO4J_PASSWORD` | Lab 1 — Aura instance creation | Labs 2, 5, 6 |
+| `MODEL_ID` | Pre-configured default | Labs 3, 4, 5, 6 |
+| `EMBEDDING_DIMENSIONS` | Pre-configured default (1024) | Labs 4, 5 |
+| `REGION` | Pre-configured default | Labs 3, 4, 5, 6 |
+| `MCP_GATEWAY_URL` | MCP server deployment | Labs 4, 6 |
+| `MCP_ACCESS_TOKEN` | MCP server deployment | Labs 4, 6 |
 
 ### 4. SageMaker Lifecycle Configuration (Optional)
 
@@ -102,7 +99,7 @@ uv run populate-financial-db samples     # Run sample Cypher queries
 
 ### solutions_bedrock — Validate GraphRAG Retrievers
 
-Runs a 6-phase validation of the Lab 6 GraphRAG pipeline: data loading, embeddings, vector retriever, vector-cypher retriever, fulltext search, and hybrid search.
+Runs a 6-phase validation of the Lab 5 GraphRAG pipeline: data loading, embeddings, vector retriever, vector-cypher retriever, fulltext search, and hybrid search.
 
 ```bash
 cd setup/solutions_bedrock

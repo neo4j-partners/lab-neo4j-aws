@@ -9,8 +9,8 @@ This is a hands-on workshop teaching GraphRAG (Graph Retrieval-Augmented Generat
 ## Workshop Structure
 
 - **Part 1 (Labs 0-2)**: No-code exploration using Neo4j Aura console and Aura Agents visual builder
-- **Part 2 (Labs 3-6)**: Python-based GraphRAG with Strands Agents SDK and neo4j-graphrag library
-- **Part 3 (Lab 7)**: MCP agents and Aura Agents API
+- **Part 2 (Labs 3-5)**: Python-based GraphRAG with Strands Agents SDK and neo4j-graphrag library
+- **Part 3 (Lab 6)**: MCP agents
 
 ## Key Configuration
 
@@ -33,20 +33,15 @@ Three notebooks using Strands Agents SDK with MCP to search a Neo4j knowledge gr
 
 Notebooks 01 and 03 use `lib/lab_4_data_utils.py` for Bedrock embeddings (lightweight — no neo4j dependency). Notebook 02 defines its own `get_embedding` inline. Notebooks 01 and 03 use `lib/mcp_utils.py` (`MCPConnection` wrapping a raw MCP `ClientSession`) for persistent connections needed by custom async `@tool` functions. Notebook 02 uses Strands `MCPClient` with `streamablehttp_client` transport in a context-manager-per-query pattern.
 
-### Lab 6 - GraphRAG
-Location: `Lab_6_GraphRAG/`
+### Lab 5 - GraphRAG
+Location: `Lab_5_GraphRAG/`
 
 Six notebooks covering data loading, embeddings, vector retrieval, graph-enhanced retrieval, full-text search, and hybrid search. Uses a forked neo4j-graphrag with Bedrock support (`neo4j-graphrag[bedrock]` from `neo4j-partners/neo4j-graphrag-python@bedrock-embeddings`).
 
-### Lab 7 - MCP Agent
-Location: `Lab_7_Neo4j_MCP_Agent/`
+### Lab 6 - MCP Agent
+Location: `Lab_6_Neo4j_MCP_Agent/`
 
 Two implementations (may be removed — largely redundant with Lab 4): one using LangGraph + langchain-mcp-adapters, one using Strands.
-
-### Lab 8 - Aura Agents API
-Location: `Lab_8_Aura_Agents_API/aura_agent_client.ipynb`
-
-Contains `AuraAgentClient` class for OAuth2 authentication (client credentials flow) and agent invocation against `api.neo4j.io`.
 
 ## Shared Utilities
 
@@ -78,4 +73,4 @@ The notebooks are designed for AWS SageMaker Studio but work locally with:
 
 ## Dependencies
 
-Lab 6 uses `pyproject.toml` at `Lab_6_GraphRAG/src/pyproject.toml`: Python 3.11+, neo4j-graphrag[bedrock] (from neo4j-partners fork), python-dotenv, pydantic-settings, nest-asyncio.
+Lab 5 uses `pyproject.toml` at `Lab_5_GraphRAG/src/pyproject.toml`: Python 3.11+, neo4j-graphrag[bedrock] (from neo4j-partners fork), python-dotenv, pydantic-settings, nest-asyncio.

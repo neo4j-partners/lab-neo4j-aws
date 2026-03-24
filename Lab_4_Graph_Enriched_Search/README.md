@@ -27,4 +27,4 @@ Before starting this lab, make sure you have:
 
 ## Next Steps
 
-After completing this lab, continue to [Lab 5](../Lab_6_GraphRAG/) for direct library-based retrieval using the neo4j-graphrag Python package.
+After completing this lab, continue to [Lab 5](../Lab_5_GraphRAG/) for direct library-based retrieval using the neo4j-graphrag Python package.

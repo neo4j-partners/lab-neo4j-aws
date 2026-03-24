@@ -66,9 +66,19 @@ class MCPConnection:
         tool_names = [t.name for t in tools_result.tools]
         print(f"MCP tools discovered: {tool_names}")
 
+        # Discover the read-cypher tool name (may be prefixed by gateway)
+        self._query_tool = next(
+            (n for n in tool_names if "read-cypher" in n),
+            next((n for n in tool_names if "execute-query" in n), None),
+        )
+        assert self._query_tool, (
+            f"No query tool found among: {tool_names}. "
+            "Expected a tool containing 'read-cypher' or 'execute-query'."
+        )
+
     async def execute_query(self, cypher: str) -> str:
-        """Execute a Cypher query via the MCP execute-query tool."""
-        result = await self._session.call_tool("execute-query", {"query": cypher})
+        """Execute a Cypher query via the MCP read-cypher tool."""
+        result = await self._session.call_tool(self._query_tool, {"query": cypher})
         if result.content:
             return result.content[0].text
         return ""

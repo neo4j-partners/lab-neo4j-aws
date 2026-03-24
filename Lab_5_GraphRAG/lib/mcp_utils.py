@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# COPIED from root lib/mcp_utils.py to simplify imports from Lab_6 notebooks.
+# COPIED from root lib/mcp_utils.py to simplify imports from Lab_5 notebooks.
 #
 # If you change this file, update the root lib/mcp_utils.py as well.
 # If you change the root lib/mcp_utils.py, update this file as well.

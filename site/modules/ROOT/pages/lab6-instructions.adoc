@@ -32,7 +32,7 @@ This lab provides two notebook options. Both connect to the same MCP server and 
 | Lightweight agent using the AWS-native Strands SDK. Fewer lines of code, built-in MCP support, simpler API.
 |===
 
-Open either notebook in the `Lab_7_Neo4j_MCP_Agent/` directory and follow the instructions within.
+Open either notebook in the `Lab_6_Neo4j_MCP_Agent/` directory and follow the instructions within.
 
 == Sample Queries
 

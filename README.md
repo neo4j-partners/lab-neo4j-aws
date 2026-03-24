@@ -14,25 +14,24 @@ A hands-on workshop teaching Graph Retrieval-Augmented Generation (GraphRAG) pat
 | [Lab 1](Lab_1_Aura_Setup/README.md) | Neo4j Aura Setup | Sign up for Neo4j Aura, load knowledge graph via Cypher, explore graph |
 | [Lab 2](Lab_2_Aura_Agents/README.md) | Aura Agents | Build a no-code AI agent using Neo4j Aura Agent platform |
 
-### Part 2: GraphRAG with Python (Labs 3-6)
+### Part 2: GraphRAG with Python (Labs 3-5)
 
 | Lab | Title | Description |
 |-----|-------|-------------|
 | [Lab 3](Lab_3_Intro_to_Bedrock_and_Agents/README.md) | Intro to Bedrock and Agents | SageMaker setup, LangGraph foundations, tool binding, ReAct pattern, AgentCore deployment |
 | [Lab 4](Lab_4_Graph_Enriched_Search/README.md) | Graph-Enriched Search | Vector, graph-enriched, and hybrid retrieval over a knowledge graph |
-| [Lab 6](Lab_6_GraphRAG/README.md) | GraphRAG | Six notebooks: data loading, embeddings, vector retrieval, vector-cypher retrieval, fulltext search, hybrid search |
+| [Lab 5](Lab_5_GraphRAG/README.md) | GraphRAG | Six notebooks: data loading, embeddings, vector retrieval, vector-cypher retrieval, fulltext search, hybrid search |
 
-### Part 3: Advanced Agents (Labs 7-8)
+### Part 3: Advanced Agents (Lab 6)
 
 | Lab | Title | Description |
 |-----|-------|-------------|
-| [Lab 7](Lab_7_Neo4j_MCP_Agent/README.md) | Neo4j MCP Agent | Connect AI agents to Neo4j via the Model Context Protocol (LangGraph and Strands implementations) |
-| [Lab 8](Lab_8_Aura_Agents_API/README.md) | Aura Agents API | Call the Lab 2 agent programmatically with OAuth2 authentication and async batch queries |
+| [Lab 6](Lab_6_Neo4j_MCP_Agent/README.md) | Neo4j MCP Agent | Connect AI agents to Neo4j via the Model Context Protocol (LangGraph and Strands implementations) |
 
 ## Prerequisites
 
 - AWS Account with Bedrock access (or workshop credentials via OneBlink)
-- Basic Python knowledge (for Labs 3-8)
+- Basic Python knowledge (for Labs 3-6)
 
 ## Quick Start
 

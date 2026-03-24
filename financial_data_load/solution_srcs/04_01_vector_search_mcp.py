@@ -93,6 +93,7 @@ async def run():
         return await mcp_conn.execute_query(f"""
             CALL db.index.vector.queryNodes('chunkEmbeddings', {top_k}, {json.dumps(embedding)})
             YIELD node, score
+            WITH node {{.*, embedding: null}} AS node, score
             RETURN node.text AS text, score
             ORDER BY score DESC
         """)

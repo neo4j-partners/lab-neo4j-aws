@@ -1,12 +1,12 @@
-= Lab 6 Instructions: Neo4j MCP Agent
+= Lab 6 Instructions: Advanced Agents
 
-TIP: For concepts and background, see xref:lab6.adoc[Lab 6: Neo4j MCP Agent].
+TIP: For concepts and background, see xref:lab6.adoc[Lab 6: Advanced Agents].
 
 == What You'll Learn
 
-* **Model Context Protocol**: How MCP connects AI agents to external data sources
-* **Neo4j MCP Server**: Graph operations exposed as discoverable agent tools
+* **Text2Cypher pattern**: How an LLM generates Cypher from a schema and a natural language question — compared to Lab 4's pre-written Cypher Templates
 * **Schema-First Queries**: Why the agent retrieves the graph schema before writing Cypher
+* **MCP Tool Discovery**: The agent discovers available tools automatically through the MCP protocol
 * **Two Frameworks**: LangGraph (complex workflows) and Strands (lightweight, AWS-native)
 
 == Prerequisites
@@ -32,7 +32,7 @@ This lab provides two notebook options. Both connect to the same MCP server and 
 | Lightweight agent using the AWS-native Strands SDK. Fewer lines of code, built-in MCP support, simpler API.
 |===
 
-Open either notebook in the `Lab_6_Neo4j_MCP_Agent/` directory and follow the instructions within.
+Open either notebook in the `Lab_6_Advanced_Agents/` directory and follow the instructions within.
 
 == Sample Queries
 
@@ -66,4 +66,4 @@ Once your agent is running, try these questions about the SEC financial data:
 
 == Next Steps
 
-Congratulations — you have completed the workshop! You've built GraphRAG pipelines from no-code tools through custom Python agents, and connected AI agents to Neo4j through the Model Context Protocol.
+Congratulations — you have completed the workshop! You've built GraphRAG pipelines from no-code tools through Cypher Templates and Graph-Enhanced Vector Search, and graduated to autonomous Text2Cypher agents that inspect schemas and write their own queries.

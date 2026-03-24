@@ -12,27 +12,25 @@ TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions]
 
 image::lab4-mcp-retrieval-architecture.png[Graph-Enriched Search Architecture,700]
 
-== Why Graph-Enriched Search?
+== From Filings to Searchable Knowledge
 
-A standard vector search returns isolated text passages ranked by similarity. That is useful, but it throws away the structured knowledge surrounding each passage. When your data lives in a knowledge graph, every chunk of text is connected to the entities it describes.
+Before diving into the retrieval strategies, here is how the data in this lab was prepared and why each step matters.
 
-Consider a query about supply chain risks. A vector search finds the most relevant chunk from a 10-K filing — a paragraph discussing logistics disruptions. Graph-enriched search returns that same chunk _plus_ the Company that filed it, the Products affected, other RiskFactors the company faces, and the Document the chunk came from. The agent receives structured context alongside the unstructured text, and can give a far richer answer.
+. **The raw data is SEC 10-K filings.** These are annual financial reports that public companies file with the Securities and Exchange Commission. A single filing can run tens of thousands of words covering business operations, risk factors, financial results, and more.
 
-This is what makes retrieval from a knowledge graph different. The graph turns text retrieval into knowledge retrieval.
+. **Filings are split into chunks.** A full filing is too long to search precisely, so each one is split into smaller passages called chunks. Each chunk becomes a node in the knowledge graph, linked to its source document and to adjacent chunks so the original reading order is preserved.
 
-== Chunks and Embeddings
+. **Each chunk is encoded as an embedding.** An embedding model reads the chunk's text and produces a numerical vector that captures what the text _means_, not just what words it contains. "Supply chain disruption" and "logistics bottleneck risk" produce similar vectors because they describe related concepts, even though they share no keywords.
 
-Before diving into the retrieval strategies, two concepts you will see throughout the notebooks.
+. **Vector search finds chunks by meaning.** Given a natural-language question, the system encodes it using the same embedding model and searches for stored chunk vectors whose meaning is closest. This is semantic similarity search: it matches on concepts rather than exact words.
 
-=== What Are Chunks?
+. **Vector search returns isolated passages.** The results are ranked text fragments with no surrounding context. You get the chunk text and a similarity score, but nothing about which company filed it, what products it mentions, or what risks it describes.
 
-SEC 10-K filings are long documents — too long to search as a single unit. Each filing is split into smaller passages called chunks. In the knowledge graph, each passage is a `Chunk` node linked to its source `Document` via a `FROM_DOCUMENT` relationship and to adjacent chunks via `NEXT_CHUNK`, preserving the original reading order. The chunking has already been done for you — the database is pre-loaded and ready to query.
+. **Graph-enriched search follows relationships to fill that gap.** The knowledge graph connects chunks to documents, companies, products, and risk factors through typed relationships. After vector search finds relevant chunks, graph traversal follows those relationships to pull in structured context. The result is not just "here's a matching passage" but "here's a matching passage from Apple's 2024 10-K, mentioning the iPhone, linked to a cybersecurity risk factor."
 
-=== What Are Embeddings?
+This lab starts with step 4 (vector search) and builds toward step 6 (graph-enriched search). The chunking, embedding, and graph construction have already been done for you.
 
-An embedding is a numerical vector that captures the meaning of a piece of text. An embedding model (Bedrock Nova in this workshop) reads a chunk and produces a 1024-dimensional vector. Chunks about similar topics produce similar vectors, so "supply chain disruption" and "logistics bottleneck risk" end up close together in vector space. These vectors are stored on `Chunk` nodes and indexed for fast approximate nearest-neighbor search via the `chunkEmbeddings` vector index.
-
-NOTE: The chunks, embeddings, and indexes were created by the workshop admin before the lab. You do not need to build the data pipeline yourself. xref:lab5.adoc[Lab 5] covers building it from scratch, including chunking trade-offs and embedding generation.
+NOTE: xref:lab5.adoc[Lab 5] covers building the data pipeline from scratch, including chunking trade-offs and embedding generation.
 
 == Three Retrieval Strategies
 
@@ -54,7 +52,7 @@ Notebook 03 introduces an alternative search method: fulltext keyword search usi
 
 == How the Agent Connects: MCP
 
-The agent communicates with Neo4j through MCP (Model Context Protocol), an open standard for agent-to-tool communication. The agent sends Cypher through an `execute-query` tool exposed by the Neo4j MCP Server. The server handles the connection, runs the query, and returns structured results. MCP is the transport layer for these queries, not the retrieval strategy itself. For a deeper look at MCP and building agents that write their own Cypher, see xref:lab6.adoc[Lab 6].
+The agent communicates with Neo4j through MCP (Model Context Protocol), an open standard for agent-to-tool communication. The agent sends Cypher through an `execute-query` tool exposed by the Neo4j MCP Server. The server handles the connection, runs the query, and returns structured results. MCP is the transport layer for these queries, not the retrieval strategy itself. For the Text2Cypher pattern — where the agent discovers the schema and writes its own Cypher — see xref:lab6.adoc[Lab 6].
 
 NOTE: This lab uses the https://github.com/neo4j/mcp[Neo4j MCP Server], an official MCP server that exposes a Neo4j database as a set of tools an agent can call — including `execute-query` for running Cypher, schema introspection, and index management. The server has been deployed to AgentCore using the https://github.com/neo4j-partners/aws-starter/tree/main/neo4j-agentcore-mcp-server[neo4j-agentcore-mcp-server starter] and connects to a database pre-loaded with Document and Chunk nodes, vector embeddings (`chunkEmbeddings` index), and fulltext indexes (`search_chunks`, `search_entities`). The workshop admin set this up before the workshop. You do not need to deploy the MCP server or create these data structures yourself — everything is ready to query.
 
@@ -107,4 +105,4 @@ This lab focuses on graph-enriched search: using an agent to execute retrieval q
 
 == Next Steps
 
-Continue to xref:lab4-instructions.adoc[Lab 4 Instructions] to work through the notebooks. After completing this lab, proceed to xref:lab5.adoc[Lab 5: GraphRAG] for direct library-based retrieval, or to xref:lab6.adoc[Lab 6: MCP Agent] to build full MCP agents.
+Continue to xref:lab4-instructions.adoc[Lab 4 Instructions] to work through the notebooks. After completing this lab, proceed to xref:lab5.adoc[Lab 5: GraphRAG] for direct library-based retrieval, or to xref:lab6.adoc[Lab 6: Advanced Agents] for the Text2Cypher pattern where agents write their own Cypher.

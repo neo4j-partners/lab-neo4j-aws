@@ -52,4 +52,4 @@ Open each notebook in order. Each one builds on the graph state left by the prev
 
 == Next Steps
 
-Continue to xref:lab6.adoc[Lab 6: MCP Agent] to build agents that use these retrieval patterns as tools.
+Continue to xref:lab6.adoc[Lab 6: Advanced Agents] to build autonomous agents that discover the graph schema and write their own Cypher queries.

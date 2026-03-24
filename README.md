@@ -26,7 +26,7 @@ A hands-on workshop teaching Graph Retrieval-Augmented Generation (GraphRAG) pat
 
 | Lab | Title | Description |
 |-----|-------|-------------|
-| [Lab 6](Lab_6_Neo4j_MCP_Agent/README.md) | Neo4j MCP Agent | Connect AI agents to Neo4j via the Model Context Protocol (LangGraph and Strands implementations) |
+| [Lab 6](Lab_6_Advanced_Agents/README.md) | Advanced Agents | Text2Cypher pattern: agents discover the graph schema via MCP and write their own Cypher queries (LangGraph and Strands implementations) |
 
 ## Prerequisites
 

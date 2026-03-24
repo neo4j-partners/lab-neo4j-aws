@@ -31,17 +31,17 @@ Three notebooks using Strands Agents SDK with MCP to search a Neo4j knowledge gr
 - `02_graph_enriched_search_mcp.ipynb`: Vector search with graph traversal for enriched context (document metadata, neighboring chunks, connected entities)
 - `03_fulltext_hybrid_search_mcp.ipynb`: Fulltext keyword search and agent-driven hybrid search with custom `@tool` wrappers
 
-Notebooks 01 and 03 use `lib/lab_4_data_utils.py` for Bedrock embeddings (lightweight — no neo4j dependency). Notebook 02 defines its own `get_embedding` inline. Notebooks 01 and 03 use `lib/mcp_utils.py` (`MCPConnection` wrapping a raw MCP `ClientSession`) for persistent connections needed by custom async `@tool` functions. Notebook 02 uses Strands `MCPClient` with `streamablehttp_client` transport in a context-manager-per-query pattern.
+All three notebooks use Strands `MCPClient` with `streamablehttp_client` transport. Notebooks 01 and 03 use `lib/lab_4_data_utils.py` for Bedrock embeddings (lightweight — no neo4j dependency) and `MCPClient.call_tool_sync()` inside `@tool` wrappers for direct Cypher execution. Notebook 02 defines its own `get_embedding` inline and uses `MCPClient` in a context-manager-per-query pattern where the agent calls MCP tools directly.
 
 ### Lab 5 - GraphRAG
 Location: `Lab_5_GraphRAG/`
 
 Six notebooks covering data loading, embeddings, vector retrieval, graph-enhanced retrieval, full-text search, and hybrid search. Uses a forked neo4j-graphrag with Bedrock support (`neo4j-graphrag[bedrock]` from `neo4j-partners/neo4j-graphrag-python@bedrock-embeddings`).
 
-### Lab 6 - MCP Agent
-Location: `Lab_6_Neo4j_MCP_Agent/`
+### Lab 6 - Advanced Agents
+Location: `Lab_6_Advanced_Agents/`
 
-Two implementations (may be removed — largely redundant with Lab 4): one using LangGraph + langchain-mcp-adapters, one using Strands.
+Text2Cypher pattern: the agent discovers the graph schema via MCP and writes its own Cypher from scratch. Distinct from Lab 4's Cypher Templates pattern where queries are pre-written. Two framework implementations: LangGraph + langchain-mcp-adapters, and Strands.
 
 ## Shared Utilities
 
@@ -49,7 +49,7 @@ Two implementations (may be removed — largely redundant with Lab 4): one using
 
 `lib/mcp_utils.py`: `MCPConnection` — wraps raw MCP `ClientSession` over Streamable HTTP for persistent connections and `execute_query(cypher)`. Loads config from `CONFIG.txt` by default.
 
-`Lab_4_Graph_Enriched_Search/lib/lab_4_data_utils.py`: Lightweight `BedrockConfig` and `get_embedding()` only — no neo4j or neo4j-graphrag dependency. Used by Lab 4 notebooks.
+`Lab_4_Graph_Enriched_Search/lib/lab_4_data_utils.py`: Lightweight `BedrockConfig` and `get_embedding()` only — no neo4j or neo4j-graphrag dependency. Used by Lab 4 notebooks. Lab 4 no longer has its own `mcp_utils.py` — all MCP access uses Strands `MCPClient` directly.
 
 `financial_data_load/lib/`: Local copies of `data_utils.py` and `mcp_utils.py` that load from `financial_data_load/.env` instead of the project-root `CONFIG.txt`. These are copied from the root `lib/` to simplify env loading for the test harness. If either copy is changed, the other must be updated to match.
 

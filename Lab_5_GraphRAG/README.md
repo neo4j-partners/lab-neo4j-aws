@@ -32,4 +32,4 @@ Before starting this lab, make sure you have:
 
 ## Next Steps
 
-After completing this lab, continue to [Lab 6](../Lab_6_Neo4j_MCP_Agent/) to build MCP agents that use these retrieval patterns as tools.
+After completing this lab, continue to [Lab 6](../Lab_6_Advanced_Agents/) to build autonomous agents that discover the graph schema and write their own Cypher queries.

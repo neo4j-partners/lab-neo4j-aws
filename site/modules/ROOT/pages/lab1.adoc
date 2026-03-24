@@ -111,7 +111,7 @@ Neo4j Aura is a fully managed cloud graph database service. It provides the Neo4
 .Vector search, Graph Data Science, and AI capabilities
 [%collapsible]
 ====
-Aura provides capabilities beyond the core graph engine that support AI retrieval pipelines. Built-in vector indexes store embeddings alongside graph data, enabling semantic similarity search without a separate vector store. Cypher queries can combine vector search with graph traversal in a single operation. Graph Data Science algorithms like PageRank and community detection run directly within Aura. These capabilities come together in Lab 5 (GraphRAG retrieval) and Lab 6 (MCP agents).
+Aura provides capabilities beyond the core graph engine that support AI retrieval pipelines. Built-in vector indexes store embeddings alongside graph data, enabling semantic similarity search without a separate vector store. Cypher queries can combine vector search with graph traversal in a single operation. Graph Data Science algorithms like PageRank and community detection run directly within Aura. These capabilities come together in Lab 5 (GraphRAG retrieval) and Lab 6 (advanced agents with Text2Cypher).
 ====
 
 .Aura Agents — no-code agent platform

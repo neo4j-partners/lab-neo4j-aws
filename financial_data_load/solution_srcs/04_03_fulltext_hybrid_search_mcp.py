@@ -197,6 +197,7 @@ async def main():
             CALL db.index.vector.queryNodes('chunkEmbeddings', {top_k}, {json.dumps(embedding)})
             YIELD node, score
             MATCH (node)-[:FROM_DOCUMENT]->(doc:Document)
+            WITH node {{.*, embedding: null}} AS node, score, doc
             RETURN node.text AS text, score, doc.name AS document
             ORDER BY score DESC
         """)

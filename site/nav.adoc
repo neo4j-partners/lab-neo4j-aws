@@ -19,6 +19,6 @@
 ** xref:lab5.adoc[Lab 5: GraphRAG]
 *** xref:lab5-instructions.adoc[Instructions]
 * Part 3: Advanced Agents
-** xref:lab6.adoc[Lab 6: MCP Agent]
+** xref:lab6.adoc[Lab 6: Advanced Agents]
 *** xref:lab6-instructions.adoc[Instructions]
 * xref:admin-setup.adoc[Admin Setup]

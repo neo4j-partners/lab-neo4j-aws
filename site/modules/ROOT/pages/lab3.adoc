@@ -90,7 +90,7 @@ The agent reasons that it needs NVIDIA's risk factors first and calls a graph qu
 Each cycle follows the same pattern: reason about what information is missing, act by calling a tool, observe the result. The number of cycles depends on the question's complexity, not on a predetermined plan.
 ====
 
-This loop is the foundation for every agent in the workshop. Labs 4 and 5 add retrieval tools (vector search, graph traversal). Lab 6 connects tools through the Model Context Protocol. The orchestration pattern stays the same.
+This loop is the foundation for every agent in the workshop. Labs 4 and 5 add retrieval tools (vector search, graph traversal). Lab 6 gives the agent full autonomy to discover the graph schema and write its own Cypher through MCP. The orchestration pattern stays the same.
 
 == AgentCore Deployment
 

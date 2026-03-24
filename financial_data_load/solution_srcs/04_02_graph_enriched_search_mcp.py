@@ -72,6 +72,7 @@ When given a query embedding, use this Cypher to find similar chunks:
 
 CALL db.index.vector.queryNodes('chunkEmbeddings', $top_k, $embedding)
 YIELD node, score
+WITH node {.*, embedding: null} AS node, score
 RETURN node.text AS text, score
 ORDER BY score DESC
 
@@ -89,6 +90,7 @@ OPTIONAL MATCH (prev:Chunk)-[:NEXT_CHUNK]->(node)
 WITH node, doc, score,
      CASE WHEN prev IS NOT NULL THEN prev.text ELSE '' END AS prev_text,
      CASE WHEN next IS NOT NULL THEN next.text ELSE '' END AS next_text
+WITH node {.*, embedding: null} AS node, doc, score, prev_text, next_text
 RETURN node.text AS text,
        score,
        doc.name AS document,
@@ -123,6 +125,7 @@ WITH node, doc, score,
 OPTIONAL MATCH (product:Product)-[:FROM_CHUNK]->(node)
 WITH node, doc, score, companies, risks,
      collect(DISTINCT product.name)[0..5] AS products
+WITH node {.*, embedding: null} AS node, doc, score, companies, risks, products
 RETURN node.text AS text,
        score,
        doc.name AS document,
@@ -158,6 +161,7 @@ WITH node, doc, score,
 OPTIONAL MATCH (product:Product)-[:FROM_CHUNK]->(node)
 WITH node, doc, score, companies, risks,
      collect(DISTINCT product.name)[0..5] AS products
+WITH node {.*, embedding: null} AS node, doc, score, companies, risks, products
 RETURN node.text AS text, score, doc.name AS document,
        companies, risks, products
 ORDER BY score DESC

@@ -472,9 +472,9 @@ def cmd_samples(args):
 # Module prefixes align with workshop labs:
 #   01_xx = Lab 8 (Building a Knowledge Graph)
 #   02_xx = Lab 10 (Advanced Retrievers)
-#   03_xx = Lab 6 + Lab 9 (Foundry Agents + Advanced Agents)
+#   03_xx = Lab 5 + Lab 9 (GraphRAG + Advanced Agents)
 #   05_xx = Lab 11 (Hybrid Search)
-#   06_xx = Lab 7 (Context Providers)
+#   06_xx = Lab 6 (Advanced Agents)
 #   07_xx = Lab 8 (Agent Memory)
 SOLUTIONS = [
     ("solution_srcs.01_01_data_loading", "Data Loading Fundamentals", False, "main"),

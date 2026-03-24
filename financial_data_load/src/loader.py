@@ -160,6 +160,55 @@ def link_to_existing_graph(driver: Driver) -> None:
     if result[0]["count"]:
         print(f"  [OK] {result[0]['count']} additional FILED (CIK fallback)")
 
+    # Reconstruct entity-company relationships from the chunk provenance path.
+    # SimpleKGPipeline reliably creates Entity -[:FROM_CHUNK]-> Chunk and
+    # Chunk -[:FROM_DOCUMENT]-> Document, but often misses the schema
+    # relationships (HAS_EXECUTIVE, OFFERS, etc.) that connect entities to
+    # their filing company. We reconstruct them here.
+    _reconstruct_entity_relationships(driver)
+
+
+def _reconstruct_entity_relationships(driver: Driver) -> None:
+    """Create missing entity-company relationships via chunk provenance.
+
+    Path: Entity -[:FROM_CHUNK]-> Chunk -[:FROM_DOCUMENT]-> Document
+    Then match Company by Document.name and MERGE the schema relationship.
+    """
+    entity_rels = [
+        ("Executive", "HAS_EXECUTIVE"),
+        ("Product", "OFFERS"),
+        ("RiskFactor", "FACES_RISK"),
+        ("FinancialMetric", "REPORTS"),
+    ]
+
+    for label, rel_type in entity_rels:
+        result, _, _ = driver.execute_query(
+            f"MATCH (e:{label})-[:FROM_CHUNK]->(ch:Chunk)-[:FROM_DOCUMENT]->(d:Document) "
+            f"WHERE d.name IS NOT NULL "
+            f"MATCH (c:Company {{name: d.name}}) "
+            f"WHERE NOT (c)-[:{rel_type}]->(e) "
+            f"MERGE (c)-[:{rel_type}]->(e) "
+            f"RETURN count(*) AS created"
+        )
+        created = result[0]["created"]
+        if created:
+            print(f"  [OK] {rel_type}: {created} relationships reconstructed")
+
+    # COMPETES_WITH: Company nodes extracted from another company's filing
+    # are competitors of the filing company.
+    result, _, _ = driver.execute_query(
+        "MATCH (competitor:Company)-[:FROM_CHUNK]->(ch:Chunk)"
+        "-[:FROM_DOCUMENT]->(d:Document) "
+        "WHERE d.name IS NOT NULL AND competitor.name <> d.name "
+        "MATCH (filing_company:Company {name: d.name}) "
+        "WHERE NOT (filing_company)-[:COMPETES_WITH]->(competitor) "
+        "MERGE (filing_company)-[:COMPETES_WITH]->(competitor) "
+        "RETURN count(*) AS created"
+    )
+    created = result[0]["created"]
+    if created:
+        print(f"  [OK] COMPETES_WITH: {created} relationships reconstructed")
+
 
 # ---------------------------------------------------------------------------
 # Clear and verify

@@ -19,7 +19,7 @@ MCP_GATEWAY_URL=your-gateway-url-here
 MCP_ACCESS_TOKEN=your-access-token-here
 
 # =============================================================================
-# ADVANCED LABS - The settings below do not need to be modified until noted
+# ADVANCED LABS - The settings below do not need to be modified
 # =============================================================================
 
 

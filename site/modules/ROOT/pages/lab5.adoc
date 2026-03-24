@@ -149,6 +149,8 @@ retriever.search(query, alpha=0.5)
 
 Start with `alpha=0.5` for a balanced blend, then adjust based on your query patterns. Push toward `1.0` when queries are conversational and toward `0.0` when queries contain specific identifiers like tickers or filing numbers.
 
+TIP: After completing the Lab 5 notebooks, try the xref:lab5-sample-queries.adoc[Advanced Sample Queries] to explore fulltext search, vector similarity, and graph-enriched retrieval patterns against your data.
+
 == From First Principles to Library
 
 Lab 4 and Lab 5 query the same underlying Neo4j indexes and graph structure. The difference is in how the search is executed — and what each approach teaches you.

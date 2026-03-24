@@ -18,7 +18,7 @@ from pathlib import Path
 from dotenv import dotenv_values
 from neo4j import Driver, GraphDatabase
 
-ENV_FILE = Path(__file__).resolve().parent.parent / "financial_data_load" / ".env"
+ENV_FILE = Path(__file__).resolve().parent / ".env"
 
 
 def get_driver() -> Driver:
@@ -130,32 +130,59 @@ ORDER BY holdings DESC LIMIT 5
             pass_condition=lambda rows: len(rows) > 0,
         ))
 
-        # Query 5: Who does Microsoft compete with?
+        # Query 5: Competitive Landscape — NVIDIA
         results.append(run_query(
             driver,
-            "Who does Microsoft compete with?",
+            "Who does NVIDIA compete with, and do any also partner?",
             """
-MATCH (c:Company {ticker: 'MSFT'})-[:COMPETES_WITH]->(comp)
-RETURN comp.name ORDER BY comp.name
+MATCH (c:Company {ticker: 'NVDA'})-[:COMPETES_WITH]->(comp)
+RETURN comp.name,
+       EXISTS { (c)-[:PARTNERS_WITH]->(comp) } AS alsoPartner
+ORDER BY comp.name
             """,
             pass_condition=lambda rows: len(rows) > 0,
         ))
 
-        # Query 6: Which risk factors expose an asset manager's portfolio?
+        # Query 6: Portfolio Exposure — BlackRock
         results.append(run_query(
             driver,
-            "Which risk factors expose an asset manager's portfolio across multiple companies?",
+            "Which risk factors expose BlackRock's portfolio across multiple companies?",
             """
-MATCH (am:AssetManager)-[:OWNS]->(c:Company)-[:FACES_RISK]->(r:RiskFactor)
-WITH am, r, count(DISTINCT c) AS exposed
-WHERE exposed > 1
-RETURN am.name, r.name, exposed
-ORDER BY exposed DESC, am.name LIMIT 5
+MATCH (am:AssetManager {name: 'BlackRock'})-[:OWNS]->(c:Company)-[:FACES_RISK]->(r:RiskFactor)
+WITH am, r, collect(DISTINCT c.name) AS exposedCompanies, count(DISTINCT c) AS cnt
+RETURN r.name AS riskFactor, exposedCompanies, cnt
+ORDER BY cnt DESC LIMIT 10
             """,
             pass_condition=lambda rows: len(rows) > 0,
         ))
 
-        # Query 7: Who are NVIDIA's supply chain partners?
+        # Query 7: Cross-Entity Analysis — Cybersecurity risks and owners
+        results.append(run_query(
+            driver,
+            "Which companies face cybersecurity risks and who owns them?",
+            """
+MATCH (c:Company)-[:FACES_RISK]->(r:RiskFactor), (am:AssetManager)-[:OWNS]->(c)
+WHERE r.name CONTAINS 'Cybersecurity'
+WITH c, r, collect(am.name) AS owners
+RETURN c.name, c.ticker, r.name AS risk, owners
+ORDER BY c.name
+            """,
+            pass_condition=lambda rows: len(rows) > 0,
+        ))
+
+        # Query 8: Company FILED Document link
+        results.append(run_query(
+            driver,
+            "Which companies have filed documents?",
+            """
+MATCH (c:Company)-[:FILED]->(d:Document)
+RETURN c.name, c.ticker, d.source
+ORDER BY c.name
+            """,
+            pass_condition=lambda rows: len(rows) > 0,
+        ))
+
+        # Query 9: Who are NVIDIA's supply chain partners?
         # NOTE: PARTNERS_WITH edges are hardcoded in company_partners.csv,
         # not in the live database. This query only returns results after
         # loading the seed CSVs into a fresh Aura instance.

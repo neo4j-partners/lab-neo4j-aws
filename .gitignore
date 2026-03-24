@@ -38,6 +38,7 @@ env/
 .env.local
 .env.*.local
 !.env.sample
+!.env.example
 
 # Jupyter Notebooks
 .ipynb_checkpoints/

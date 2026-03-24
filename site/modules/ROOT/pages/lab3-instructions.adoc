@@ -27,7 +27,7 @@ TIP: For concepts and background, see xref:lab3.adoc[Lab 3: Bedrock and Agents].
 2. In the search bar at the top, type `SageMaker`
 3. Select **Amazon SageMaker AI** from the results
 
-IMPORTANT: Select **Amazon SageMaker AI**, not "Amazon SageMaker" — they are different services.
+IMPORTANT: Select **Amazon SageMaker AI**, not "Amazon SageMaker." They are different services.
 
 image::lab3-navigate-sagemaker.png[Navigate to SageMaker AI]
 

@@ -15,7 +15,7 @@ TIP: Ready to start? Jump to the xref:lab2-instructions.adoc[Lab 2 Instructions]
 
 Aura Agents is Neo4j's no-code platform for building conversational AI interfaces grounded in graph data. Rather than writing retrieval logic by hand, you describe a use case in natural language and the platform generates an agent with tools tailored to your graph's schema. The agent then uses those tools to answer questions by combining graph traversals and dynamically generated Cypher queries.
 
-The "Create with AI" workflow inspects the node labels, relationship types, and indexes in your knowledge graph and produces a fully configured agent. For the SEC financial dataset, this means the agent automatically understands how to look up company details, traverse ownership chains, compare risk factors, and search filing text — all without manual configuration.
+The "Create with AI" workflow inspects the node labels, relationship types, and indexes in your knowledge graph and produces a fully configured agent. For the SEC financial dataset, this means the agent automatically understands how to look up company details, traverse ownership chains, compare risk factors, and search filing text, all without manual configuration.
 
 == Two Retrieval Patterns
 
@@ -23,17 +23,17 @@ The generated agent uses two categories of tools, each suited to different quest
 
 === Cypher Templates
 
-Cypher Templates are pre-built graph traversal patterns mapped to specific questions. Each template targets a known pattern in the graph — company details, risk factors, ownership relationships — and executes a precise, deterministic Cypher query. Because the query structure is fixed, results are predictable and fast.
+Cypher Templates are pre-built graph traversal patterns mapped to specific questions. Each template targets a known pattern in the graph (company details, risk factors, ownership relationships) and executes a precise, deterministic Cypher query. Because the query structure is fixed, results are predictable and fast.
 
 .Example
 [%collapsible]
 ====
-"What products does NVIDIA Corporation offer?" triggers a template that traverses `(Company)-[:OFFERS]->(Product)` and returns the product list. No query generation is needed — the template maps directly to the graph pattern.
+"What products does NVIDIA Corporation offer?" triggers a template that traverses `(Company)-[:OFFERS]->(Product)` and returns the product list. No query generation is needed. The template maps directly to the graph pattern.
 ====
 
 === Text2Cypher
 
-Text2Cypher translates arbitrary natural language questions into Cypher queries at runtime. This is the most flexible retrieval pattern — it can answer questions the template authors did not anticipate — but it is also the least deterministic, since the generated query depends on the LLM's interpretation.
+Text2Cypher translates arbitrary natural language questions into Cypher queries at runtime. This is the most flexible retrieval pattern, able to answer questions the template authors did not anticipate, but it is also the least deterministic, since the generated query depends on the LLM's interpretation.
 
 .Example
 [%collapsible]
@@ -72,7 +72,7 @@ This is why both tool types exist rather than just Text2Cypher. Templates cover 
 
 == Connection to Later Labs
 
-Labs 5 and 6 implement these retrieval patterns — and more, including vector similarity search — programmatically using Python and the neo4j-graphrag library. The no-code agent you build here provides a reference point: when you write graph-enriched retrieval and text-to-Cypher pipelines in code, you will already understand how each pattern behaves and what kinds of questions it handles well.
+Labs 5 and 6 implement these retrieval patterns, including vector similarity search, programmatically using Python and the neo4j-graphrag library. The no-code agent you build here provides a reference point: when you write graph-enriched retrieval and text-to-Cypher pipelines in code, you will already understand how each pattern behaves and what kinds of questions it handles well.
 
 == Next Steps
 

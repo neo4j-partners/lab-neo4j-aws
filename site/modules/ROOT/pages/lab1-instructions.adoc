@@ -70,7 +70,7 @@ image::lab1-configure-instance.png[Configure Instance]
 
 == Save Your Credentials
 
-IMPORTANT: After clicking Create, a credentials dialog appears with your Connection URI, Username, and Password. **Save this information immediately** — the password will not be shown again.
+IMPORTANT: After clicking Create, a credentials dialog appears with your Connection URI, Username, and Password. **Save this information immediately.** The password will not be shown again.
 
 image::lab1-save-credentials.png[Save Credentials]
 

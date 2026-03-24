@@ -74,7 +74,7 @@ image::lab1-apply-centrality.png[Apply Centrality]
 
 == Size Nodes Based on Scores
 
-After the algorithm completes, click **Size nodes based on scores** to visually represent centrality — nodes with more connections appear larger.
+After the algorithm completes, click **Size nodes based on scores** to visually represent centrality. Nodes with more connections appear larger.
 
 image::lab1-size-nodes.png[Size Nodes]
 

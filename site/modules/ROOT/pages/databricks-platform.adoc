@@ -16,6 +16,33 @@ Most real-world problems have both: numbers that need crunching and relationship
 
 The rule of thumb: if you're counting things, stay in SQL. If you're following connections, move to the graph. If you need both, route to specialized agents.
 
+image::dual-database-architecture.png[Dual Database Architecture,align=center]
+
+The diagram shows how the SEC 10-K financial data splits across both platforms. Databricks holds the `companies` table (the shared entity) and `daily_prices` — roughly 25,200 rows of daily OHLCV data partitioned by ticker, rolled up into weekly and monthly aggregations. Neo4j holds the knowledge graph: Company, Product, RiskFactor, and AssetManager nodes connected by OFFERS, FACES_RISK, COMPETES_WITH, PARTNERS_WITH, and OWNS relationships, plus Document and Chunk nodes for GraphRAG retrieval over the 10-K filings.
+
+Company (identified by ticker) is the join point between both platforms. The Spark Connector syncs governed Delta tables to graph nodes.
+
+.Databricks SQL — price volatility by company
+[source,sql]
+----
+SELECT c.ticker, AVG(p.close) AS avg_close,
+       STDDEV(p.close) AS volatility
+FROM daily_prices p
+  JOIN companies c ON p.ticker = c.ticker
+GROUP BY c.ticker ORDER BY volatility DESC
+----
+
+.Neo4j Cypher — shared risk factors across companies
+[source,cypher]
+----
+MATCH (c:Company)-[:FACES_RISK]->(r:RiskFactor)
+      <-[:FACES_RISK]-(other:Company)
+WHERE c.name = 'Apple Inc'
+RETURN other.name, r.name, r.category
+----
+
+A dual-database query combines both: _"Which companies saw >10% price drops this quarter?"_ routes to Databricks SQL, then _"What risk factors and competitive relationships connect them?"_ routes to Neo4j Cypher. A supervisor agent coordinates both and synthesizes the answer.
+
 == Lakehouse Architecture
 
 The lakehouse combines the scalability of data lakes with the governance of data warehouses through Delta Lake, an open storage layer that provides ACID transactions, schema enforcement, and time travel on top of cloud object storage (S3, ADLS Gen2, GCS).

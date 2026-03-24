@@ -4,7 +4,9 @@ A GraphRAG architecture needs more than a graph database and a model API. It nee
 
 .**At a Glance**
 
+* **Complementary Intelligence** — Databricks handles aggregations and metrics while Neo4j handles connections and traversals, with agents routing between both
 * **Lakehouse Architecture** — Delta Lake with ACID transactions, schema enforcement, and time travel, organized through the medallion pattern (bronze, silver, gold)
+* **Neo4j Spark Connector** — Databricks-certified connector for bulk data movement between governed Delta tables and the knowledge graph
 * **Unity Catalog** — unified governance across all data and AI assets, including federated JDBC access to Neo4j
 * **Mosaic AI and Agent Bricks** — agent development, serving, and orchestration with built-in Genie for natural language SQL
 
@@ -16,7 +18,31 @@ Most real-world problems have both: numbers that need crunching and relationship
 
 The rule of thumb: if you're counting things, stay in SQL. If you're following connections, move to the graph. If you need both, route to specialized agents.
 
-=== Dual Database Architecture
+== Lakehouse Architecture
+
+The lakehouse combines the scalability of data lakes with the governance of data warehouses through Delta Lake, an open storage layer that provides ACID transactions, schema enforcement, and time travel on top of cloud object storage (S3, ADLS Gen2, GCS).
+
+=== The Medallion Pattern
+
+Data moves through three progressive refinement layers:
+
+**Bronze** is the raw landing zone. Files arrive from cloud storage with no transformation. This is the system of record for what was ingested and when.
+
+**Silver** is the curation layer. Schema enforcement catches malformed records, column renaming normalizes naming conventions, and type casting ensures consistency. Silver tables are governed and ready for downstream consumers, including the Neo4j Spark Connector. This is where graph-bound data gets its last quality check before projection.
+
+**Gold** is where all intelligence converges. Graph algorithm results (cycle detection scores, PageRank, community assignments) write back from Neo4j as columns in gold tables. These join with operational data that never left the lakehouse to produce business-ready outputs: fraud alerts, risk scores, ML feature tables. Data flows forward through the layers; graph insights flow back.
+
+=== Delta Lake
+
+Delta Lake is the storage foundation. ACID transactions ensure that concurrent reads and writes never produce corrupted state. Schema enforcement rejects records that don't match the expected structure at ingestion time, catching data quality issues before they propagate downstream. Time travel provides versioned access to previous states, so a bad pipeline run can be rolled back to the last known good version rather than re-ingested from scratch.
+
+Delta tables serve as the interchange format between Databricks and Neo4j. The Spark Connector reads from governed silver tables and writes graph algorithm results back to gold tables. The quality guarantees that Delta provides upstream mean the graph receives clean, typed data without requiring additional transformation at load time.
+
+== Connecting Databricks to Neo4j with the Spark Connector
+
+The Neo4j Spark Connector is the officially supported, Databricks-certified bridge for bulk data movement. It reads governed silver Delta tables and writes them as graph nodes and relationships. The transformation follows a consistent pattern: table rows become nodes with column values as properties, foreign keys become relationships, mapping tables dissolve into relationships with properties, and shared attribute values (like an SSN appearing on multiple accounts) become shared nodes that make hidden connections explicit. The connector also reads from Neo4j back into DataFrames, enabling validation (node counts should match source row counts) and bidirectional data flow.
+
+== Dual Database Architecture
 
 image::dual-database-architecture.png[Dual Database Architecture,align=center]
 
@@ -45,59 +71,9 @@ RETURN other.name, r.name, r.category
 
 A dual-database query combines both: _"Which companies saw >10% price drops this quarter?"_ routes to Databricks SQL, then _"What risk factors and competitive relationships connect them?"_ routes to Neo4j Cypher. A supervisor agent coordinates both and synthesizes the answer.
 
-== Lakehouse Architecture
+== Other Ways of Connecting Neo4j
 
-The lakehouse combines the scalability of data lakes with the governance of data warehouses through Delta Lake, an open storage layer that provides ACID transactions, schema enforcement, and time travel on top of cloud object storage (S3, ADLS Gen2, GCS).
-
-=== The Medallion Pattern
-
-Data moves through three progressive refinement layers:
-
-**Bronze** is the raw landing zone. Files arrive from cloud storage with no transformation. This is the system of record for what was ingested and when.
-
-**Silver** is the curation layer. Schema enforcement catches malformed records, column renaming normalizes naming conventions, and type casting ensures consistency. Silver tables are governed and ready for downstream consumers, including the Neo4j Spark Connector. This is where graph-bound data gets its last quality check before projection.
-
-**Gold** is where all intelligence converges. Graph algorithm results (cycle detection scores, PageRank, community assignments) write back from Neo4j as columns in gold tables. These join with operational data that never left the lakehouse to produce business-ready outputs: fraud alerts, risk scores, ML feature tables. Data flows forward through the layers; graph insights flow back.
-
-=== Delta Lake
-
-Delta Lake is the storage foundation. ACID transactions ensure that concurrent reads and writes never produce corrupted state. Schema enforcement rejects records that don't match the expected structure at ingestion time, catching data quality issues before they propagate downstream. Time travel provides versioned access to previous states, so a bad pipeline run can be rolled back to the last known good version rather than re-ingested from scratch.
-
-Delta tables serve as the interchange format between Databricks and Neo4j. The Spark Connector reads from governed silver tables and writes graph algorithm results back to gold tables. The quality guarantees that Delta provides upstream mean the graph receives clean, typed data without requiring additional transformation at load time.
-
-== Unity Catalog
-
-Unity Catalog provides unified governance across all data and AI assets in the lakehouse. It manages access controls, tracks lineage, and enforces policies across managed tables, external tables, views, models, and functions. For the GraphRAG architecture, Unity Catalog plays two specific roles.
-
-**Governance of graph-bound data.** The silver tables that feed the Neo4j Spark Connector are governed assets with lineage tracking. When graph data quality issues surface, lineage traces back through the exact transformations and source records that produced the data.
-
-**Federated access to Neo4j.** Neo4j can be registered as a JDBC connection in Unity Catalog using the Neo4j JDBC driver. The driver translates SQL into Cypher automatically, so users and BI tools write SQL against what appears to be another catalog, and Neo4j executes the equivalent graph query. This enables federated queries that combine graph relationships and lakehouse metrics in a single SQL statement, governed under the same access controls as everything else. Graph data can also be materialized as Delta tables for use in dashboards and Genie spaces.
-
-== Mosaic AI and Agent Systems
-
-Databricks provides a complete agent development and serving stack through Mosaic AI, from foundation model access to multi-agent orchestration.
-
-=== Foundation Models
-
-Mosaic AI provides access to foundation models for embedding generation, reasoning, and tool use. In the GraphRAG architecture, these models serve the same function as Amazon Bedrock: converting text to embeddings for vector search and providing the reasoning layer that agents use to select tools and synthesize answers. The choice of model provider depends on deployment context; the architecture supports both.
-
-=== Genie
-
-Genie is a compound AI system that translates natural language into governed SQL. It queries any data registered in Unity Catalog: managed tables, external tables, federated sources, and materialized views. Domain experts configure Genie Spaces with curated table sets, join definitions, plain-text instructions teaching domain terminology, and example SQL queries. When a generated query matches a verified example, Genie marks it as "Trusted" so users know the answer came from a validated path. All generated queries are read-only.
-
-Genie handles the tabular half of a multi-agent architecture. Questions about aggregations, trends, and metrics route to Genie, which generates SQL against the lakehouse. Questions about relationships and graph traversal route to a Neo4j agent that generates Cypher. A supervisor coordinates both.
-
-=== Agent Bricks
-
-Agent Bricks is the control plane for deploying and orchestrating agents. Agents package with MLflow, register in Unity Catalog, and deploy to Model Serving endpoints that scale automatically. The supervisor agent pattern, where a coordinator routes questions to specialized sub-agents, is configurable through the workspace UI without custom orchestration code. Built-in tracing and feedback collection through the Review App support production monitoring.
-
-== Connecting Databricks to Neo4j
-
-Four integration stages connect the platforms, each using the connector pattern best suited to its workload.
-
-=== Data Pipeline: Spark Connector
-
-The Neo4j Spark Connector is the officially supported, Databricks-certified bridge for bulk data movement. It reads governed silver Delta tables and writes them as graph nodes and relationships. The transformation follows a consistent pattern: table rows become nodes with column values as properties, foreign keys become relationships, mapping tables dissolve into relationships with properties, and shared attribute values (like an SSN appearing on multiple accounts) become shared nodes that make hidden connections explicit. The connector also reads from Neo4j back into DataFrames, enabling validation (node counts should match source row counts) and bidirectional data flow.
+Beyond the Spark Connector, three additional integration patterns connect the platforms, each suited to a different workload.
 
 === Knowledge Graph Construction
 
@@ -129,7 +105,7 @@ Databricks                     Neo4j                        Agents
                                 question type)
 ----
 
-== Neo4j Connection Patterns by Stage
+=== Neo4j Connection Patterns by Stage
 
 [cols="1,2,2"]
 |===
@@ -151,6 +127,32 @@ Databricks                     Neo4j                        Agents
 | Neo4j MCP Server + Python driver
 | Schema discovery, Cypher execution, vector search, agent tool access
 |===
+
+== Unity Catalog
+
+Unity Catalog provides unified governance across all data and AI assets in the lakehouse. It manages access controls, tracks lineage, and enforces policies across managed tables, external tables, views, models, and functions. For the GraphRAG architecture, Unity Catalog plays two specific roles.
+
+**Governance of graph-bound data.** The silver tables that feed the Neo4j Spark Connector are governed assets with lineage tracking. When graph data quality issues surface, lineage traces back through the exact transformations and source records that produced the data.
+
+**Federated access to Neo4j.** Neo4j can be registered as a JDBC connection in Unity Catalog using the Neo4j JDBC driver. The driver translates SQL into Cypher automatically, so users and BI tools write SQL against what appears to be another catalog, and Neo4j executes the equivalent graph query. This enables federated queries that combine graph relationships and lakehouse metrics in a single SQL statement, governed under the same access controls as everything else. Graph data can also be materialized as Delta tables for use in dashboards and Genie spaces.
+
+== Mosaic AI and Agent Systems
+
+Databricks provides a complete agent development and serving stack through Mosaic AI, from foundation model access to multi-agent orchestration.
+
+=== Foundation Models
+
+Mosaic AI provides access to foundation models for embedding generation, reasoning, and tool use. In the GraphRAG architecture, these models serve the same function as Amazon Bedrock: converting text to embeddings for vector search and providing the reasoning layer that agents use to select tools and synthesize answers. The choice of model provider depends on deployment context; the architecture supports both.
+
+=== Genie
+
+Genie is a compound AI system that translates natural language into governed SQL. It queries any data registered in Unity Catalog: managed tables, external tables, federated sources, and materialized views. Domain experts configure Genie Spaces with curated table sets, join definitions, plain-text instructions teaching domain terminology, and example SQL queries. When a generated query matches a verified example, Genie marks it as "Trusted" so users know the answer came from a validated path. All generated queries are read-only.
+
+Genie handles the tabular half of a multi-agent architecture. Questions about aggregations, trends, and metrics route to Genie, which generates SQL against the lakehouse. Questions about relationships and graph traversal route to a Neo4j agent that generates Cypher. A supervisor coordinates both.
+
+=== Agent Bricks
+
+Agent Bricks is the control plane for deploying and orchestrating agents. Agents package with MLflow, register in Unity Catalog, and deploy to Model Serving endpoints that scale automatically. The supervisor agent pattern, where a coordinator routes questions to specialized sub-agents, is configurable through the workspace UI without custom orchestration code. Built-in tracing and feedback collection through the Review App support production monitoring.
 
 == Learn More
 

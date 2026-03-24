@@ -1,6 +1,6 @@
 # SEC 10-K Financial Data Architecture
 
-This document describes the graph data model used for the SEC 10-K financial filing workshop. The data is extracted from real SEC 10-K filings by the `financial_data_load/` pipeline using LLM-powered entity extraction, then exported and filtered to the 9 primary filing companies and their directly-connected entities.
+This document describes the graph data model used for the SEC 10-K financial filing workshop. The data is extracted from real SEC 10-K filings by the `financial_data_load/` pipeline using LLM-powered entity extraction, then exported and filtered to the 6 primary filing companies and their directly-connected entities.
 
 ## Graph Schema
 
@@ -37,7 +37,6 @@ The `FILED` relationship bridges these layers, connecting each Company to the Do
 | `HAS_EXECUTIVE` | Company | Executive | Company has this executive |
 | `REPORTS` | Company | FinancialMetric | Company reports this metric |
 | `COMPETES_WITH` | Company | Company | Competitive relationship |
-| `PARTNERS_WITH` | Company | Company | Partnership relationship |
 | `OWNS` | AssetManager | Company | Asset manager holds shares |
 
 ### Schema Diagram
@@ -52,7 +51,6 @@ The `FILED` relationship bridges these layers, connecting each Company to the Do
 (:Company)       -[:HAS_EXECUTIVE]->(:Executive)
 (:Company)       -[:REPORTS]->      (:FinancialMetric)
 (:Company)       -[:COMPETES_WITH]->(:Company)
-(:Company)       -[:PARTNERS_WITH]->(:Company)
 
                               Cross-Link (FILED)
                               ==================
@@ -79,19 +77,16 @@ This deterministic path connects every chunk to the company that filed its sourc
 
 ## Filing Companies
 
-The dataset contains 9 companies that filed SEC 10-K reports:
+The dataset contains 6 companies that filed SEC 10-K reports:
 
 | ID | Name | Ticker | Sector |
 |----|------|--------|--------|
 | C001 | Amazon.com, Inc. | AMZN | Consumer Discretionary |
-| C002 | American International Group, Inc. | AIG | Financial Services |
-| C003 | Apple Inc. | AAPL | Technology |
-| C004 | Intel Corporation | INTC | Technology |
-| C005 | McDonald's Corporation | MCD | Consumer Discretionary |
-| C006 | Microsoft Corporation | MSFT | Technology |
-| C007 | NVIDIA Corporation | NVDA | Technology |
-| C008 | PG&E Corporation | PCG | Utilities |
-| C009 | PayPal Holdings, Inc. | PYPL | Financial Services |
+| C002 | Apple Inc. | AAPL | Technology |
+| C003 | Microsoft Corporation | MSFT | Technology |
+| C004 | NVIDIA Corporation | NVDA | Technology |
+| C005 | PG&E Corporation | PCG | Utilities |
+| C006 | PayPal Holdings, Inc. | PYPL | Financial Services |
 
 ## Key Traversal Patterns
 
@@ -135,7 +130,7 @@ Analyze an asset manager's holdings.
 
 ```cypher
 MATCH (am:AssetManager)-[o:OWNS]->(c:Company)
-WHERE am.name CONTAINS 'BlackRock'
+WHERE am.managerName CONTAINS 'BlackRock'
 RETURN c.name, c.ticker, o.shares
 ORDER BY o.shares DESC
 ```
@@ -147,7 +142,7 @@ Determine aggregate risk exposure across an asset manager's portfolio.
 ```cypher
 MATCH (am:AssetManager)-[:OWNS]->(c:Company)-[:FACES_RISK]->(r:RiskFactor)
 WITH am, r, count(DISTINCT c) AS companies_exposed
-RETURN am.name, r.name, companies_exposed
+RETURN am.managerName, r.name, companies_exposed
 ORDER BY companies_exposed DESC
 ```
 
@@ -160,16 +155,7 @@ MATCH (c:Company {ticker: 'MSFT'})-[:COMPETES_WITH]->(competitor:Company)
 RETURN competitor.name
 ```
 
-### 7. Partner Network
-
-Explore partnership relationships.
-
-```cypher
-MATCH (c:Company {ticker: 'NVDA'})-[:PARTNERS_WITH]->(partner:Company)
-RETURN partner.name
-```
-
-### 8. Document-Chunk Provenance
+### 7. Document-Chunk Provenance
 
 Trace from a company to its filing documents and chunks.
 
@@ -182,7 +168,7 @@ ORDER BY chunk.index
 
 ## Data Provenance
 
-The entity and relationship data was extracted from SEC 10-K filings using the `financial_data_load/` pipeline with `neo4j-graphrag`'s `SimpleKGPipeline`. The pipeline processes PDF filings through LLM-powered extraction, entity resolution, and graph construction. The CSVs in this directory were exported from the resulting graph, filtered to the 9 primary filing companies and their directly-connected entities.
+The entity and relationship data was extracted from SEC 10-K filings using the `financial_data_load/` pipeline with `neo4j-graphrag`'s `SimpleKGPipeline`. The pipeline processes PDF filings through LLM-powered extraction, entity resolution, and graph construction. The CSVs in this directory were exported from the resulting graph, filtered to the 6 primary filing companies and their directly-connected entities.
 
 The `FILED` relationship is created by the `link_to_existing_graph()` function in `financial_data_load/src/loader.py`, which matches Company nodes to Document nodes by normalized company name (with CIK fallback).
 

@@ -1,46 +1,105 @@
 """
 Data Loading Fundamentals
 
-This solution demonstrates basic data loading into Neo4j,
-creating Document and Chunk nodes with relationships.
+This solution demonstrates building a two-layer knowledge graph in Neo4j,
+creating structured entity nodes (Company, Product, RiskFactor) and
+unstructured document chunks with cross-link relationships.
 
 Run with: uv run python main.py solutions 1
 """
 
 from config import get_neo4j_driver
 
-# Sample text representing SEC 10-K filing content
-SAMPLE_TEXT = """
-Apple Inc. ("Apple" or the "Company") designs, manufactures and markets smartphones,
-personal computers, tablets, wearables and accessories, and sells a variety of related
-services. The Company's fiscal year is the 52- or 53-week period that ends on the last
-Saturday of September.
-
-Products
-
-iPhone is the Company's line of smartphones based on its iOS operating system. The iPhone
-product line includes iPhone 14 Pro, iPhone 14, iPhone 13 and iPhone SE. Mac is the Company's
-line of personal computers based on its macOS operating system. iPad is the Company's line
-of multi-purpose tablets based on its iPadOS operating system.
-
-Services
-
-Advertising includes third-party licensing arrangements and the Company's own advertising
-platforms. AppleCare offers a portfolio of fee-based service and support products. Cloud
-Services store and keep customers' content up-to-date across all devices. Digital Content
-operates various platforms for discovering, purchasing, streaming and downloading digital
-content and apps. Payment Services include Apple Card and Apple Pay.
-""".strip()
-
-DOCUMENT_PATH = "form10k-sample/apple-2023-10k.pdf"
-DOCUMENT_PAGE = 1
+# Structured filing data matching Lab_5_GraphRAG/financial_data.json
+FILING_DATA = {
+    "company": {
+        "name": "Apple Inc.",
+        "ticker": "AAPL",
+        "cik": "320193",
+    },
+    "document": {
+        "name": "Apple Inc 10-K 2024",
+        "source": "SEC EDGAR",
+    },
+    "products": [
+        {"name": "iPhone", "description": "Line of smartphones based on iOS operating system"},
+        {"name": "Mac", "description": "Line of personal computers based on macOS operating system"},
+        {"name": "iPad", "description": "Line of multi-purpose tablets based on iPadOS operating system"},
+        {"name": "Apple Watch", "description": "Wearable smartwatch device"},
+        {"name": "AirPods", "description": "Wireless earbuds and headphones"},
+        {"name": "Apple TV", "description": "Digital media player and streaming device"},
+        {"name": "HomePod", "description": "Smart speaker"},
+        {"name": "App Store", "description": "Digital distribution platform for apps"},
+        {"name": "Apple Music", "description": "Music streaming subscription service"},
+        {"name": "Apple TV+", "description": "Video streaming subscription service"},
+        {"name": "AppleCare", "description": "Fee-based service and support products"},
+        {"name": "Apple Pay", "description": "Mobile and digital payment service"},
+    ],
+    "risk_factors": [
+        {"name": "Macroeconomic and Industry Risks", "description": "Risks from global market conditions including inflation, interest rate changes and currency fluctuations that could materially affect revenue and profitability"},
+        {"name": "Supply Chain Risk", "description": "Supply chain disruptions from geopolitical tensions, natural disasters or public health emergencies that could impact manufacturing and delivery of products"},
+        {"name": "Competitive Market", "description": "Intensely competitive markets with pricing pressure from competitors across all product categories"},
+        {"name": "Customer Demand and Spending", "description": "Changes in consumer demand, economic conditions or buying patterns that could reduce sales volumes"},
+        {"name": "Intellectual Property Risks", "description": "Unauthorized use or infringement of the Company's intellectual property that could harm competitive position"},
+    ],
+    "filing_text": (
+        'Apple Inc. (\u201cApple\u201d or the \u201cCompany\u201d) designs, manufactures and markets smartphones, '
+        "personal computers, tablets, wearables and accessories, and sells a variety of related "
+        "services. The Company\u2019s fiscal year is the 52- or 53-week period that ends on the last "
+        "Saturday of September. The Company is a California corporation established in 1977.\n"
+        "\n"
+        "Products\n"
+        "\n"
+        "iPhone is the Company\u2019s line of smartphones based on its iOS operating system. The iPhone "
+        "product line includes iPhone 16 Pro, iPhone 16, iPhone 15 and iPhone SE. Mac is the "
+        "Company\u2019s line of personal computers based on its macOS operating system, including "
+        "MacBook Air, MacBook Pro, iMac, Mac mini, Mac Studio and Mac Pro. iPad is the Company\u2019s "
+        "line of multi-purpose tablets based on its iPadOS operating system, including iPad Pro, "
+        "iPad Air, iPad and iPad mini. Wearables, Home and Accessories includes Apple Watch, "
+        "AirPods, Apple TV, HomePod and Beats products, as well as Apple-branded and third-party "
+        "accessories.\n"
+        "\n"
+        "Services\n"
+        "\n"
+        "The Company\u2019s services segment includes advertising, AppleCare, cloud services, digital "
+        "content and payment services. Advertising includes third-party licensing arrangements and "
+        "the Company\u2019s own advertising platforms. AppleCare offers a portfolio of fee-based service "
+        "and support products. Cloud Services store and keep customers\u2019 content up-to-date and "
+        "available across multiple Apple devices. Digital Content operates various platforms, "
+        "including the App Store, Apple Arcade, Apple Fitness+, Apple Music, Apple News+, Apple TV+ "
+        "and Apple Books. Payment Services include Apple Card, Apple Cash and Apple Pay.\n"
+        "\n"
+        "Risk Factors\n"
+        "\n"
+        "The Company faces significant risks from global market conditions including inflation, "
+        "interest rate changes and currency fluctuations that could materially affect revenue and "
+        "profitability. Supply chain disruptions from geopolitical tensions, natural disasters or "
+        "public health emergencies could impact the Company\u2019s ability to manufacture and deliver "
+        "products. The Company operates in intensely competitive markets and faces pricing pressure "
+        "from competitors across all product categories. Changes in consumer demand, economic "
+        "conditions or buying patterns could reduce sales volumes. The Company\u2019s intellectual "
+        "property is critical to its business and unauthorized use or infringement could harm "
+        "competitive position.\n"
+        "\n"
+        "Financial Performance\n"
+        "\n"
+        "Total net revenue for fiscal year 2024 was $391.0 billion, compared to $383.3 billion in "
+        "fiscal year 2023, an increase of 2%. iPhone revenue was $201.2 billion, representing 51% "
+        "of total revenue. Services revenue reached $96.2 billion, growing 13% year-over-year and "
+        "representing the fastest-growing segment. The Company\u2019s gross margin was 46.2%, up from "
+        "44.1% in the prior year. Net income was $93.7 billion with diluted earnings per share of "
+        "$6.08. The Company returned over $110 billion to shareholders through dividends and share "
+        "repurchases during fiscal year 2024. Cash and cash equivalents totaled $29.9 billion at "
+        "year end."
+    ),
+}
 
 
 def clear_graph(driver) -> int:
-    """Remove all Document and Chunk nodes."""
+    """Remove all nodes."""
     with driver.session() as session:
         result = session.run("""
-            MATCH (n) WHERE n:Document OR n:Chunk
+            MATCH (n)
             DETACH DELETE n
             RETURN count(n) as deleted
         """)
@@ -52,13 +111,51 @@ def split_into_chunks(text: str) -> list[str]:
     return [chunk.strip() for chunk in text.split("\n\n") if chunk.strip()]
 
 
-def create_document(driver, path: str, page: int) -> str:
-    """Create a Document node and return its element ID."""
+def create_company(driver, company: dict) -> str:
+    """Create a Company node and return its element ID."""
     with driver.session() as session:
         result = session.run("""
-            CREATE (d:Document {path: $path, page: $page})
-            RETURN elementId(d) as doc_id
-        """, path=path, page=page)
+            MERGE (c:Company {name: $name})
+            SET c.ticker = $ticker, c.cik = $cik
+            RETURN elementId(c) AS company_id
+        """, name=company["name"], ticker=company["ticker"], cik=company["cik"])
+        return result.single()["company_id"]
+
+
+def create_products(driver, company_id: str, products: list[dict]) -> None:
+    """Create Product nodes and OFFERS relationships from Company."""
+    with driver.session() as session:
+        session.run("""
+            MATCH (c:Company) WHERE elementId(c) = $company_id
+            UNWIND $products AS prod
+            MERGE (p:Product {name: prod.name})
+            SET p.description = prod.description
+            MERGE (c)-[:OFFERS]->(p)
+        """, company_id=company_id, products=products)
+
+
+def create_risk_factors(driver, company_id: str, risk_factors: list[dict]) -> None:
+    """Create RiskFactor nodes and FACES_RISK relationships from Company."""
+    with driver.session() as session:
+        session.run("""
+            MATCH (c:Company) WHERE elementId(c) = $company_id
+            UNWIND $risks AS risk
+            MERGE (r:RiskFactor {name: risk.name})
+            SET r.description = risk.description
+            MERGE (c)-[:FACES_RISK]->(r)
+        """, company_id=company_id, risks=risk_factors)
+
+
+def create_document(driver, company_id: str, document: dict) -> str:
+    """Create a Document node and FILED relationship from Company."""
+    with driver.session() as session:
+        result = session.run("""
+            MATCH (c:Company) WHERE elementId(c) = $company_id
+            MERGE (d:Document {name: $name})
+            SET d.source = $source
+            MERGE (c)-[:FILED]->(d)
+            RETURN elementId(d) AS doc_id
+        """, company_id=company_id, name=document["name"], source=document["source"])
         return result.single()["doc_id"]
 
 
@@ -89,33 +186,80 @@ def link_chunks(driver, chunk_ids: list[str]) -> int:
     return len(chunk_ids) - 1
 
 
-def show_graph_structure(driver) -> None:
-    """Display the Document-Chunk graph structure."""
+def link_products_to_chunks(driver, products: list[dict]) -> int:
+    """Create FROM_CHUNK relationships from Products to Chunks that mention them."""
+    total = 0
     with driver.session() as session:
-        result = session.run("""
-            MATCH (d:Document)
-            OPTIONAL MATCH (d)<-[:FROM_DOCUMENT]-(c:Chunk)
-            WITH d, count(c) as chunks
-            RETURN d.path as document, d.page as page, chunks
-        """)
-        print("\n=== Graph Structure ===")
-        for record in result:
-            print(f"Document: {record['document']} (page {record['page']})")
-            print(f"  Chunks: {record['chunks']}")
+        for product in products:
+            result = session.run("""
+                MATCH (p:Product {name: $name})
+                MATCH (c:Chunk)
+                WHERE c.text CONTAINS $name
+                MERGE (p)-[:FROM_CHUNK]->(c)
+                RETURN count(*) AS linked
+            """, name=product["name"])
+            count = result.single()["linked"]
+            if count > 0:
+                total += count
+    return total
 
+
+def show_graph_structure(driver) -> None:
+    """Display the full graph structure."""
+    with driver.session() as session:
+        # Node counts
+        result = session.run("""
+            MATCH (n)
+            WITH labels(n)[0] AS label, n
+            WHERE label IS NOT NULL
+            RETURN label, count(n) AS count
+            ORDER BY label
+        """)
+        print("\n=== Node Counts ===")
+        for record in result:
+            print(f"  {record['label']}: {record['count']}")
+
+        # Relationship counts
+        result = session.run("""
+            MATCH ()-[r]->()
+            RETURN type(r) AS type, count(r) AS count
+            ORDER BY type
+        """)
+        print("\n=== Relationship Counts ===")
+        for record in result:
+            print(f"  {record['type']}: {record['count']}")
+
+        # Structured layer
+        result = session.run("""
+            MATCH (c:Company)
+            OPTIONAL MATCH (c)-[:OFFERS]->(p:Product)
+            OPTIONAL MATCH (c)-[:FACES_RISK]->(r:RiskFactor)
+            OPTIONAL MATCH (c)-[:FILED]->(d:Document)
+            RETURN c.name AS company, c.ticker AS ticker,
+                   count(DISTINCT p) AS products,
+                   count(DISTINCT r) AS risks,
+                   count(DISTINCT d) AS documents
+        """)
+        print("\n=== Structured Layer ===")
+        for record in result:
+            print(f"  {record['company']} ({record['ticker']})")
+            print(f"    Products: {record['products']}, Risk Factors: {record['risks']}, Documents: {record['documents']}")
+
+        # Chunk chain
         result = session.run("""
             MATCH (c:Chunk)
             OPTIONAL MATCH (c)-[:NEXT_CHUNK]->(next:Chunk)
-            WHERE c.index IS NOT NULL
-            RETURN c.index as idx,
-                   c.text as text,
-                   next.index as next_idx
+            OPTIONAL MATCH (p:Product)-[:FROM_CHUNK]->(c)
+            RETURN c.index AS idx, next.index AS next_idx,
+                   left(c.text, 60) AS preview,
+                   collect(DISTINCT p.name) AS products
             ORDER BY c.index
         """)
         print("\n=== Chunk Chain ===")
         for record in result:
             next_str = f" -> Chunk {record['next_idx']}" if record['next_idx'] is not None else " (end)"
-            print(f"Chunk {record['idx']}: \"{record['text']}\"{next_str}")
+            products_str = f" [Products: {', '.join(record['products'])}]" if record['products'] else ""
+            print(f"  Chunk {record['idx']}: \"{record['preview']}...\"{next_str}{products_str}")
 
 
 def main():
@@ -128,21 +272,36 @@ def main():
         deleted = clear_graph(driver)
         print(f"Deleted {deleted} existing nodes")
 
-        # Split text into chunks
-        chunks = split_into_chunks(SAMPLE_TEXT)
-        print(f"\nSplit text into {len(chunks)} chunks")
+        # Create structured layer
+        company_id = create_company(driver, FILING_DATA["company"])
+        print(f"\nCreated Company: {FILING_DATA['company']['name']} ({FILING_DATA['company']['ticker']})")
 
-        # Create document
-        doc_id = create_document(driver, DOCUMENT_PATH, DOCUMENT_PAGE)
-        print(f"Created Document node")
+        create_products(driver, company_id, FILING_DATA["products"])
+        print(f"Created {len(FILING_DATA['products'])} Product nodes with OFFERS relationships")
+
+        create_risk_factors(driver, company_id, FILING_DATA["risk_factors"])
+        print(f"Created {len(FILING_DATA['risk_factors'])} RiskFactor nodes with FACES_RISK relationships")
+
+        # Create document and FILED relationship
+        doc_id = create_document(driver, company_id, FILING_DATA["document"])
+        print(f"Created Document: {FILING_DATA['document']['name']}")
+        print(f"Created FILED relationship: {FILING_DATA['company']['name']} -> {FILING_DATA['document']['name']}")
+
+        # Split text into chunks
+        chunks = split_into_chunks(FILING_DATA["filing_text"])
+        print(f"\nSplit text into {len(chunks)} chunks")
 
         # Create chunks
         chunk_ids = create_chunks(driver, doc_id, chunks)
-        print(f"Created {len(chunk_ids)} Chunk nodes")
+        print(f"Created {len(chunk_ids)} Chunk nodes with FROM_DOCUMENT relationships")
 
         # Link chunks
         links = link_chunks(driver, chunk_ids)
         print(f"Created {links} NEXT_CHUNK relationships")
+
+        # Link products to chunks
+        from_chunk_count = link_products_to_chunks(driver, FILING_DATA["products"])
+        print(f"Created {from_chunk_count} FROM_CHUNK relationships")
 
         # Show structure
         show_graph_structure(driver)

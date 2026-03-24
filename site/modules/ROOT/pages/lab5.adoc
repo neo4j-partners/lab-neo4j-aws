@@ -1,6 +1,6 @@
 = Lab 5: GraphRAG
 
-Lab 4 introduced graph-enriched search — vector retrieval augmented with graph traversal — where an agent executes Cypher through MCP. This lab takes the direct approach: connect to Neo4j with a Python driver and use the neo4j-graphrag library's retriever classes. You will build the full pipeline from raw text to hybrid retrieval.
+In Lab 4 you wrote every retrieval query by hand — vector search Cypher, graph traversal joins, fulltext lookups — and saw exactly how each strategy works at the query level. This lab replaces that manual plumbing with the neo4j-graphrag library. `VectorRetriever` replaces your hand-written vector Cypher. `VectorCypherRetriever` replaces your graph traversal joins. `HybridRetriever` replaces your agent-driven combination with proper score normalization and alpha tuning. You also build the data pipeline from scratch — chunking, embedding generation — that was pre-built for you in Lab 4.
 
 TIP: Ready to start? Jump to the xref:lab5-instructions.adoc[Lab 5 Instructions] for the notebook walkthrough.
 
@@ -148,6 +148,35 @@ retriever.search(query, alpha=0.5)
 ----
 
 Start with `alpha=0.5` for a balanced blend, then adjust based on your query patterns. Push toward `1.0` when queries are conversational and toward `0.0` when queries contain specific identifiers like tickers or filing numbers.
+
+== From First Principles to Library
+
+Lab 4 and Lab 5 query the same underlying Neo4j indexes and graph structure. The difference is in how the search is executed — and what each approach teaches you.
+
+[cols="1,2,2"]
+|===
+| Aspect | Lab 4 (First Principles) | Lab 5 (Library)
+
+| **Connection**
+| MCP server via AgentCore Gateway
+| Direct Neo4j driver
+
+| **Query execution**
+| Hand-written Cypher in `@tool` functions
+| Retriever class methods
+
+| **Embedding**
+| Client-side (Bedrock Nova), wrapped in `@tool`
+| Retriever calls embedder internally
+
+| **Hybrid search**
+| Agent runs both queries and combines results
+| `HybridRetriever` handles score normalization and alpha tuning
+
+| **Graph traversal**
+| Cypher in `@tool` functions
+| `retrieval_query` parameter on retriever classes
+|===
 
 == Next Steps
 

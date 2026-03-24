@@ -1,112 +1,51 @@
 """
 Embeddings and Vector Search
 
-This solution demonstrates embedding generation and vector similarity
-search using Neo4j and Microsoft Foundry.
+This solution generates embeddings for Chunk nodes created by 01_01_data_loading
+and creates a vector index for semantic similarity search.
 
 Run with: uv run python main.py solutions 2
 """
 
-import asyncio
-
 from neo4j_graphrag.indexes import create_vector_index
-from neo4j_graphrag.experimental.components.text_splitters.fixed_size_splitter import (
-    FixedSizeSplitter,
-)
 
-from config import get_neo4j_driver, get_embedder
+from config import get_neo4j_driver, get_embedder, BedrockConfig
 
-# Sample text representing SEC 10-K filing content
-SAMPLE_TEXT = """
-Apple Inc. ("Apple" or the "Company") designs, manufactures and markets smartphones,
-personal computers, tablets, wearables and accessories, and sells a variety of related
-services. The Company's fiscal year is the 52- or 53-week period that ends on the last
-Saturday of September.
-
-Products
-
-iPhone is the Company's line of smartphones based on its iOS operating system. The iPhone
-product line includes iPhone 14 Pro, iPhone 14, iPhone 13 and iPhone SE. Mac is the Company's
-line of personal computers based on its macOS operating system. iPad is the Company's line
-of multi-purpose tablets based on its iPadOS operating system.
-
-Services
-
-Advertising includes third-party licensing arrangements and the Company's own advertising
-platforms. AppleCare offers a portfolio of fee-based service and support products. Cloud
-Services store and keep customers' content up-to-date across all devices. Digital Content
-operates various platforms for discovering, purchasing, streaming and downloading digital
-content and apps. Payment Services include Apple Card and Apple Pay.
-""".strip()
-
-DOCUMENT_PATH = "form10k-sample/apple-2023-10k.pdf"
 INDEX_NAME = "chunkEmbeddings"
 
 
-def clear_graph(driver) -> int:
-    """Remove all Document and Chunk nodes."""
+def generate_and_store_embeddings(driver, embedder) -> int:
+    """Generate embeddings for all chunks that don't have one yet."""
     with driver.session() as session:
         result = session.run("""
-            MATCH (n) WHERE n:Document OR n:Chunk
-            DETACH DELETE n
-            RETURN count(n) as deleted
+            MATCH (c:Chunk)
+            WHERE c.embedding IS NULL
+            RETURN elementId(c) AS chunk_id, c.text AS text, c.index AS index
+            ORDER BY c.index
         """)
-        return result.single()["deleted"]
+        chunks = list(result)
 
+    if not chunks:
+        print("All chunks already have embeddings")
+        return 0
 
-async def split_text(text: str, chunk_size: int = 400, overlap: int = 50):
-    """Split text using FixedSizeSplitter."""
-    splitter = FixedSizeSplitter(chunk_size=chunk_size, chunk_overlap=overlap)
-    return await splitter.run(text=text)
+    print(f"Found {len(chunks)} chunks without embeddings")
 
+    for chunk in chunks:
+        embedding = embedder.embed_query(chunk["text"])
+        with driver.session() as session:
+            session.run("""
+                MATCH (c:Chunk) WHERE elementId(c) = $chunk_id
+                SET c.embedding = $embedding
+            """, chunk_id=chunk["chunk_id"], embedding=embedding)
+        print(f"  Embedded Chunk {chunk['index']} ({len(embedding)} dimensions)")
 
-def generate_embeddings(embedder, chunks) -> list[dict]:
-    """Generate embeddings for each chunk."""
-    chunk_data = []
-    for i, chunk in enumerate(chunks.chunks):
-        embedding = embedder.embed_query(chunk.text)
-        chunk_data.append({
-            "text": chunk.text,
-            "index": i,
-            "embedding": embedding
-        })
-    return chunk_data
-
-
-def store_chunks_with_embeddings(driver, doc_path: str, chunk_data: list[dict]) -> None:
-    """Store Document and Chunk nodes with embeddings."""
-    with driver.session() as session:
-        # Create Document
-        session.run("CREATE (d:Document {path: $path})", path=doc_path)
-
-        # Create Chunks with embeddings
-        session.run("""
-            MATCH (d:Document {path: $path})
-            UNWIND $chunks AS chunk
-            CREATE (c:Chunk {
-                text: chunk.text,
-                index: chunk.index,
-                embedding: chunk.embedding
-            })
-            CREATE (c)-[:FROM_DOCUMENT]->(d)
-        """, path=doc_path, chunks=chunk_data)
-
-        # Create NEXT_CHUNK relationships
-        session.run("""
-            MATCH (d:Document {path: $path})<-[:FROM_DOCUMENT]-(c:Chunk)
-            WITH c ORDER BY c.index
-            WITH collect(c) as chunks
-            UNWIND range(0, size(chunks)-2) as i
-            WITH chunks[i] as c1, chunks[i+1] as c2
-            CREATE (c1)-[:NEXT_CHUNK]->(c2)
-        """, path=doc_path)
+    return len(chunks)
 
 
 def create_index(driver) -> None:
     """Create vector index for similarity search."""
-    from src.embeddings import get_embedding_dimensions
-
-    dimensions = get_embedding_dimensions()
+    config = BedrockConfig()
 
     # Drop existing index
     try:
@@ -115,14 +54,13 @@ def create_index(driver) -> None:
     except Exception:
         pass
 
-    # Create new index
     create_vector_index(
         driver=driver,
         name=INDEX_NAME,
         label="Chunk",
         embedding_property="embedding",
-        dimensions=dimensions,
-        similarity_fn="cosine"
+        dimensions=config.embedding_dimensions,
+        similarity_fn="cosine",
     )
 
 
@@ -144,47 +82,34 @@ def demo_search(driver, embedder) -> None:
     """Demo vector similarity search."""
     queries = [
         "What products does Apple make?",
-        "Tell me about iPhone and Mac computers",
+        "What are the key risk factors?",
         "What services does the company offer?",
-        "When does the fiscal year end?"
+        "How did Apple perform financially?",
     ]
 
     for query in queries:
-        print(f"\nQuery: \"{query}\"")
+        print(f'\nQuery: "{query}"')
         print("-" * 50)
         results = vector_search(driver, embedder, query, top_k=1)
         if results:
             record = results[0]
-            print(f"Best match (score: {record['score']:.4f}):")
-            print(f"  {record['text']}")
+            print(f"Best match (score: {record['score']:.4f}, Chunk {record['idx']}):")
+            print(f"  {record['text'][:150]}...")
 
 
-async def main():
+def main():
     """Run embeddings demo."""
     with get_neo4j_driver() as driver:
         driver.verify_connectivity()
         print("Connected to Neo4j successfully!")
 
-        # Clear existing data
-        deleted = clear_graph(driver)
-        print(f"Deleted {deleted} existing nodes")
-
-        # Split text
-        print("\nSplitting text...")
-        chunks = await split_text(SAMPLE_TEXT)
-        print(f"Split into {len(chunks.chunks)} chunks")
-
-        # Generate embeddings
-        print("\nGenerating embeddings...")
         embedder = get_embedder()
-        chunk_data = generate_embeddings(embedder, chunks)
-        print(f"Generated embeddings for {len(chunk_data)} chunks")
-        print(f"Embedding dimensions: {len(chunk_data[0]['embedding'])}")
+        print(f"Embedder: {embedder.model_id}")
 
-        # Store in Neo4j
-        print("\nStoring in Neo4j...")
-        store_chunks_with_embeddings(driver, DOCUMENT_PATH, chunk_data)
-        print("Stored Document and Chunk nodes with embeddings")
+        # Generate embeddings for existing chunks
+        print("\nGenerating embeddings...")
+        count = generate_and_store_embeddings(driver, embedder)
+        print(f"Embedded {count} chunks")
 
         # Create index
         print("\nCreating vector index...")
@@ -199,4 +124,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

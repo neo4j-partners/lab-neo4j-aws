@@ -32,11 +32,11 @@ This lab starts with step 4 (vector search) and builds toward step 6 (graph-enri
 
 The graph you explored in Lab 1 — companies, products, risk factors, asset managers — is the structured layer. The documents and chunks described above are the unstructured layer, added on top. The `FILED` relationship bridges them: `(Company)-[:FILED]->(Document)`. When graph-enriched search traverses from a chunk to its source document to the company that filed it, it crosses from unstructured text into the structured entities you already know. That traversal chain, `(Chunk)-[:FROM_DOCUMENT]->(Document)<-[:FILED]-(Company)`, is what makes graph-enriched search possible.
 
-NOTE: xref:lab5.adoc[Lab 5] covers building the data pipeline from scratch, including chunking trade-offs and embedding generation.
+NOTE: xref:lab5.adoc[Lab 5] covers building the data pipeline from scratch — chunking, embedding generation — and shows how the neo4j-graphrag library abstracts the retrieval strategies you build by hand in this lab.
 
 == Three Retrieval Strategies
 
-The three notebooks use the **Cypher Templates** pattern from Neo4j's https://graphrag.com/reference/[GraphRAG Patterns Catalog] — the same pattern you saw in xref:lab2.adoc[Lab 2]'s Aura Agents, now implemented in code. The Cypher queries are pre-written inside `@tool` functions and system prompts; the agent selects which query to run but never writes Cypher itself. xref:lab6.adoc[Lab 6] takes the next step with the Text2Cypher pattern, where the agent discovers the schema and writes its own queries from scratch.
+Each notebook builds a retrieval strategy from scratch. You write the Cypher queries by hand inside `@tool` functions, manage embedding generation yourself, and wire everything through MCP. By the end of this lab you will understand exactly what vector search, graph traversal, and fulltext search look like at the query level — the mechanics that the neo4j-graphrag library abstracts away in xref:lab5.adoc[Lab 5].
 
 Each notebook returns more context than the previous one. Vector search returns chunk text. Graph-enriched search returns chunk text plus connected entities and document metadata. Hybrid search returns results from both keyword and semantic matching, giving the agent the broadest possible context to reason over.
 
@@ -68,35 +68,6 @@ The important design choice is where the embedding lives. A 1024-dimensional vec
 
 This is the same separation of concerns that the neo4j-graphrag library enforces in Lab 5: the `VectorRetriever` generates embeddings and queries the index internally, and the LLM only sees retrieved text. The `@tool` wrapper achieves the same boundary when working through MCP instead of a direct driver connection.
 
-== Comparing Approaches: MCP vs Direct Library
-
-All three notebooks use the same underlying Neo4j indexes and graph structure as Lab 5. The difference is in how the search is executed.
-
-[cols="1,2,2"]
-|===
-| Aspect | Lab 4 (MCP) | Lab 5 (Library)
-
-| **Connection**
-| MCP server via AgentCore Gateway
-| Direct Neo4j driver
-
-| **Query execution**
-| Agent calls `execute-query` MCP tool
-| Retriever class methods
-
-| **Embedding**
-| Client-side (Bedrock Nova), passed to agent or wrapped in `@tool`
-| Retriever calls embedder internally
-
-| **Hybrid search**
-| Agent runs both queries and combines results
-| `HybridRetriever` handles score normalization and alpha tuning
-
-| **Graph traversal**
-| Cypher in agent prompt
-| `retrieval_query` parameter on retriever classes
-|===
-
 == What Is Covered Here vs Lab 5
 
 This lab focuses on graph-enriched search: using an agent to execute retrieval queries against a knowledge graph. For the following topics, see xref:lab5.adoc[Lab 5]:
@@ -107,6 +78,10 @@ This lab focuses on graph-enriched search: using an agent to execute retrieval q
 * **GraphRAG pipeline** — `GraphRAG(llm=llm, retriever=retriever).search()` for end-to-end RAG
 * **Data loading and embedding generation** — building the graph from scratch
 
+== Pattern Reference
+
+The approach used in this lab — pre-written Cypher queries selected by the agent — is the **Cypher Templates** pattern from Neo4j's https://graphrag.com/reference/[GraphRAG Patterns Catalog]. It is the same pattern behind xref:lab2.adoc[Lab 2]'s Aura Agents, now implemented in code. xref:lab6.adoc[Lab 6] takes the next step with the Text2Cypher pattern, where the agent discovers the schema and writes its own Cypher from scratch.
+
 == Next Steps
 
-Continue to xref:lab4-instructions.adoc[Lab 4 Instructions] to work through the notebooks. After completing this lab, proceed to xref:lab5.adoc[Lab 5: GraphRAG] for direct library-based retrieval, or to xref:lab6.adoc[Lab 6: Advanced Agents] for the Text2Cypher pattern where agents write their own Cypher.
+Continue to xref:lab4-instructions.adoc[Lab 4 Instructions] to work through the notebooks. After completing this lab, proceed to xref:lab5.adoc[Lab 5: GraphRAG] to see how the neo4j-graphrag library abstracts the retrieval you just built by hand, or to xref:lab6.adoc[Lab 6: Advanced Agents] for the Text2Cypher pattern where agents write their own Cypher.

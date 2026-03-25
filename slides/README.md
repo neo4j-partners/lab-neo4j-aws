@@ -7,7 +7,6 @@ Presentation-ready slides formatted for [Marp](https://marp.app/).
 Requires Node.js 22 LTS (`brew install node@22`) and a one-time `npm install` in this directory.
 
 ```bash
-cd slides
 /opt/homebrew/opt/node@22/bin/node ./node_modules/.bin/marp overview-aws-neo4j --server
 ```
 

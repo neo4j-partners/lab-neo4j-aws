@@ -167,7 +167,7 @@ Structured Layer (Lab 1)          Unstructured Layer (Lab 4)
 
 ---
 
-![bg contain](../images/graph-enriched-retrieval.png)
+![bg contain](graph-enriched-retrieval.png)
 
 ---
 
@@ -222,7 +222,7 @@ Lab 4 loads pre-built data. Lab 6 builds this pipeline from scratch.
 
 ---
 
-![bg contain](../images/data-pipeline-v2.png)
+![bg contain](data-pipeline-v2.png)
 
 ---
 

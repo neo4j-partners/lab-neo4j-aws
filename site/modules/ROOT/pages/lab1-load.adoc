@@ -201,14 +201,6 @@ RETURN am.name, r.name, exposed
 ORDER BY exposed DESC, am.name LIMIT 5
 ----
 
-**Who are NVIDIA's supply chain partners?**
-
-[source,cypher]
-----
-MATCH (c:Company {ticker: 'NVDA'})-[:PARTNERS_WITH]->(p)
-RETURN p.name ORDER BY p.name
-----
-
 **Fulltext search: find entities mentioning "artificial intelligence"**
 
 [source,cypher]

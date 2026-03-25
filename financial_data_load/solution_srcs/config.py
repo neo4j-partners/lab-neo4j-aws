@@ -8,6 +8,7 @@ LLM/embedder initialization, and configuration management.
 Uses AWS Bedrock for LLM and embedding services.
 """
 
+import os
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -18,9 +19,11 @@ from neo4j_graphrag.llm import BedrockLLM
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Load .env from financial_data_load directory
-_root_env = Path(__file__).parent.parent / ".env"
-load_dotenv(_root_env)
+# Load .env from financial_data_load directory.
+# Override with ENV_FILE env var (e.g., ENV_FILE=.env.gold).
+_env_name = os.environ.get("ENV_FILE", ".env")
+_root_env = Path(__file__).parent.parent / _env_name
+load_dotenv(_root_env, override=True)
 
 
 class Neo4jConfig(BaseSettings):

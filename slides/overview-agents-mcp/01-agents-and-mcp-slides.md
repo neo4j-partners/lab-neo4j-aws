@@ -124,7 +124,7 @@ Any MCP-compatible agent connects to any MCP-compatible server.
 
 ---
 
-![bg contain](../images/lab5-mcp-agent-architecture.png)
+![bg contain](lab5-mcp-agent-architecture.png)
 
 ---
 

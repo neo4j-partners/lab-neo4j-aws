@@ -55,7 +55,7 @@ Together: AWS powers the reasoning and embedding, Neo4j provides the knowledge l
 
 ---
 
-![bg contain](../images/workshop-architecture.png)
+![bg contain](workshop-architecture.png)
 
 ---
 
@@ -86,7 +86,7 @@ Four entity types connected by typed relationships that reflect real-world struc
 
 ---
 
-![bg contain](../images/financial-data-model.png)
+![bg contain](financial-data-model.png)
 
 ---
 

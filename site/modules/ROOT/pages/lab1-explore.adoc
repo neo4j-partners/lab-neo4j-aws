@@ -64,31 +64,24 @@ Click the **Graph Data Science** button in the left toolbar to open the data sci
 
 image::lab1-gds-panel.png[Graph Data Science]
 
-== Apply Degree Centrality Algorithm
+== Apply Community Detection
 
 1. Click **Add algorithm**
-2. Select **Degree Centrality** from the dropdown — this measures the number of incoming and outgoing relationships for each node, identifying the most connected nodes in the graph
+2. Select **Louvain** from the Algorithm dropdown — the Louvain method detects communities by finding groups of nodes that are more densely connected to each other than to the rest of the graph
 3. Click **Apply algorithm** to run the analysis
+4. Under **Rule-based styling**, toggle on **Unique colors** — this assigns a distinct color to each community
 
-image::lab1-apply-centrality.png[Apply Centrality]
-
-== Size Nodes Based on Scores
-
-After the algorithm completes, click **Size nodes based on scores** to visually represent centrality. Nodes with more connections appear larger.
-
-image::lab1-size-nodes.png[Size Nodes]
+image::lab1-community-results.png[Community Detection Results]
 
 == Analyze the Results
 
-The graph now displays nodes sized according to their degree centrality scores:
+The graph now displays nodes colored by community. Each color represents a cluster of nodes that are densely connected to each other:
 
-* **Larger nodes** = More connections (higher centrality)
-* Asset managers owning more companies appear larger
-* Companies with more risk factors appear larger
+* The **large teal community** contains risk factors that are broadly shared across many companies — these are systemic risks like regulatory compliance, cybersecurity, and macroeconomic conditions
+* The **smaller colored communities** (pink, yellow, blue, orange) in the lower-left group companies with their unique or niche risk factors — risks that are specific to a particular company or small set of companies
+* **Asset managers** appear in the community of the companies they are most connected to, revealing which investor portfolios are concentrated in similar risk profiles
 
-This makes it easy to visually identify the most significant institutional investors, companies with diverse risk profiles, and common risk factors across multiple companies.
-
-image::lab1-centrality-results.png[Centrality Results]
+This is more revealing than simply counting connections. Community detection shows _which_ companies share _the same_ risks, not just how many risks each company has. Companies in the same small community face a similar set of risks, which has real implications for portfolio diversification — an investor holding companies in the same community has concentrated risk exposure.
 
 == Additional Exploration Ideas
 

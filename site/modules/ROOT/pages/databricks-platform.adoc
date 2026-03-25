@@ -4,11 +4,11 @@ A GraphRAG architecture needs more than a graph database and a model API. It nee
 
 .**At a Glance**
 
-* **Complementary Intelligence** — Databricks handles aggregations and metrics while Neo4j handles connections and traversals, with agents routing between both
-* **Lakehouse Architecture** — Delta Lake with ACID transactions, schema enforcement, and time travel, organized through the medallion pattern (bronze, silver, gold)
-* **Neo4j Spark Connector** — Databricks-certified connector for bulk data movement between governed Delta tables and the knowledge graph
-* **Unity Catalog** — unified governance across all data and AI assets, including federated JDBC access to Neo4j
-* **Mosaic AI and Agent Bricks** — agent development, serving, and orchestration with built-in Genie for natural language SQL
+* **Complementary Intelligence**: Databricks handles aggregations and metrics while Neo4j handles connections and traversals, with agents routing between both
+* **Lakehouse Architecture**: Delta Lake with ACID transactions, schema enforcement, and time travel, organized through the medallion pattern (bronze, silver, gold)
+* **Neo4j Spark Connector**: Databricks-certified connector for bulk data movement between governed Delta tables and the knowledge graph
+* **Unity Catalog**: unified governance across all data and AI assets, including federated JDBC access to Neo4j
+* **Mosaic AI and Agent Bricks**: agent development, serving, and orchestration with built-in Genie for natural language SQL
 
 == Complementary Intelligence
 
@@ -50,7 +50,7 @@ The diagram shows how the SEC 10-K financial data splits across both platforms. 
 
 Company (identified by ticker) is the join point between both platforms. The Spark Connector syncs governed Delta tables to graph nodes.
 
-.Databricks SQL — price volatility by company
+.Databricks SQL: price volatility by company
 [source,sql]
 ----
 SELECT c.ticker, AVG(p.close) AS avg_close,
@@ -60,7 +60,7 @@ FROM daily_prices p
 GROUP BY c.ticker ORDER BY volatility DESC
 ----
 
-.Neo4j Cypher — shared risk factors across companies
+.Neo4j Cypher: shared risk factors across companies
 [source,cypher]
 ----
 MATCH (c:Company)-[:FACES_RISK]->(r:RiskFactor)
@@ -156,11 +156,11 @@ Agent Bricks is the control plane for deploying and orchestrating agents. Agents
 
 == Learn More
 
-* https://www.databricks.com/product/data-intelligence-platform[Databricks Data Intelligence Platform] — official platform overview
-* https://docs.databricks.com/en/delta/index.html[Delta Lake Documentation] — ACID transactions, schema enforcement, and time travel
-* https://docs.databricks.com/en/data-governance/unity-catalog/index.html[Unity Catalog Documentation] — unified governance across data and AI
-* https://neo4j.com/docs/spark/current/[Neo4j Spark Connector Documentation] — Databricks-certified connector for bidirectional data flow
-* https://docs.databricks.com/en/genie/index.html[Databricks Genie] — natural language SQL through compound AI
+* https://www.databricks.com/product/data-intelligence-platform[Databricks Data Intelligence Platform]: official platform overview
+* https://docs.databricks.com/en/delta/index.html[Delta Lake Documentation]: ACID transactions, schema enforcement, and time travel
+* https://docs.databricks.com/en/data-governance/unity-catalog/index.html[Unity Catalog Documentation]: unified governance across data and AI
+* https://neo4j.com/docs/spark/current/[Neo4j Spark Connector Documentation]: Databricks-certified connector for bidirectional data flow
+* https://docs.databricks.com/en/genie/index.html[Databricks Genie]: natural language SQL through compound AI
 
 == Next Steps
 

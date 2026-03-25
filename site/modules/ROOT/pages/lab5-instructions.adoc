@@ -6,7 +6,7 @@ TIP: For concepts and background, see xref:lab5.adoc[Lab 5: Neo4j MCP Server].
 
 * **MCP Fundamentals**: Connect a Strands Agent to a Neo4j MCP Server, discover tools, inspect the graph schema
 * **Cypher Templates**: Pre-written vector search + graph traversal queries in `@tool` functions for reliable, predictable results
-* **Text2Cypher**: The agent discovers the schema and writes original Cypher from scratch — fully autonomous graph querying
+* **Text2Cypher**: The agent discovers the schema and writes original Cypher from scratch, enabling fully autonomous graph querying
 
 == Prerequisites
 
@@ -30,11 +30,11 @@ Open each notebook in order in the `Lab_5_MCP_Server/` directory. The progressio
 
 | `02_graph_enriched_search.ipynb`
 | Graph-Enriched Search
-| Cypher Templates — pre-written `@tool` functions that combine vector search with graph traversal for document context and entity enrichment
+| Cypher Templates: pre-written `@tool` functions that combine vector search with graph traversal for document context and entity enrichment
 
 | `03_text2cypher_agent.ipynb`
 | Text2Cypher Agent
-| An autonomous agent that discovers the graph schema and writes original Cypher from scratch — the Text2Cypher retrieval pattern
+| An autonomous agent that discovers the graph schema and writes original Cypher from scratch (the Text2Cypher retrieval pattern)
 |===
 
 == Sample Queries
@@ -66,4 +66,4 @@ Once your agent is running in notebook 03, try these questions about the SEC fin
 
 == Next Steps
 
-Congratulations — you have completed the main workshop! For a bonus challenge, continue to xref:lab6.adoc[Lab 6: GraphRAG Pipeline] to build the data pipeline from scratch.
+Congratulations, you have completed the main workshop! For a bonus challenge, continue to xref:lab6.adoc[Lab 6: GraphRAG Pipeline] to build the data pipeline from scratch.

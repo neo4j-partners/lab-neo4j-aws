@@ -55,6 +55,34 @@ These queries run against the structured entity data loaded in Lab 1: Company, P
 
 '''
 
+=== Schema Introspection
+
+View the complete graph schema:
+
+[source,cypher]
+----
+CALL db.schema.visualization()
+----
+
+List all indexes and constraints:
+
+[source,cypher]
+----
+SHOW INDEXES
+----
+
+Node counts by label:
+
+[source,cypher]
+----
+MATCH (n)
+WITH labels(n)[0] AS label, count(n) AS count
+RETURN label, count
+ORDER BY label
+----
+
+'''
+
 === Company Products
 
 What products does NVIDIA offer?
@@ -165,32 +193,6 @@ ORDER BY c.name
 ----
 
 NOTE: Pattern matching with directed relationships following the schema: Company to RiskFactor via FACES_RISK, and AssetManager to Company via OWNS. `collect()` gathers all asset managers owning each company into a single row.
-
-=== Schema Introspection
-
-View the complete graph schema:
-
-[source,cypher]
-----
-CALL db.schema.visualization()
-----
-
-List all indexes and constraints:
-
-[source,cypher]
-----
-SHOW INDEXES
-----
-
-Node counts by label:
-
-[source,cypher]
-----
-MATCH (n)
-WITH labels(n)[0] AS label, count(n) AS count
-RETURN label, count
-ORDER BY label
-----
 
 '''
 

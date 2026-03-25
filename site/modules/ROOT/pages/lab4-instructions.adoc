@@ -12,11 +12,11 @@ TIP: For concepts and background, see xref:lab4.adoc[Lab 4: GraphRAG Retrievers]
 
 == Prerequisites
 
-* Completed **Lab 1** — Aura instance created and knowledge graph loaded
-* Completed **Lab 3** — SageMaker Studio set up and repository cloned
+* Completed **Lab 1**: Aura instance created and knowledge graph loaded
+* Completed **Lab 3**: SageMaker Studio set up and repository cloned
 * A running environment (SageMaker Studio or GitHub Codespace)
 
-NOTE: This lab uses the same Neo4j Aura instance from Labs 1-2. The structured graph (companies, products, risk factors, asset managers) must already be loaded. Notebook 01 adds the unstructured layer on top — it does not clear existing data.
+NOTE: This lab uses the same Neo4j Aura instance from Labs 1-2. The structured graph (companies, products, risk factors, asset managers) must already be loaded. Notebook 01 adds the unstructured layer on top; it does not clear existing data.
 
 === Update CONFIG.txt with Neo4j Credentials
 
@@ -47,7 +47,7 @@ NEO4J_PASSWORD=your-password-from-lab-1
 
 | `03_vector_cypher_retriever.ipynb`
 | VectorCypher Retriever
-| Graph-enriched retrieval using `VectorCypherRetriever` — adds filing metadata, companies, products, and risk factors to vector search results
+| Graph-enriched retrieval using `VectorCypherRetriever`, adding filing metadata, companies, products, and risk factors to vector search results
 |===
 
 == Next Steps

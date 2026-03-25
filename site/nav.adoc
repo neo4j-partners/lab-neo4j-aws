@@ -21,7 +21,7 @@
 *** xref:lab4-sample-queries.adoc[Sample Queries]
 ** xref:lab5.adoc[Lab 5: Neo4j MCP Server]
 *** xref:lab5-instructions.adoc[Instructions]
-* Part 3: Bonus — Build Your Own Pipeline
+* Part 3 (Bonus): Build Your Own Pipeline
 ** xref:lab6.adoc[Lab 6: GraphRAG Pipeline]
 *** xref:lab6-instructions.adoc[Instructions]
 * xref:admin-setup.adoc[Admin Setup]

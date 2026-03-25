@@ -6,8 +6,8 @@ TIP: For concepts and background, see xref:lab0.adoc[Lab 0: Concepts and Referen
 
 There are two setup paths depending on your situation:
 
-* <<Option A: Workshop Event (OneBlink)>> — for instructor-led workshop participants with an event code
-* <<Option B: Using Your Own AWS Account>> — for self-paced learners using a personal or company AWS account
+* <<Option A: Workshop Event (OneBlink)>>: for instructor-led workshop participants with an event code
+* <<Option B: Using Your Own AWS Account>>: for self-paced learners using a personal or company AWS account
 
 == Prerequisites
 
@@ -32,7 +32,7 @@ Enter your email, the event code, and the validation code from your email, then 
 
 image::lab0-access-sandbox.png[Access Sandbox]
 
-Once validated, you will receive your AWS credentials. **Save this information** — you will need it for all subsequent labs. These accounts are terminated at the end of the workshop.
+Once validated, you will receive your AWS credentials. **Save this information.** You will need it for all subsequent labs. These accounts are terminated at the end of the workshop.
 
 == Option B: Using Your Own AWS Account
 
@@ -65,11 +65,11 @@ NOTE: If this is your first time using Bedrock, you may need to request access t
 
 == Troubleshooting
 
-**"Access Denied" when accessing Bedrock** — Verify your IAM user has the `AmazonBedrockFullAccess` policy attached. Check you are in a supported region (us-east-1 recommended).
+**"Access Denied" when accessing Bedrock**: Verify your IAM user has the `AmazonBedrockFullAccess` policy attached. Check you are in a supported region (us-east-1 recommended).
 
-**Model access shows "Not available"** — Some models require explicit access requests. Click **Manage model access** and request the needed models. Nova models are usually instant; Claude may take a few minutes.
+**Model access shows "Not available"**: Some models require explicit access requests. Click **Manage model access** and request the needed models. Nova models are usually instant; Claude may take a few minutes.
 
-**Cannot find Bedrock in services** — Ensure you are in a region that supports Bedrock. Try switching to us-east-1 (N. Virginia).
+**Cannot find Bedrock in services**: Ensure you are in a region that supports Bedrock. Try switching to us-east-1 (N. Virginia).
 
 == Next Steps
 

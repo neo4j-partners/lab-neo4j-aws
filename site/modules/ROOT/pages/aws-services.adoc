@@ -4,9 +4,9 @@ Building a GraphRAG agent requires three capabilities: access to foundation mode
 
 .**At a Glance**
 
-* **Amazon Bedrock** — unified API access to foundation models for reasoning (Claude) and embeddings (Nova), with cross-region routing for throughput
-* **Amazon Bedrock AgentCore** — serverless agent hosting that packages agent code into isolated microVMs, supporting multiple frameworks and protocols
-* **Amazon SageMaker Studio** — JupyterLab notebook environment with managed compute, where you develop and test agents before deploying them
+* **Amazon Bedrock**: unified API access to foundation models for reasoning (Claude) and embeddings (Nova), with cross-region routing for throughput
+* **Amazon Bedrock AgentCore**: serverless agent hosting that packages agent code into isolated microVMs, supporting multiple frameworks and protocols
+* **Amazon SageMaker Studio**: JupyterLab notebook environment with managed compute, where you develop and test agents before deploying them
 
 == Amazon Bedrock
 

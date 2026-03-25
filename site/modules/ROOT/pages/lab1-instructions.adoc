@@ -46,7 +46,7 @@ If you are completing this lab independently or your organizer has instructed yo
 +
 image::lab1-free-trial-region.png[Free trial region selection]
 5. Click **Start 14-day free trial**
-6. **Save your credentials immediately** — click **Download to continue**. The password is only shown once.
+6. **Save your credentials immediately.** Click **Download to continue**. The password is only shown once.
 +
 image::lab1-free-trial-credentials.png[Free trial credentials]
 
@@ -60,7 +60,7 @@ image::lab1-create-instance.png[Create Instance]
 2. Configure your new instance:
 +
 IMPORTANT: 3 key settings to watch when creating your instance! +
-**1.** Select **Professional** — do _not_ select Business Critical +
+**1.** Select **Professional**. Do _not_ select Business Critical +
 **2.** Set **Graph Analytics** to **Plugin** +
 **3.** Enable **Vector-optimized** (under Additional settings)
 +

@@ -4,10 +4,10 @@ These steps must be completed by the workshop admin before participants begin. T
 
 .**At a Glance**
 
-* **Bedrock model access** — enable Claude and Nova in the Bedrock console (manual, cannot be scripted)
-* **AgentCore IAM and resources** — run `setup_agentcore.sh` to create the execution role, S3 bucket, and SageMaker permissions needed for Lab 3 deployment
-* **CONFIG.txt preparation** — fill in MCP Gateway credentials and verify defaults before distributing to participants
-* **SageMaker lifecycle configuration** (optional) — pre-install packages so notebooks start faster
+* **Bedrock model access**: enable Claude and Nova in the Bedrock console (manual, cannot be scripted)
+* **AgentCore IAM and resources**: run `setup_agentcore.sh` to create the execution role, S3 bucket, and SageMaker permissions needed for Lab 3 deployment
+* **CONFIG.txt preparation**: fill in MCP Gateway credentials and verify defaults before distributing to participants
+* **SageMaker lifecycle configuration** (optional): pre-install packages so notebooks start faster
 
 == Step 1: Enable Bedrock Model Access
 

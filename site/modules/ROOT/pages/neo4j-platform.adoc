@@ -4,9 +4,9 @@ A GraphRAG agent needs more than a database. It needs a knowledge layer that sto
 
 .**At a Glance**
 
-* **Database and Analytics** — a native graph database (AuraDB) for storing and querying the knowledge graph, plus Graph Data Science (GDS) for running graph algorithms like community detection and similarity scoring
-* **AI-Powered Graph Tools** — Browser for Cypher queries, Bloom for visual exploration, NeoDash for dashboards, Data Import for loading, and a GraphQL API
-* **Graph-Powered AI** — Document Intelligence, Aura Agents, Ontology modeling, Agentic Brain for agent memory, and MCP Server connectivity that turn the knowledge graph into a reasoning substrate for AI agents
+* **Database and Analytics**: a native graph database (AuraDB) for storing and querying the knowledge graph, plus Graph Data Science (GDS) for running graph algorithms like community detection and similarity scoring
+* **AI-Powered Graph Tools**: Browser for Cypher queries, Bloom for visual exploration, NeoDash for dashboards, Data Import for loading, and a GraphQL API
+* **Graph-Powered AI**: Document Intelligence, Aura Agents, Ontology modeling, Agentic Brain for agent memory, and MCP Server connectivity that turn the knowledge graph into a reasoning substrate for AI agents
 
 == Database and Analytics
 
@@ -117,9 +117,9 @@ The database stores the knowledge graph and maintains its indexes. The tools pro
 
 == Learn More
 
-* https://neo4j.com/[Neo4j Graph Intelligence Platform] — official product page covering the full platform stack
-* https://neo4j.com/nodes-ai/agenda/from-data-to-knowledge-to-action-the-graph-intelligence-platform/[From Data to Knowledge to Action: The Graph Intelligence Platform] — Sudhir Hasbe (President & CPO, Neo4j) presents the platform vision at NODES AI 2026
-* https://neo4j.com/videos/live-from-nodes-2025-keynote-fireside-chat-with-andrew-ng-and-emil-eifrem/[Fireside Chat with Andrew Ng and Emil Eifrem] — NODES 2025 keynote on the future of AI and graphs
+* https://neo4j.com/[Neo4j Graph Intelligence Platform]: official product page covering the full platform stack
+* https://neo4j.com/nodes-ai/agenda/from-data-to-knowledge-to-action-the-graph-intelligence-platform/[From Data to Knowledge to Action: The Graph Intelligence Platform]: Sudhir Hasbe (President & CPO, Neo4j) presents the platform vision at NODES AI 2026
+* https://neo4j.com/videos/live-from-nodes-2025-keynote-fireside-chat-with-andrew-ng-and-emil-eifrem/[Fireside Chat with Andrew Ng and Emil Eifrem]: NODES 2025 keynote on the future of AI and graphs
 
 == Next Steps
 

@@ -1,15 +1,15 @@
 = Lab 5: Neo4j MCP Server
 
-Lab 4 used the neo4j-graphrag library with a direct Python driver — you called retriever classes that handled embedding, vector search, and graph traversal internally. This lab connects to the same knowledge graph through the **Model Context Protocol (MCP)**, an open standard that defines how AI agents discover and interact with external tools and data sources. You'll progress from MCP basics to pre-written Cypher templates to fully autonomous Text2Cypher agents.
+Lab 4 used the neo4j-graphrag library with a direct Python driver. You called retriever classes that handled embedding, vector search, and graph traversal internally. This lab connects to the same knowledge graph through the **Model Context Protocol (MCP)**, an open standard that defines how AI agents discover and interact with external tools and data sources. You'll progress from MCP basics to pre-written Cypher templates to fully autonomous Text2Cypher agents.
 
 TIP: Ready to start? Jump to the xref:lab5-instructions.adoc[Lab 5 Instructions] for the notebook walkthrough.
 
 .**At a Glance**
 
-* **Three notebooks** — progress from MCP tool discovery to graph-enriched search to autonomous Cypher generation
-* **Strands Agents SDK** — AWS-native agent framework with built-in MCP support
-* **Two retrieval patterns** — Cypher Templates (reliable, pre-written) and Text2Cypher (flexible, agent-generated)
-* **Schema-first approach** — the agent retrieves the graph schema before writing any query
+* **Three notebooks**: progress from MCP tool discovery to graph-enriched search to autonomous Cypher generation
+* **Strands Agents SDK**: AWS-native agent framework with built-in MCP support
+* **Two retrieval patterns**: Cypher Templates (reliable, pre-written) and Text2Cypher (flexible, agent-generated)
+* **Schema-first approach**: the agent retrieves the graph schema before writing any query
 
 == Model Context Protocol (MCP)
 
@@ -96,12 +96,12 @@ Neo4j's https://graphrag.com/reference/[GraphRAG Patterns Catalog] defines a spe
 | **Cypher Templates**
 | Pre-written, parameterized queries in `@tool` functions. The agent selects which template to execute.
 | Notebook 02
-| High — expert-reviewed queries
+| High (expert-reviewed queries)
 
 | **Text2Cypher**
 | The agent reads the schema, reasons about the question, and writes original Cypher from scratch.
 | Notebook 03
-| Variable — depends on LLM reasoning quality
+| Variable (depends on LLM reasoning quality)
 |===
 
 Cypher Templates are the most reliable: queries are reviewed in advance and execute predictably. Text2Cypher is the most flexible: the agent can answer any question the schema supports. The trade-off is that Text2Cypher's query quality depends on the LLM's ability to reason about graph structures, which is why the schema-first approach is critical.
@@ -117,16 +117,16 @@ Cypher Templates are the most reliable: queries are reviewed in advance and exec
 | Agent writes from scratch after schema discovery
 
 | **Schema discovery**
-| No — queries are hard-coded with known labels and types
-| Yes — agent calls `get-schema` before every query
+| No; queries are hard-coded with known labels and types
+| Yes; agent calls `get-schema` before every query
 
 | **Flexibility**
 | Limited to the query patterns defined in advance
 | Any question the schema can answer
 
 | **Failure mode**
-| Predictable — expert-reviewed queries return expected results
-| Silent failures possible — wrong labels return empty results without errors
+| Predictable; expert-reviewed queries return expected results
+| Silent failures possible; wrong labels return empty results without errors
 
 | **MCP role**
 | Transport layer for executing pre-written queries
@@ -165,10 +165,10 @@ In production systems, a supervisor or router agent sits above specialized agent
 
 == Alternative Frameworks
 
-This lab uses the **Strands Agents SDK** — AWS-native, built-in MCP support, simpler API. **LangGraph** is a viable alternative that provides fine-grained control over the agent loop via LangChain MCP adapters, better suited for complex multi-step workflows where you need to customize how the agent reasons, retries, or chains operations.
+This lab uses the **Strands Agents SDK**: AWS-native, built-in MCP support, simpler API. **LangGraph** is a viable alternative that provides fine-grained control over the agent loop via LangChain MCP adapters, better suited for complex multi-step workflows where you need to customize how the agent reasons, retries, or chains operations.
 
 == Next Steps
 
 Continue to xref:lab5-instructions.adoc[Lab 5 Instructions] for the notebook walkthrough. This is the final lab in the main workshop.
 
-For a bonus challenge, xref:lab6.adoc[Lab 6: GraphRAG Pipeline] walks through building the data pipeline from scratch — chunking, embedding generation, and retrieval using the neo4j-graphrag library.
+For a bonus challenge, xref:lab6.adoc[Lab 6: GraphRAG Pipeline] walks through building the data pipeline from scratch: chunking, embedding generation, and retrieval using the neo4j-graphrag library.

@@ -122,7 +122,7 @@ FOR (n:Company|Product|RiskFactor)
 ON EACH [n.name, n.description];
 ----
 
-NOTE: This statement will return "No changes, no records" — that is expected. Index creation is a schema operation and does not return rows. To confirm the index was created, run `SHOW FULLTEXT INDEXES`.
+NOTE: This statement will return "No changes, no records." That is expected. Index creation is a schema operation and does not return rows. To confirm the index was created, run `SHOW FULLTEXT INDEXES`.
 
 === Step 5: Verify the Load
 
@@ -147,7 +147,7 @@ Expected counts:
 | RiskFactor | 883
 |===
 
-NOTE: The Company count is higher than 6 because `company_competitors.csv` and `company_partners.csv` contain competitor and partner names (e.g., Google, Samsung, OpenAI) that are not in `companies.csv`. The relationship loads use `MERGE (b:Company {name: row.targetCompanyName})`, which creates new Company nodes for these names. The resulting nodes have only a `name` property — no `companyId`, `ticker`, or other identifiers.
+NOTE: The Company count is higher than 6 because `company_competitors.csv` and `company_partners.csv` contain competitor and partner names (e.g., Google, Samsung, OpenAI) that are not in `companies.csv`. The relationship loads use `MERGE (b:Company {name: row.targetCompanyName})`, which creates new Company nodes for these names. The resulting nodes have only a `name` property, with no `companyId`, `ticker`, or other identifiers.
 
 == Sample Queries
 
@@ -209,7 +209,7 @@ MATCH (c:Company {ticker: 'NVDA'})-[:PARTNERS_WITH]->(p)
 RETURN p.name ORDER BY p.name
 ----
 
-**Fulltext search — find entities mentioning "artificial intelligence"**
+**Fulltext search: find entities mentioning "artificial intelligence"**
 
 [source,cypher]
 ----

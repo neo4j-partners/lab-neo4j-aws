@@ -1,0 +1,244 @@
+---
+marp: true
+theme: default
+paginate: true
+---
+
+<style>
+section {
+  --marp-auto-scaling-code: false;
+}
+
+li {
+  opacity: 1 !important;
+  animation: none !important;
+  visibility: visible !important;
+}
+
+/* Disable all fragment animations */
+.marp-fragment {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+ul > li,
+ol > li {
+  opacity: 1 !important;
+}
+</style>
+
+# Neo4j GraphRAG Retrievers
+
+From Vector Search to Graph-Enriched Retrieval
+
+---
+
+## From Knowledge Graph to Answers
+
+You have a knowledge graph with:
+- **Entities**: Companies, products, risk factors, asset managers
+- **Relationships**: OFFERS, FACES_RISK, COMPETES_WITH, OWNS
+- **Embeddings**: Vector representations for semantic search
+- **Chunks**: Text passages from SEC 10-K filings
+
+**The question**: How do you *retrieve* the right information to answer user questions?
+
+---
+
+## What Is a Retriever?
+
+A **retriever** searches your knowledge graph and returns relevant information.
+
+**Two retrieval patterns in Lab 4:**
+
+| Retriever | What It Does |
+|-----------|--------------|
+| **VectorRetriever** | Semantic similarity search across text chunks |
+| **VectorCypherRetriever** | Semantic search + graph traversal for entity context |
+
+Each pattern excels at different question types.
+
+---
+
+## The GraphRAG Class
+
+Retrievers work with the **GraphRAG** class, which combines retrieval with LLM generation:
+
+```
+User Question
+    ↓
+Retriever finds relevant context
+    ↓
+Context passed to LLM
+    ↓
+LLM generates grounded answer
+```
+
+The retriever's job is finding the right context. The LLM's job is generating a coherent answer from that context.
+
+---
+
+## VectorRetriever
+
+**How it works:**
+- Converts your question to an embedding (Bedrock Nova)
+- Queries the `chunkEmbeddings` vector index
+- Returns chunks ranked by cosine similarity
+
+**Best for:**
+- "What is Apple's strategy?"
+- "Tell me about cybersecurity threats"
+- Conceptual, exploratory questions
+
+**Limitation:** Returns text chunks only — no entity relationships.
+
+---
+
+## VectorCypherRetriever
+
+**How it works:**
+- Vector search finds relevant chunks (same as VectorRetriever)
+- Custom Cypher query traverses from chunks to related entities
+- Returns content + structured graph context
+
+**Best for:**
+- "Which asset managers are affected by crypto regulations?"
+- "What risks do tech companies face?"
+- Questions needing both content and relationships
+
+**Key insight:** The chunk is the anchor — graph traversal enriches what vector search finds.
+
+---
+
+<style scoped>
+section { font-size: 25px; }
+</style>
+
+## The Retrieval Query
+
+The `VectorCypherRetriever` accepts a `retrieval_query` that runs on each matched chunk:
+
+```cypher
+MATCH (node)-[:FROM_DOCUMENT]->(doc:Document)
+OPTIONAL MATCH (doc)<-[:FILED]-(company:Company)
+OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
+OPTIONAL MATCH (product:Product)-[:FROM_CHUNK]->(node)
+```
+
+Starting from the matched chunk (`node`), the query traverses:
+1. **FROM_DOCUMENT** → which filing?
+2. **FILED** ← which company?
+3. **FACES_RISK** → what risk factors?
+4. **FROM_CHUNK** ← what products mentioned?
+
+---
+
+## What the Library Does Under the Hood
+
+When you call a retriever, it:
+
+1. **Embeds your question**: sends text to Bedrock Nova, gets a 1024-dimensional vector
+2. **Queries the vector index**: runs Cypher against the `chunkEmbeddings` index
+3. **Traverses the graph** (Cypher retrievers only): executes the `retrieval_query`
+4. **Formats results for the LLM**: packages text and metadata into prompt-ready format
+
+In Lab 5, you do each of these steps yourself through MCP.
+
+---
+
+## VectorRetriever vs VectorCypherRetriever
+
+| Aspect | VectorRetriever | VectorCypherRetriever |
+|--------|----------------|----------------------|
+| **Search** | Vector similarity | Vector similarity + graph traversal |
+| **Returns** | Chunk text + score | Chunk text + entities + relationships |
+| **Context** | Isolated passages | Passages with company, product, risk data |
+| **Complexity** | Simple setup | Requires retrieval query design |
+| **Best for** | Exploratory questions | Questions needing entity context |
+
+---
+
+## The Chunk-as-Anchor Pattern
+
+Graph traversal starts from what vector search finds:
+
+```
+Question → Embedding → Vector Index → Matched Chunks
+                                          ↓
+                              Graph Traversal from each chunk
+                                          ↓
+                              Entities, relationships, metadata
+```
+
+If vector search does not surface relevant chunks, no amount of graph traversal compensates. The chunk is the anchor.
+
+---
+
+## When Vector Search Is Not Enough
+
+**"How many products does NVIDIA offer?"**
+
+This question targets a **count over relationships**, not a semantically similar passage. Vector search may find chunks that *mention* NVIDIA products, but the accurate answer requires:
+
+```cypher
+MATCH (c:Company {name: 'NVIDIA Corporation'})-[:OFFERS]->(p:Product)
+RETURN count(p)
+```
+
+For counts, lists, and specific lookups, **Text2Cypher** (Lab 5) writes the query directly.
+
+---
+
+## Choosing the Right Retriever
+
+| Question Pattern | Best Retriever |
+|-----------------|----------------|
+| "What is...", "Tell me about..." | VectorRetriever |
+| "Which [entities] are affected by..." | VectorCypherRetriever |
+| "How many...", "List all..." | Text2Cypher (Lab 5) |
+| Content about topics | VectorRetriever |
+| Content + relationships | VectorCypherRetriever |
+| Facts, counts, aggregations | Text2Cypher (Lab 5) |
+
+---
+
+## The Decision Framework
+
+**Ask yourself:**
+
+1. **Am I looking for content or facts?**
+   - Content → VectorRetriever or VectorCypherRetriever
+   - Facts → Text2Cypher
+
+2. **Do I need related entities?**
+   - No → VectorRetriever
+   - Yes → VectorCypherRetriever
+
+3. **Is this about relationships?**
+   - Traversals → VectorCypherRetriever or Text2Cypher
+   - Semantic → VectorRetriever
+
+---
+
+## Lab 4 Notebook Progression
+
+**Notebook 01: Load and Query**
+Add chunks + embeddings to the existing knowledge graph, create vector index, link entities to chunks
+
+**Notebook 02: VectorRetriever**
+Semantic question answering with VectorRetriever + GraphRAG pipeline
+
+**Notebook 03: VectorCypherRetriever**
+Graph-enriched retrieval with custom Cypher traversal queries
+
+---
+
+## Summary
+
+- **Retrievers** search and return relevant information from your knowledge graph
+- **VectorRetriever**: semantic similarity search across chunks
+- **VectorCypherRetriever**: semantic search + graph traversal for entity context
+- **Each excels at different question types** — choosing the right one matters
+- **The chunk is the anchor** — graph traversal enriches what vector search finds
+
+**Next:** Lab 5 adds MCP, Cypher Templates, and Text2Cypher for full agent autonomy.

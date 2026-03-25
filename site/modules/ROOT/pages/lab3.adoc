@@ -6,11 +6,11 @@ TIP: Ready to start? Jump to the xref:lab3-instructions.adoc[Lab 3 Instructions]
 
 .**At a Glance**
 
-* **Amazon Bedrock** — managed access to foundation models through a unified API, no infrastructure to manage
-* **Strands Agents SDK** — lightweight, AWS-native agent framework with built-in tool use and MCP support
-* **The ReAct pattern** — reason, act, observe, repeat until the LLM reaches an answer
-* **Tools** — Python functions the LLM can invoke at runtime using the `@tool` decorator
-* **AgentCore Runtime** — packages and deploys agents as managed AWS services
+* **Amazon Bedrock**: managed access to foundation models through a unified API, no infrastructure to manage
+* **Strands Agents SDK**: lightweight, AWS-native agent framework with built-in tool use and MCP support
+* **The ReAct pattern**: reason, act, observe, repeat until the LLM reaches an answer
+* **Tools**: Python functions the LLM can invoke at runtime using the `@tool` decorator
+* **AgentCore Runtime**: packages and deploys agents as managed AWS services
 
 == Amazon Bedrock
 
@@ -46,10 +46,10 @@ bedrock_model = BedrockModel(model_id=MODEL_ID, region_name=REGION)
 
 ReAct stands for Reason + Act. The loop works as follows:
 
-1. **Reason** — The LLM examines the question and the current state, then decides what to do next.
-2. **Act** — The LLM issues a tool call (or produces a final answer if no tool is needed).
-3. **Observe** — The tool executes and the result is appended to the message history.
-4. **Repeat** — The LLM sees the tool result and decides whether to call another tool or finish.
+1. **Reason**: The LLM examines the question and the current state, then decides what to do next.
+2. **Act**: The LLM issues a tool call (or produces a final answer if no tool is needed).
+3. **Observe**: The tool executes and the result is appended to the message history.
+4. **Repeat**: The LLM sees the tool result and decides whether to call another tool or finish.
 
 .A multi-cycle example with SEC data
 [%collapsible]
@@ -65,7 +65,7 @@ This loop is the foundation for every agent in the workshop. Labs 4 and 5 add re
 
 == Strands Agent Architecture
 
-The agent in this lab has two simple tools: one that returns the current time and one that adds numbers. The architecture is the same regardless of what the tools do — Labs 4 through 6 replace these simple tools with graph queries, vector search, and MCP server connections.
+The agent in this lab has two simple tools: one that returns the current time and one that adds numbers. The architecture is the same regardless of what the tools do; Labs 4 through 6 replace these simple tools with graph queries, vector search, and MCP server connections.
 
 Strands takes a model-driven approach: the model decides what to do at each step rather than following a developer-defined workflow. You provide a model, a system prompt, and a list of tools. The agent implements the ReAct loop internally: it reasons about the question, calls tools, observes results, and repeats until it reaches an answer.
 
@@ -110,7 +110,7 @@ The deployment uses `direct_code_deploy` from the AgentCore Starter Toolkit, whi
 
 1. The agent code (`agent.py`) and dependencies (`pyproject.toml`) are pre-built in `agentcore_deploy/`
 2. Generate a `.bedrock_agentcore.yaml` configuration specifying the entrypoint, runtime, and the IAM execution role
-3. Run `agentcore deploy` — the toolkit packages the code, uploads it to S3, and creates the runtime environment
+3. Run `agentcore deploy`. The toolkit packages the code, uploads it to S3, and creates the runtime environment
 4. Invoke the deployed agent via the `agentcore` CLI or programmatically with boto3
 
 NOTE: The AgentCore deployment requires IAM resources that the workshop admin creates before the workshop. See xref:admin-setup.adoc[Admin Setup] for the `setup_agentcore.sh` script that provisions the execution role, S3 bucket, and SageMaker permissions.

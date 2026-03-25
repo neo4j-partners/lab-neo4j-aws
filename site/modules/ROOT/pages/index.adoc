@@ -107,11 +107,11 @@ image::workshop-architecture.png[Workshop Architecture,800]
 | Lab | Description | Duration
 
 | xref:lab5.adoc[Lab 5]
-| Complete GraphRAG pipeline with neo4j-graphrag: data loading, embeddings, and four retriever types
+| MCP-based GraphRAG agents: Cypher Templates, Text2Cypher, and schema-first query generation
 | 45 min
 
 | xref:lab6.adoc[Lab 6]
-| Advanced Agents: Text2Cypher pattern where agents discover the graph schema via MCP and write their own Cypher queries
+| Build the GraphRAG data pipeline from scratch: chunking, embeddings, and graph-enriched retrieval
 | 30 min
 |===
 

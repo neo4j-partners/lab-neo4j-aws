@@ -110,10 +110,10 @@ The reasoning panel shows the agent's decision process: it identified the questi
 
 Other Cypher Template questions to try:
 
-* "What risks do Apple Inc. and Microsoft Corporation share?" — Compares risk factor nodes connected to both companies.
-* "Which companies does BlackRock Inc. own shares in?" — Traverses the OWNS relationships from the AssetManager node.
-* "What products does NVIDIA Corporation offer?" — Retrieves Product nodes linked to NVIDIA, returning GPU architectures, platforms, and software services.
-* "Show me the documents filed by Apple Inc." — Uses the Documents by Company Identifier tool to retrieve SEC filing metadata.
+* "What risks do Apple Inc. and Microsoft Corporation share?" Compares risk factor nodes connected to both companies.
+* "Which companies does BlackRock Inc. own shares in?" Traverses the OWNS relationships from the AssetManager node.
+* "What products does NVIDIA Corporation offer?" Retrieves Product nodes linked to NVIDIA, returning GPU architectures, platforms, and software services.
+* "Show me the documents filed by Apple Inc." Uses the Documents by Company Identifier tool to retrieve SEC filing metadata.
 
 === Text2Cypher Questions
 

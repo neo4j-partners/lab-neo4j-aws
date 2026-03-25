@@ -4,7 +4,7 @@ TIP: For concepts and background, see xref:lab6.adoc[Lab 6: GraphRAG Pipeline].
 
 == What You'll Learn
 
-* **Data Loading**: Build a two-layer knowledge graph from raw SEC 10-K filing data — structured entities and unstructured document chunks connected by cross-links
+* **Data Loading**: Build a two-layer knowledge graph from raw SEC 10-K filing data, including structured entities and unstructured document chunks connected by cross-links
 * **Embeddings**: Generate vector embeddings with Amazon Nova and create a vector index for semantic search
 * **VectorCypherRetriever**: Vector search enriched with Cypher graph traversal to connected entities, wired into a GraphRAG pipeline
 
@@ -39,4 +39,4 @@ Open each notebook in order. Each one builds on the graph state left by the prev
 
 == Next Steps
 
-Congratulations — you have completed the bonus lab! The main workshop (Labs 0-5) covered setup, visual exploration, GraphRAG retrieval, and MCP-based agents. This bonus lab gave you hands-on experience building the data pipeline that powers those retrieval patterns.
+Congratulations, you have completed the bonus lab! The main workshop (Labs 0-5) covered setup, visual exploration, GraphRAG retrieval, and MCP-based agents. This bonus lab gave you hands-on experience building the data pipeline that powers those retrieval patterns.

@@ -2,16 +2,16 @@
 
 NOTE: This lab is optional. The main workshop is complete after Lab 5. This bonus lab is for participants who want to understand how the data pipeline behind Labs 4 and 5 was built.
 
-In Lab 4 you queried a pre-built knowledge graph — seed data and embeddings were already loaded. This lab builds that graph from scratch. You load raw SEC 10-K filing data, split it into chunks, generate vector embeddings, and then query the graph using the same neo4j-graphrag library from Lab 4 — this time with `VectorCypherRetriever`, which adds graph traversal to enrich every vector search result with connected entities.
+In Lab 4 you queried a pre-built knowledge graph where seed data and embeddings were already loaded. This lab builds that graph from scratch. You load raw SEC 10-K filing data, split it into chunks, generate vector embeddings, and then query the graph using the same neo4j-graphrag library from Lab 4, this time with `VectorCypherRetriever`, which adds graph traversal to enrich every vector search result with connected entities.
 
 TIP: Ready to start? Jump to the xref:lab6-instructions.adoc[Lab 6 Instructions] for the notebook walkthrough.
 
 .**At a Glance**
 
-* **Three notebooks** — progress from loading raw text into a knowledge graph to running graph-enriched retrieval queries
-* **neo4j-graphrag library** — `VectorCypherRetriever` combines semantic search with Cypher graph traversal
-* **Full data pipeline** — chunking, embedding generation, and index creation from scratch
-* **Standalone dataset** — wipes the graph and rebuilds from `financial_data.json` (Apple 10-K data)
+* **Three notebooks**: progress from loading raw text into a knowledge graph to running graph-enriched retrieval queries
+* **neo4j-graphrag library**: `VectorCypherRetriever` combines semantic search with Cypher graph traversal
+* **Full data pipeline**: chunking, embedding generation, and index creation from scratch
+* **Standalone dataset**: wipes the graph and rebuilds from `financial_data.json` (Apple 10-K data)
 
 == Embeddings and Vector Search
 
@@ -95,19 +95,19 @@ Lab 4 and Lab 6 use the same neo4j-graphrag library and the same underlying grap
 
 | **Data loading**
 | Seed data and embeddings pre-loaded from `setup/seed-embeddings`
-| Build from raw `financial_data.json` — chunking, entity creation, embedding generation
+| Build from raw `financial_data.json`: chunking, entity creation, embedding generation
 
 | **Graph scope**
 | Multi-company graph (6 companies, asset managers, competitors, partners)
-| Single-company graph (Apple only — 12 products, 5 risk factors)
+| Single-company graph (Apple only: 12 products, 5 risk factors)
 
 | **Retriever**
 | VectorRetriever and VectorCypherRetriever
 | VectorCypherRetriever with graph traversal
 
 | **Pipeline ownership**
-| Query only — data pipeline was done for you
-| Full ownership — you build every layer
+| Query only; data pipeline was done for you
+| Full ownership; you build every layer
 |===
 
 == Next Steps

@@ -66,6 +66,8 @@ If you're completing this lab independently or your organizer has instructed you
 
 ## Part 3: Load the Knowledge Graph
 
+![SEC 10-K Financial Data Model](images/financial-data-model.png)
+
 After your Aura instance is running, open **Query** from the left sidebar in the [Aura Console](https://console.neo4j.io) and run the following Cypher statements in order.
 
 ### Step 1: Create Constraints

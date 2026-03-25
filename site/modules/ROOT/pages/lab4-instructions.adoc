@@ -1,8 +1,8 @@
-= Lab 4 Instructions: GraphRAG Search
+= Lab 4 Instructions: GraphRAG Retrievers
 
 Follow these notebooks to load chunk embeddings into your knowledge graph and build retrieval pipelines that progress from pure vector search to graph-enriched retrieval.
 
-TIP: For concepts and background, see xref:lab4.adoc[Lab 4: GraphRAG Search].
+TIP: For concepts and background, see xref:lab4.adoc[Lab 4: GraphRAG Retrievers].
 
 == What You'll Learn
 

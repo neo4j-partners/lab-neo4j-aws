@@ -1,4 +1,4 @@
-# Lab 4 - GraphRAG Search
+# Lab 4 - GraphRAG Retrievers
 
 Run three notebooks that build a GraphRAG search pipeline using the neo4j-graphrag Python library. You start by loading pre-computed chunk embeddings into the knowledge graph from Labs 1-2, then build retrieval pipelines that progress from pure vector search to graph-enriched search with entity traversal.
 

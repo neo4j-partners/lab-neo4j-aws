@@ -17,7 +17,7 @@ Update nav.adoc from:
 ```
 * Part 2: Building GraphRAG Agents
 ** Lab 3: Bedrock & Agents
-** Lab 4: GraphRAG Search
+** Lab 4: GraphRAG Retrievers
 * Part 3: Advanced GraphRAG Patterns
 ** Lab 5: Neo4j MCP Server
 ** Lab 6: GraphRAG Pipeline
@@ -27,7 +27,7 @@ To:
 ```
 * Part 2: Building GraphRAG Agents
 ** Lab 3: Bedrock & Agents
-** Lab 4: GraphRAG Search
+** Lab 4: GraphRAG Retrievers
 *** lab4-sample-queries (new, see Fix 2)
 ** Lab 5: Neo4j MCP Server
 * Part 3: Bonus — Build Your Own Pipeline

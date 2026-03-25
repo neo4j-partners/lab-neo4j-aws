@@ -32,6 +32,8 @@ image::01_Login_w_Org_SSO.png[Login with Organization SSO]
 +
 image::lab1-oneblink-sso.png[Continue with OneBlink SSO]
 6. Enter your **Email** and **Password** from the OneBlink credentials page
++
+WARNING: The email field may be pre-populated with an incorrect address. Be sure to clear it and enter the email from your OneBlink credentials.
 
 === Option B: Free Trial Signup (For self-paced learning)
 

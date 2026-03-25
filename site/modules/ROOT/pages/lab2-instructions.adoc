@@ -37,7 +37,7 @@ image::lab2-connect-instance.png[Connect Instance]
 
 The "Create with AI" dialog needs your instance selection and a prompt describing what the agent should do.
 
-image::lab2-create-ai-settings.png[Create with AI Settings]
+image::Create_with_AI.png[Create with AI Settings]
 
 Configure the following settings:
 
@@ -49,7 +49,7 @@ Configure the following settings:
 | Your Lab 1 instance (pre-selected from Step 2)
 
 | **Vector embeddings**
-| Leave unchecked (no embeddings loaded yet)
+| Do not select (no embeddings loaded yet)
 |===
 
 Enter the following prompt:
@@ -73,7 +73,7 @@ Click **Create**. Neo4j will analyze the graph schema and generate the agent alo
 
 After creation, the agent appears with a full set of auto-generated tools. Neo4j derived these from the node labels, relationship types, and indexes in your knowledge graph.
 
-image::lab2-agent-tools.png[Agent Tools]
+image::agent_tools.png[Agent Tools]
 
 The generated tools fall into two categories:
 

@@ -483,8 +483,7 @@ SOLUTIONS = [
     ("solution_srcs.05_02_embeddings", "Embeddings (Lab 5)", False, "main"),
     ("solution_srcs.05_03_vector_retriever", "Vector Retriever (Lab 5)", False, "main"),
     ("solution_srcs.05_04_vector_cypher_retriever", "Vector Cypher Retriever (Lab 5)", False, "main"),
-    ("solution_srcs.05_05_hybrid_rag", "Hybrid RAG (Lab 5)", False, "main"),
-    ("solution_srcs.05_06_hybrid_search", "Hybrid Search (Lab 5)", False, "main"),
+    ("solution_srcs.05_05_hybrid_rag", "Hybrid Search and GraphRAG (Lab 5)", False, "main"),
 ]
 
 
@@ -507,8 +506,7 @@ def _print_solutions_menu():
     print("  7. Embeddings")
     print("  8. Vector Retriever")
     print("  9. Vector Cypher Retriever")
-    print(" 10. Hybrid RAG")
-    print(" 11. Hybrid Search")
+    print(" 10. Hybrid Search and GraphRAG")
     print("\n  A. Run all")
     print("  0. Exit")
     print("=" * 50)

@@ -109,6 +109,8 @@ FOR (n:Company|Product|RiskFactor)
 ON EACH [n.name, n.description];
 ----
 
+NOTE: This statement will return "No changes, no records" — that is expected. Index creation is a schema operation and does not return rows. To confirm the index was created, run `SHOW FULLTEXT INDEXES`.
+
 === Step 5: Verify the Load
 
 [source,cypher]
@@ -191,6 +193,16 @@ ORDER BY exposed DESC, am.name LIMIT 5
 ----
 MATCH (c:Company {ticker: 'NVDA'})-[:PARTNERS_WITH]->(p)
 RETURN p.name ORDER BY p.name
+----
+
+**Fulltext search — find entities mentioning "artificial intelligence"**
+
+[source,cypher]
+----
+CALL db.index.fulltext.queryNodes('search_entities', 'artificial intelligence')
+YIELD node, score
+RETURN labels(node)[0] AS label, node.name AS name, score
+ORDER BY score DESC LIMIT 10
 ----
 
 == Next Steps

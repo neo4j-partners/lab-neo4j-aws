@@ -61,7 +61,8 @@ def write_to_neo4j(  # noqa: C901
         """UNWIND $docs AS doc
            MERGE (d:Document {documentId: doc.documentId})
            SET d.accessionNumber = doc.accessionNumber,
-               d.filingType = doc.filingType""",
+               d.filingType = doc.filingType,
+               d.source = doc.source""",
         docs=documents,
     )
     driver.execute_query(

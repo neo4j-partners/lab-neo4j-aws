@@ -174,7 +174,8 @@ def export(driver) -> dict:  # noqa: C901
         result = session.run("""
             MATCH (c:Company)-[:FILED]->(d:Document)
             WHERE c.name IN $filing_companies
-            RETURN DISTINCT d.path AS path
+            RETURN DISTINCT d.path AS path,
+                   coalesce(d.source, d.path) AS source
             ORDER BY d.path
         """, **params)
         documents = [dict(r) for r in result]
@@ -189,7 +190,7 @@ def export(driver) -> dict:  # noqa: C901
             d["filingType"] = "10-K"
         write_csv(
             "documents.csv",
-            ["documentId", "accessionNumber", "filingType"],
+            ["documentId", "accessionNumber", "filingType", "source"],
             [strip_keys(d, {"path"}) for d in documents],
         )
 

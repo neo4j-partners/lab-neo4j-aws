@@ -174,11 +174,9 @@ NOTE: NEXT_CHUNK relationships form a linked list that preserves the original re
 
 == Fulltext Keyword Search
 
-Fulltext indexes enable keyword-based search alongside vector similarity. The queries below require two fulltext indexes that are not created during Lab 4. Run the following setup queries first.
+Fulltext indexes enable keyword-based search alongside vector similarity. The `search_entities` index was already created in xref:lab1-load.adoc[Lab 1 Step 4]. The queries below also require a `search_chunks` index on Chunk text, which is not created until you run the setup query below.
 
-=== Setup: Create Fulltext Indexes
-
-Create a fulltext index on Chunk text:
+=== Setup: Create Fulltext Index on Chunks
 
 [source,cypher]
 ----
@@ -186,15 +184,7 @@ CREATE FULLTEXT INDEX search_chunks IF NOT EXISTS
 FOR (c:Chunk) ON EACH [c.text]
 ----
 
-Create a fulltext index on entity names:
-
-[source,cypher]
-----
-CREATE FULLTEXT INDEX search_entities IF NOT EXISTS
-FOR (n:Company|Product|RiskFactor) ON EACH [n.name]
-----
-
-NOTE: These indexes use Apache Lucene under the hood. `IF NOT EXISTS` makes the statements safe to re-run. Allow a few seconds for indexing to complete before running the queries below.
+NOTE: This index uses Apache Lucene under the hood. `IF NOT EXISTS` makes the statement safe to re-run. Allow a few seconds for indexing to complete before running the queries below.
 
 === Keyword Search
 
@@ -284,4 +274,4 @@ RETURN name, type, labelsOrTypes, properties
 ORDER BY type, name
 ----
 
-NOTE: Expected indexes include `chunkEmbeddings` (VECTOR). If you created the fulltext indexes above, you should also see `search_chunks` (FULLTEXT) and `search_entities` (FULLTEXT).
+NOTE: Expected indexes include `chunkEmbeddings` (VECTOR), `search_entities` (FULLTEXT, created in Lab 1), and `search_chunks` (FULLTEXT, created above).

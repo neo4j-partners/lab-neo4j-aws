@@ -61,7 +61,8 @@ SET m.name = row.name;
 
 LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/documents.csv' AS row
 MERGE (d:Document {documentId: row.documentId})
-SET d.accessionNumber = row.accessionNumber, d.filingType = row.filingType;
+SET d.accessionNumber = row.accessionNumber, d.filingType = row.filingType,
+    d.source = row.source;
 
 LOAD CSV WITH HEADERS FROM 'https://dhoj7jltw73ew.cloudfront.net/sec-filings/financial_metrics.csv' AS row
 MERGE (fm:FinancialMetric {metricId: row.metricId})

@@ -14,13 +14,13 @@ TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions]
 
 Most documents are too long for an LLM to process in a single pass. Retrieval-Augmented Generation (RAG) solves this by finding the most relevant pieces of a document and feeding only those to the model. The building blocks are:
 
-**Chunks.** A long document is split into smaller passages called chunks. Each chunk is short enough to embed and retrieve individually, but long enough to carry useful context. Chunks are stored as nodes in the graph and linked in sequence so the original reading order is preserved.
+**Chunks.** A long document is split into smaller passages called chunks — think of them as paragraphs or short sections. Each chunk is small enough for the system to process individually, but long enough to carry useful context. Chunks are stored as nodes in the graph and linked in sequence so the original reading order is preserved.
 
-**Embeddings.** An embedding model reads a chunk's text and produces a numerical vector that captures what the text _means_, not just what words it contains. "Supply chain disruption" and "logistics bottleneck risk" produce similar vectors because they describe related concepts, even though they share no keywords.
+**Embeddings.** An embedding model reads a chunk's text and produces a list of numbers — called a vector — that acts as a fingerprint for the meaning of the text, not just the words it contains. Texts that describe similar ideas get similar fingerprints. For example, "supply chain disruption" and "logistics bottleneck risk" produce nearly identical vectors because they describe related concepts, even though they share no keywords.
 
-**Vector search.** Given a natural-language question, the system encodes it with the same embedding model and finds stored chunk vectors whose meaning is closest. This is semantic similarity search — it matches on concepts rather than exact words. The results are ranked text fragments with similarity scores.
+**Vector search.** Given a natural-language question, the system converts it into a vector using the same embedding model and then compares that vector against all the stored chunk vectors to find the closest matches. This is called semantic similarity search — it matches on meaning rather than exact keywords. The results are text passages ranked by how closely their meaning matches your question.
 
-**The limitation of vector search alone.** Vector search returns isolated passages. You get the chunk text and a score, but nothing about where the passage came from, what entities it mentions, or how it relates to other information in the corpus.
+**The limitation of vector search alone.** Vector search returns isolated passages. You get the chunk text and a similarity score, but nothing about where the passage came from, what entities it mentions, or how it relates to other information in the corpus.
 
 **Graph-enriched search.** A knowledge graph connects chunks to structured entities — documents, companies, products, risk factors — through typed relationships. After vector search finds relevant chunks, graph traversal follows those relationships to pull in structured context. The result is not just "here's a matching passage" but "here's a matching passage, filed by this company, mentioning these products, linked to these risk factors." That additional context grounds the LLM's answer in verified, structured data.
 

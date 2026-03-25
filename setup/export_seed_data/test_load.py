@@ -109,7 +109,8 @@ def load_nodes(driver, data: dict) -> None:
         """UNWIND $rows AS row
            MERGE (d:Document {documentId: row.documentId})
            SET d.accessionNumber = row.accessionNumber,
-               d.filingType = row.filingType""",
+               d.filingType = row.filingType,
+               d.source = row.source""",
         rows=data["documents"],
     )
     print(f"    Documents: {len(data['documents'])}")

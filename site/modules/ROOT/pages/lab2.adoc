@@ -43,7 +43,7 @@ Text2Cypher translates arbitrary natural language questions into Cypher queries 
 
 === Similarity Search
 
-Similarity Search uses vector embeddings to find nodes that are semantically similar to a query. Aura Agents offers this as a tool type, but it requires a vector index with pre-computed embeddings on the target nodes. The current SEC 10-K dataset does not have embeddings loaded at this stage, so the Similarity Search tool is not enabled for this lab. You will add embeddings and use vector search in Lab 5.
+Similarity Search uses vector embeddings — numerical fingerprints of meaning, covered in detail in xref:lab4.adoc[Lab 4] — to find nodes whose content is similar in meaning to a query, even when they use different words. Aura Agents offers this as a tool type, but it requires a vector index with pre-computed embeddings on the target nodes. The current SEC 10-K dataset does not have embeddings loaded at this stage, so the Similarity Search tool is not enabled for this lab. You will add embeddings and use vector search in Lab 4.
 
 NOTE: If you see Similarity Search listed as an available tool type when creating your agent, you can skip it for now — there are no embeddings in the graph to search against yet.
 

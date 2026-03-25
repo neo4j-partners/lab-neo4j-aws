@@ -51,12 +51,24 @@ def strip_keys(row: dict, exclude: set[str]) -> dict:
     return {k: v for k, v in row.items() if k not in exclude}
 
 
+def write_embeddings_csv(
+    filename: str, headers: list[str], rows: list[dict],
+) -> None:
+    path = EMBEDDINGS_DIR / filename
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"  {filename}: {len(rows)} rows")
+
+
 # ---------------------------------------------------------------------------
-# Export
+# Export: Structured Layer
 # ---------------------------------------------------------------------------
 
 
-def export(driver) -> None:  # noqa: C901
+def export(driver) -> dict:  # noqa: C901
+    """Export structured layer. Returns id_maps for use by export_chunks."""
     with driver.session() as session:
 
         # ── Discover filing companies (those with FILED -> Document) ───

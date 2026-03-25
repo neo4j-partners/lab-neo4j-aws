@@ -8,7 +8,7 @@ TIP: Ready to start? Jump to the xref:lab2-instructions.adoc[Lab 2 Instructions]
 
 * **Aura Agents** — combine graph traversal and natural language queries in one conversational interface
 * **"Create with AI"** — analyzes your graph schema and auto-generates tools with no Cypher to write manually
-* **Two retrieval patterns** — Cypher Templates (deterministic traversals) and Text2Cypher (ad-hoc natural language queries)
+* **Three retrieval patterns** — Cypher Templates (deterministic traversals), Text2Cypher (ad-hoc natural language queries), and Similarity Search (vector-based, not yet enabled for this dataset)
 * **Optional deployment** — expose the agent as a REST API endpoint or MCP server for integration with external clients
 
 == What Are Aura Agents?
@@ -17,9 +17,9 @@ Aura Agents is Neo4j's no-code platform for building conversational AI interface
 
 The "Create with AI" workflow inspects the node labels, relationship types, and indexes in your knowledge graph and produces a fully configured agent. For the SEC financial dataset, this means the agent automatically understands how to look up company details, traverse ownership chains, compare risk factors, and search filing text, all without manual configuration.
 
-== Two Retrieval Patterns
+== Three Retrieval Patterns
 
-The generated agent uses two categories of tools, each suited to different question types.
+The generated agent uses three categories of tools, each suited to different question types.
 
 === Cypher Templates
 
@@ -41,6 +41,12 @@ Text2Cypher translates arbitrary natural language questions into Cypher queries 
 "How many products does NVIDIA Corporation mention?" generates a Cypher query like `MATCH (c:Company {name: 'NVIDIA Corporation'})-[:OFFERS]->(p:Product) RETURN count(p)` and executes it against the graph.
 ====
 
+=== Similarity Search
+
+Similarity Search uses vector embeddings to find nodes that are semantically similar to a query. Aura Agents offers this as a tool type, but it requires a vector index with pre-computed embeddings on the target nodes. The current SEC 10-K dataset does not have embeddings loaded at this stage, so the Similarity Search tool is not enabled for this lab. You will add embeddings and use vector search in Lab 5.
+
+NOTE: If you see Similarity Search listed as an available tool type when creating your agent, you can skip it for now — there are no embeddings in the graph to search against yet.
+
 == Tool Type Comparison
 
 [cols="1,2,2,1"]
@@ -56,6 +62,11 @@ Text2Cypher translates arbitrary natural language questions into Cypher queries 
 | Flexible natural language to Cypher
 | Ad-hoc questions about the data
 | Variable
+
+| **Similarity Search**
+| Vector-based semantic matching
+| Finding related content by meaning (requires embeddings)
+| Not available — dataset has no embeddings yet
 |===
 
 == Tool Reliability

@@ -82,7 +82,7 @@ The generated tools fall into two categories:
 | Tool Type | Generated Tools
 
 | **Cypher Templates**
-| Company Details, Company Risk Factors, Companies Owned by Asset Manager, Company Financial Metrics, Company Products Offered, Documents by Company Identifier, Company Executives
+| Company Details, Company Risk Factors, Companies Owned by Asset Manager, Company Financial Metrics, Company Products Offered, Documents by Company Identifier
 
 | **Text2Cypher**
 | Natural Language to Cypher Tool
@@ -113,7 +113,6 @@ Other Cypher Template questions to try:
 * "What risks do Apple Inc. and Microsoft Corporation share?" — Compares risk factor nodes connected to both companies.
 * "Which companies does BlackRock Inc. own shares in?" — Traverses the OWNS relationships from the AssetManager node.
 * "What products does NVIDIA Corporation offer?" — Retrieves Product nodes linked to NVIDIA, returning GPU architectures, platforms, and software services.
-* "Who are the executives at NVIDIA Corporation?" — Traverses HAS_EXECUTIVE relationships to list leadership names and titles.
 * "Show me the documents filed by Apple Inc." — Uses the Documents by Company Identifier tool to retrieve SEC filing metadata.
 
 === Text2Cypher Questions
@@ -121,10 +120,6 @@ Other Cypher Template questions to try:
 Try asking: **"How many products does NVIDIA Corporation mention?"**
 
 The agent translates this natural language question into a Cypher query that counts Product nodes linked to NVIDIA and returns the result.
-
-Other Text2Cypher questions to try:
-
-* "What executives does NVIDIA Corporation have?" — Generates a query to find Executive nodes and their titles associated with NVIDIA.
 
 == Step 6: (Optional) Deploy to API
 

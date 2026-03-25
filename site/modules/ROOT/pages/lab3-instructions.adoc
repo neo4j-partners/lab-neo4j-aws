@@ -29,7 +29,9 @@ TIP: For concepts and background, see xref:lab3.adoc[Lab 3: Bedrock and Agents].
 
 IMPORTANT: Select **Amazon SageMaker AI**, not "Amazon SageMaker." They are different services.
 
-image::lab3-navigate-sagemaker.png[Navigate to SageMaker AI]
+IMPORTANT: SageMaker Studio must be set up in the **US East (N. Virginia) / us-east-1** region. Verify the region selector in the upper right corner shows `us-east-1` before proceeding.
+
+image::Select_SageMaker_East_1.png[Navigate to SageMaker AI in us-east-1]
 
 === Step 2: Set Up a Domain
 

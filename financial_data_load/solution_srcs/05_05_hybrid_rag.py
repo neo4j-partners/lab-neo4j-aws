@@ -77,7 +77,7 @@ def compare_alpha_values(retriever: HybridRetriever, query: str) -> None:
     for alpha in [1.0, 0.5, 0.0]:
         label = {1.0: "Pure Vector", 0.5: "Balanced", 0.0: "Pure Fulltext"}[alpha]
 
-        results = retriever.search(query_text=query, top_k=3, alpha=alpha)
+        results = retriever.search(query_text=query, top_k=3, ranker="linear", alpha=alpha)
 
         print(f"\n--- Alpha={alpha} ({label}) ---")
         for i, item in enumerate(results.items, 1):

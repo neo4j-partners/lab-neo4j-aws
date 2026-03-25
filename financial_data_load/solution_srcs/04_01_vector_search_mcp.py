@@ -10,6 +10,7 @@ Run with: uv run python main.py solutions <N>
 
 import os
 import sys
+import uuid
 
 from dotenv import load_dotenv
 from mcp.client.streamable_http import streamablehttp_client
@@ -110,7 +111,7 @@ def main():
                 ORDER BY score DESC
             """
             result = mcp_client.call_tool_sync(
-                tool_use_id="vector-search",
+                tool_use_id=str(uuid.uuid4()),
                 name=cypher_tool,
                 arguments={"query": cypher, "params": {"query_vector": embedding}},
             )

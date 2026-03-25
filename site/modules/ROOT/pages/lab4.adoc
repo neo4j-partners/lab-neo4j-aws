@@ -10,7 +10,7 @@ TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions]
 * **Graph-enriched search** — after finding matching passages, follow graph relationships to pull in the companies, products, and risk factors connected to them
 * **Hybrid search** — combine keyword matching with semantic similarity for broader recall
 
-image::mcp-retrieval-architecture.png[Graph-Enriched Search Architecture,700]
+image::lab4-mcp-retrieval-architecture.png[Graph-Enriched Search Architecture,700]
 
 == From Filings to Searchable Knowledge
 
@@ -54,7 +54,7 @@ Notebook 01 introduces the basic pattern. A custom `@tool` function embeds the n
 
 Notebook 02 extends vector search by adding graph traversal. After finding semantically similar chunks, the agent follows relationships to pull in document metadata, neighboring chunks (via `NEXT_CHUNK`), and connected entities — companies, products, and risk factors. This context enrichment gives the agent more information to work with when generating answers.
 
-image::graph-enriched-retrieval.png[Graph-Enriched Retrieval Flow,700]
+image::lab4-graph-enriched-retrieval.png[Graph-Enriched Retrieval Flow,700]
 
 === Hybrid Search
 
@@ -62,7 +62,7 @@ Notebook 03 introduces an alternative search method: fulltext keyword search usi
 
 == How the Agent Connects: MCP
 
-The agent communicates with Neo4j through MCP (Model Context Protocol), an open standard for agent-to-tool communication. The agent sends Cypher through the `read-cypher` tool exposed by the Neo4j MCP Server, which validates every query as read-only before executing it. MCP is the transport layer for these queries, not the retrieval strategy itself. For the Text2Cypher pattern, where the agent discovers the schema and writes its own Cypher, see xref:lab6.adoc[Lab 6].
+The agent communicates with Neo4j through MCP (Model Context Protocol), an open standard for agent-to-tool communication. The agent sends Cypher through the `read-cypher` tool exposed by the Neo4j MCP Server, which validates every query as read-only before executing it. MCP is the transport layer for these queries, not the retrieval strategy itself.
 
 NOTE: The https://github.com/neo4j/mcp[Neo4j MCP Server] has been deployed to AgentCore using the https://github.com/neo4j-partners/aws-starter/tree/main/neo4j-agentcore-mcp-server[neo4j-agentcore-mcp-server starter] and connects to a database pre-loaded with Document and Chunk nodes, vector embeddings (`chunkEmbeddings` index), and fulltext indexes (`search_chunks`, `search_entities`). You do not need to deploy the server or create these data structures yourself. For details on the server's tools and architecture, see xref:lab6.adoc#_neo4j_mcp_server_tools[Lab 6].
 

@@ -10,6 +10,7 @@ Run with: uv run python main.py solutions <N>
 
 import os
 import sys
+import uuid
 
 from dotenv import load_dotenv
 from mcp.client.streamable_http import streamablehttp_client
@@ -136,17 +137,18 @@ def main():
         # ---------------------------------------------------------------------
         # 2. Basic Fulltext Search (agent uses raw MCP tools)
         # ---------------------------------------------------------------------
+        fulltext_agent = Agent(
+            model=bedrock_model,
+            system_prompt=FULLTEXT_PROMPT,
+            tools=mcp_tools,
+        )
+
         def fulltext_search(term: str, limit: int = 5):
             """Run a fulltext keyword search through the MCP agent."""
             print(f'Search term: "{term}"')
             print('-' * 60)
 
-            agent = Agent(
-                model=bedrock_model,
-                system_prompt=FULLTEXT_PROMPT,
-                tools=mcp_tools,
-            )
-            response = agent(f"Search for chunks containing '{term}'. Use limit={limit}.")
+            response = fulltext_agent(f"Search for chunks containing '{term}'. Use limit={limit}.")
             print(response)
             return response
 
@@ -167,17 +169,18 @@ def main():
         # ---------------------------------------------------------------------
         # 4. Fulltext + Graph Traversal
         # ---------------------------------------------------------------------
+        fulltext_graph_agent = Agent(
+            model=bedrock_model,
+            system_prompt=FULLTEXT_GRAPH_PROMPT,
+            tools=mcp_tools,
+        )
+
         def fulltext_graph_search(term: str, limit: int = 5):
             """Run fulltext search with graph traversal."""
             print(f'Search term: "{term}" (with graph context)')
             print('-' * 60)
 
-            agent = Agent(
-                model=bedrock_model,
-                system_prompt=FULLTEXT_GRAPH_PROMPT,
-                tools=mcp_tools,
-            )
-            response = agent(f"Search for chunks containing '{term}' with graph context. Use limit={limit}.")
+            response = fulltext_graph_agent(f"Search for chunks containing '{term}' with graph context. Use limit={limit}.")
             print(response)
             return response
 
@@ -202,7 +205,7 @@ def main():
                 ORDER BY score DESC
             """
             result = mcp_client.call_tool_sync(
-                tool_use_id="vector-search",
+                tool_use_id=str(uuid.uuid4()),
                 name=cypher_tool,
                 arguments={"query": cypher, "params": {"query_vector": embedding}},
             )
@@ -224,7 +227,7 @@ def main():
                 LIMIT {limit}
             """
             result = mcp_client.call_tool_sync(
-                tool_use_id="fulltext-search",
+                tool_use_id=str(uuid.uuid4()),
                 name=cypher_tool,
                 arguments={"query": cypher, "params": {"search_term": term}},
             )

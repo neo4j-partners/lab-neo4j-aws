@@ -205,71 +205,40 @@ Use the test script to validate all solutions against a given `.env` file:
 ./test_solutions.sh .env.gold 8-11
 ```
 
-Each solution runs with a 5-minute timeout. Solutions 9-11 (Lab 4 MCP) require `MCP_GATEWAY_URL` and `MCP_ACCESS_TOKEN` in the env file — they are skipped if not configured. The env file is sourced into the shell environment; your `.env` is not modified.
+Each solution runs with a 5-minute timeout. Solutions 3-6 (Lab 4 MCP) require `MCP_GATEWAY_URL` and `MCP_ACCESS_TOKEN` in the env file — they are skipped if not configured. The env file is sourced into the shell environment; your `.env` is not modified.
 
 ## Workshop Solutions
 
-### Data Pipeline (01_xx)
-
-These solutions build the knowledge graph — **WARNING: they will delete existing data**:
+### Lab 3: Intro to Bedrock and Agents (03_xx)
 
 | # | Solution | Description |
 |---|----------|-------------|
-| 1 | `01_01_data_loading.py` | Load financial documents into Neo4j |
-| 2 | `01_02_embeddings.py` | Generate and store vector embeddings |
-| 3 | `01_03_entity_extraction.py` | Extract entities and relationships |
-| 4 | `01_04_full_dataset_queries.py` | Explore the loaded data |
+| 1 | `03_01_basic_strands_agent.py` | Basic Strands agent with tools |
+| 2 | `03_02_deploy_to_agentcore.py` | Deploy agent to AgentCore |
 
-### Retrievers (02_xx)
+### Lab 4: Graph-Enriched Search (04_xx)
 
-GraphRAG patterns using neo4j-graphrag:
+Strands Agents SDK with MCP to search a Neo4j knowledge graph:
 
 | # | Solution | Description |
 |---|----------|-------------|
-| 5 | `02_01_vector_retriever.py` | Basic vector search |
-| 6 | `02_02_vector_cypher_retriever.py` | Vector search + custom Cypher |
-| 7 | `02_03_text2cypher_retriever.py` | Natural language to Cypher |
+| 3 | `04_00_intro_strands_mcp.py` | Intro to Strands + MCP |
+| 4 | `04_01_vector_search_mcp.py` | Vector search via MCP |
+| 5 | `04_02_graph_enriched_search_mcp.py` | Graph-enriched search via MCP |
+| 6 | `04_03_fulltext_hybrid_search_mcp.py` | Fulltext & hybrid search via MCP |
 
-### Agents (03_xx / 05_xx)
+### Lab 5: GraphRAG (05_xx)
 
-Agent patterns:
-
-| # | Solution | Description |
-|---|----------|-------------|
-| 8 | `05_01_simple_agent.py` | Basic agent with schema tool |
-| 9 | `05_02_context_provider.py` | Context provider intro (user info memory) |
-| 10 | `03_02_vector_graph_agent.py` | Agent with vector search + graph traversal |
-| 11 | `03_03_text2cypher_agent.py` | Multi-tool agent with Text2Cypher |
-
-### Search (05_xx)
-
-Advanced search patterns:
+Data pipeline and GraphRAG patterns using neo4j-graphrag:
 
 | # | Solution | Description |
 |---|----------|-------------|
-| 12 | `05_01_hybrid_rag.py` | Hybrid RAG: HybridRetriever + GraphRAG |
-| 13 | `05_02_hybrid_search.py` | Hybrid vector + keyword search |
-
-### Context Providers (06_xx)
-
-Neo4j context providers using agent-framework-neo4j:
-
-| # | Solution | Description |
-|---|----------|-------------|
-| 14 | `06_01_fulltext_context_provider.py` | Fulltext search context provider |
-| 15 | `06_02_vector_context_provider.py` | Vector (semantic) search context provider |
-| 16 | `06_03_graph_enriched_provider.py` | Vector search + graph traversal context provider |
-
-### Agent Memory (07_xx)
-
-Persistent agent memory using neo4j-agent-memory:
-
-| # | Solution | Description |
-|---|----------|-------------|
-| 17 | `07_01_memory_context_provider.py` | Memory as a context provider |
-| 18 | `07_02_entity_extraction.py` | Entity extraction pipeline |
-| 19 | `07_03_memory_tools_agent.py` | Agent with explicit memory tools |
-| 20 | `07_04_reasoning_memory.py` | Reasoning memory traces and tool stats |
+| 7 | `05_01_data_loading.py` | Load financial documents into Neo4j |
+| 8 | `05_02_embeddings.py` | Generate and store vector embeddings |
+| 9 | `05_03_vector_retriever.py` | Basic vector search |
+| 10 | `05_04_vector_cypher_retriever.py` | Vector search + custom Cypher |
+| 11 | `05_05_hybrid_rag.py` | Hybrid RAG: HybridRetriever + GraphRAG |
+| 12 | `05_06_hybrid_search.py` | Hybrid vector + keyword search |
 
 ## AI Provider
 

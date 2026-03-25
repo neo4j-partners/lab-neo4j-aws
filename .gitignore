@@ -97,7 +97,7 @@ cdk.context.json
 *.d.ts
 
 # AgentCore deployment artifacts
-.bedrock_agentcore/
+**/.bedrock_agentcore
 .bedrock_agentcore.yaml
 
 # Claude Code local settings

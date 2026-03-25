@@ -6,6 +6,7 @@ TIP: For concepts and background, see xref:lab4.adoc[Lab 4: Graph-Enriched Searc
 
 == What You'll Learn
 
+* **Strands + MCP Basics**: Connect an agent to Neo4j via MCP and query the knowledge graph using natural language (Text2Cypher)
 * **Vector Search**: Embed queries and find semantically similar chunks using Bedrock Nova embeddings
 * **Graph-Enriched Search**: Follow relationships from matched chunks to documents, companies, products, and risk factors
 * **Hybrid Search**: Combine fulltext keyword search with vector similarity using custom `@tool` wrappers
@@ -22,6 +23,10 @@ NOTE: This lab connects to Neo4j through a pre-deployed MCP server. The database
 [cols="1,2,3"]
 |===
 | Notebook | Title | What You Build
+
+| `00_intro_strands_mcp.ipynb`
+| Introduction to Strands + MCP
+| Connect an agent to Neo4j via MCP — the agent discovers tools and writes its own Cypher (Text2Cypher)
 
 | `01_vector_search_mcp.ipynb`
 | Vector Search

@@ -19,19 +19,22 @@ All credentials are stored in `CONFIG.txt` at the project root (gitignored). The
 ## Lab Code Patterns
 
 ### Lab 3 - Basic Strands Agent + AgentCore Deployment
-Location: `Lab_3_Intro_to_Bedrock_and_Agents/01_basic_strands_agent.ipynb`
+Location: `Lab_3_Intro_to_Bedrock_and_Agents/`
 
-Uses `strands.Agent` with `strands.models.BedrockModel` and `@tool` decorator. Defines simple tools (get_current_time, add_numbers), creates an agent, tests it with queries including sample SEC filing data. Ends with packaging and deploying the agent to AgentCore Runtime via `bedrock-agentcore-starter-toolkit` using `direct_code_deploy`.
+Two notebooks:
+- `01_basic_strands_agent.ipynb`: Uses `strands.Agent` with `strands.models.BedrockModel` and `@tool` decorator. Defines simple tools (get_current_time, add_numbers), creates an agent, tests it with queries including sample SEC filing data.
+- `02_deploy_to_agentcore.ipynb`: Deploys the agent to AgentCore Runtime via `bedrock-agentcore-starter-toolkit` using `direct_code_deploy`. Agent code is pre-built in `agentcore_deploy/` (agent.py + pyproject.toml).
 
 ### Lab 4 - Graph-Enriched Search
 Location: `Lab_4_Graph_Enriched_Search/`
 
-Three notebooks using Strands Agents SDK with MCP to search a Neo4j knowledge graph:
+Four notebooks using Strands Agents SDK with MCP to search a Neo4j knowledge graph:
+- `00_intro_strands_mcp.ipynb`: Introduction to Strands+MCP — agent discovers tools via `list_tools_sync()` and queries the graph directly (Text2Cypher pattern, no `@tool` wrappers)
 - `01_vector_search_mcp.ipynb`: Semantic vector search via `strands.tools.mcp.MCPClient` using Bedrock Nova embeddings
 - `02_graph_enriched_search_mcp.ipynb`: Vector search with graph traversal for enriched context (document metadata, neighboring chunks, connected entities)
 - `03_fulltext_hybrid_search_mcp.ipynb`: Fulltext keyword search and agent-driven hybrid search with custom `@tool` wrappers
 
-All three notebooks use Strands `MCPClient` with `streamablehttp_client` transport. Notebooks 01 and 03 use `lib/lab_4_data_utils.py` for Bedrock embeddings (lightweight — no neo4j dependency) and `MCPClient.call_tool_sync()` inside `@tool` wrappers for direct Cypher execution. Notebook 02 defines its own `get_embedding` inline and uses `MCPClient` in a context-manager-per-query pattern where the agent calls MCP tools directly.
+All four notebooks use Strands `MCPClient` with `streamablehttp_client` transport. Notebook 00 passes MCP tools directly to the agent (standard Strands pattern). Notebooks 01 and 03 use `lib/lab_4_data_utils.py` for Bedrock embeddings (lightweight — no neo4j dependency) and `MCPClient.call_tool_sync()` inside `@tool` wrappers for direct Cypher execution. Notebook 02 defines its own `get_embedding` inline and uses `MCPClient` in a context-manager-per-query pattern where the agent calls MCP tools directly.
 
 ### Lab 5 - GraphRAG
 Location: `Lab_5_GraphRAG/`

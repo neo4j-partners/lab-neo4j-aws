@@ -1,6 +1,6 @@
 = Lab 4: Graph-Enriched Search
 
-In Lab 3 you built an agent that calls simple tools. Now you connect an agent to your knowledge graph and explore what makes searching a knowledge graph different from searching a standalone vector database. This lab walks through three retrieval strategies that grow in sophistication — from basic vector search, to graph-enriched search that follows relationships to connected entities, to hybrid search that combines semantic and keyword matching.
+In Lab 3 you built an agent that calls simple tools. Now you connect an agent to your knowledge graph and explore what makes searching a knowledge graph different from searching a standalone vector database. This lab starts with the basics of connecting a Strands Agent to Neo4j via MCP, then walks through three retrieval strategies that grow in sophistication — from vector search, to graph-enriched search that follows relationships to connected entities, to hybrid search that combines semantic and keyword matching.
 
 TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions] for step-by-step notebook walkthroughs.
 
@@ -34,9 +34,15 @@ The graph you explored in Lab 1 — companies, products, risk factors, asset man
 
 NOTE: xref:lab5.adoc[Lab 5] covers building the data pipeline from scratch — chunking, embedding generation — and introduces the neo4j-graphrag library's retriever classes.
 
+== Strands Agents with MCP
+
+Notebook 00 introduces the foundation: connecting a Strands Agent to the Neo4j MCP Server. The agent discovers the server's tools (`get-schema`, `read-cypher`) at startup and decides which to call — no custom tool wrappers needed. You ask questions in natural language, and the agent retrieves the schema, writes Cypher, executes it, and interprets the results. This is the **Text2Cypher** pattern: the agent writes its own queries from scratch based on the graph schema.
+
+This notebook establishes the standard Strands+MCP pattern that the remaining notebooks build on. The retrieval notebooks that follow introduce `@tool` wrappers — and the reason they exist becomes clear by contrast.
+
 == Three Retrieval Strategies
 
-Each notebook builds a retrieval strategy from scratch. You write the Cypher queries by hand inside `@tool` functions, manage embedding generation yourself, and wire everything through MCP. By the end of this lab you will understand exactly what vector search, graph traversal, and fulltext search look like at the query level — the mechanics that the neo4j-graphrag library abstracts away in xref:lab5.adoc[Lab 5].
+Notebooks 01–03 each build a retrieval strategy from scratch. You write the Cypher queries by hand inside `@tool` functions, manage embedding generation yourself, and wire everything through MCP. By the end of this lab you will understand exactly what vector search, graph traversal, and fulltext search look like at the query level — the mechanics that the neo4j-graphrag library abstracts away in xref:lab5.adoc[Lab 5].
 
 Each notebook returns more context than the previous one. Vector search returns chunk text. Graph-enriched search returns chunk text plus connected entities and document metadata. Hybrid search returns results from both keyword and semantic matching, giving the agent the broadest possible context to reason over.
 
@@ -62,6 +68,8 @@ NOTE: The https://github.com/neo4j/mcp[Neo4j MCP Server] has been deployed to Ag
 
 == The @tool Pattern
 
+Notebook 00 uses the standard Strands pattern: pass MCP tools directly to the agent and let it call them. This works for structured graph queries where the agent writes its own Cypher. But vector search introduces a complication — embedding generation.
+
 Notebooks 01 and 03 wrap embedding generation and Cypher execution inside custom `@tool` functions. The agent receives a natural-language question, decides which search to run, and calls a tool function. That function handles the mechanical work the LLM should never see: generating the embedding, building the Cypher query, and sending it to Neo4j through the MCP connection. The results come back as text that the agent can reason over and present to the user.
 
 The important design choice is where the embedding lives. A 1024-dimensional vector is roughly 8–10KB of floating-point numbers. If that array passes through the LLM's context window, it wastes tokens on data the model cannot interpret, doubles the payload (once in the message, once in the tool call), and risks the model silently truncating or rounding values. Wrapping embedding generation inside a `@tool` function keeps the vector on the data plane. The agent calls `vector_search_tool("supply chain risks")` and receives chunk text and scores. It never touches the float array.
@@ -80,7 +88,7 @@ This lab focuses on graph-enriched search: using an agent to execute retrieval q
 
 == Pattern Reference
 
-The approach used in this lab — pre-written Cypher queries selected by the agent — is the **Cypher Templates** pattern from Neo4j's https://graphrag.com/reference/[GraphRAG Patterns Catalog]. It is the same pattern behind xref:lab2.adoc[Lab 2]'s Aura Agents, now implemented in code. xref:lab6.adoc[Lab 6] takes the next step with the Text2Cypher pattern, where the agent discovers the schema and writes its own Cypher from scratch.
+This lab covers two patterns from Neo4j's https://graphrag.com/reference/[GraphRAG Patterns Catalog]. Notebook 00 uses the **Text2Cypher** pattern: the agent discovers the schema and writes its own Cypher from scratch (the same pattern explored in depth in xref:lab6.adoc[Lab 6]). Notebooks 01–03 use the **Cypher Templates** pattern: pre-written Cypher queries selected by the agent, the same approach behind xref:lab2.adoc[Lab 2]'s Aura Agents, now implemented in code.
 
 == Next Steps
 

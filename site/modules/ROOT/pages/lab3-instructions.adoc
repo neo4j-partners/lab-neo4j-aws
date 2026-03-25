@@ -101,7 +101,7 @@ git clone https://github.com/neo4j-partners/lab-neo4j-aws.git
 +
 3. Once the clone completes, click the **file browser icon** (folder icon) in the left sidebar to navigate into the `labs/lab-neo4j-aws` directory
 
-== Run the Agent Notebook
+== Notebook 1: Build and Test the Agent
 
 1. In the file browser, navigate to `Lab_3_Intro_to_Bedrock_and_Agents/`
 2. Open `01_basic_strands_agent.ipynb`
@@ -112,10 +112,17 @@ git clone https://github.com/neo4j-partners/lab-neo4j-aws.git
 ** Build and run the Strands agent
 ** Test the agent with sample queries
 ** Ask questions about sample SEC financial filing data
-** Package and deploy the agent to AgentCore Runtime
+
+== Notebook 2: Deploy to AgentCore Runtime
+
+1. Open `02_deploy_to_agentcore.ipynb`
+2. The agent code is pre-built in the `agentcore_deploy/` directory
+3. Run through the cells to:
+** Review the deployment package (`agent.py` and `pyproject.toml`)
+** Configure and deploy the agent to AgentCore Runtime
 ** Invoke the deployed agent via CLI and boto3
 
-NOTE: The AgentCore deployment section at the end of the notebook creates AWS resources. When you are finished, uncomment and run the cleanup cell to destroy the deployed agent.
+NOTE: The deployment creates AWS resources. When you are finished, uncomment and run the cleanup cell to destroy the deployed agent.
 
 == Next Steps
 

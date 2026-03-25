@@ -104,11 +104,11 @@ This loop is the foundation for every agent in the workshop. Labs 4 and 5 add re
 
 == AgentCore Deployment
 
-After testing the agent locally, the notebook walks through deploying it to Amazon Bedrock AgentCore Runtime. AgentCore provides a serverless hosting environment that runs each agent session in an isolated microVM. For the full service overview, see xref:aws-services.adoc#_amazon_bedrock_agentcore[AgentCore in AWS GenAI Services].
+After testing the agent locally in the first notebook, a second notebook (`02_deploy_to_agentcore.ipynb`) walks through deploying it to Amazon Bedrock AgentCore Runtime. The agent code is pre-built in the `agentcore_deploy/` directory. AgentCore provides a serverless hosting environment that runs each agent session in an isolated microVM. For the full service overview, see xref:aws-services.adoc#_amazon_bedrock_agentcore[AgentCore in AWS GenAI Services].
 
 The deployment uses `direct_code_deploy` from the AgentCore Starter Toolkit, which packages agent code without requiring a Dockerfile:
 
-1. Create a self-contained directory with the agent code (`agent.py`) and dependencies (`pyproject.toml`)
+1. The agent code (`agent.py`) and dependencies (`pyproject.toml`) are pre-built in `agentcore_deploy/`
 2. Generate a `.bedrock_agentcore.yaml` configuration specifying the entrypoint, runtime, and the IAM execution role
 3. Run `agentcore deploy` — the toolkit packages the code, uploads it to S3, and creates the runtime environment
 4. Invoke the deployed agent via the `agentcore` CLI or programmatically with boto3

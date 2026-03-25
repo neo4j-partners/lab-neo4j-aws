@@ -485,6 +485,8 @@ SOLUTIONS = [
     ("solution_srcs.02_02_vector_cypher_retriever", "Vector Cypher Retriever", False, "main"),
     ("solution_srcs.02_03_text2cypher_retriever", "Text2Cypher Retriever", False, "main"),
     ("solution_srcs.03_01_basic_strands_agent", "Basic Strands Agent (Lab 3)", False, "main"),
+    ("solution_srcs.03_02_deploy_to_agentcore", "Deploy to AgentCore (Lab 3)", False, "main"),
+    ("solution_srcs.04_00_intro_strands_mcp", "Intro to Strands + MCP (Lab 4)", False, "main"),
     ("solution_srcs.04_01_vector_search_mcp", "Vector Search via MCP (Lab 4)", False, "main"),
     ("solution_srcs.04_02_graph_enriched_search_mcp", "Graph-Enriched Search via MCP (Lab 4)", False, "main"),
     ("solution_srcs.04_03_fulltext_hybrid_search_mcp", "Fulltext & Hybrid Search via MCP (Lab 4)", False, "main"),
@@ -529,24 +531,25 @@ def _print_solutions_menu():
     print("\nLab 3 - Basic Agent:")
     print("  8. Basic Strands Agent")
     print("\nLab 4 - Graph-Enriched Search:")
-    print("  9. Vector Search via MCP")
-    print(" 10. Graph-Enriched Search via MCP")
-    print(" 11. Fulltext & Hybrid Search via MCP")
+    print("  9. Intro to Strands + MCP")
+    print(" 10. Vector Search via MCP")
+    print(" 11. Graph-Enriched Search via MCP")
+    print(" 12. Fulltext & Hybrid Search via MCP")
     print("\nAgents:")
-    print(" 12. Simple Agent")
-    print(" 13. Context Provider Intro")
+    print(" 13. Simple Agent")
+    print(" 14. Context Provider Intro")
     print("\nSearch:")
-    print(" 14. Fulltext Search")
-    print(" 15. Hybrid Search")
+    print(" 15. Fulltext Search")
+    print(" 16. Hybrid Search")
     print("\nContext Providers:")
-    print(" 16. Fulltext Context Provider")
-    print(" 17. Vector Context Provider")
-    print(" 18. Graph-Enriched Provider")
+    print(" 17. Fulltext Context Provider")
+    print(" 18. Vector Context Provider")
+    print(" 19. Graph-Enriched Provider")
     print("\nAgent Memory:")
-    print(" 19. Memory Context Provider")
-    print(" 20. Entity Extraction Pipeline")
-    print(" 21. Memory Tools Agent")
-    print(" 22. Reasoning Memory")
+    print(" 20. Memory Context Provider")
+    print(" 21. Entity Extraction Pipeline")
+    print(" 22. Memory Tools Agent")
+    print(" 23. Reasoning Memory")
     print("\n  A. Run all (from option 4 onwards)")
     print("  0. Exit")
     print("=" * 50)
@@ -608,7 +611,7 @@ def cmd_solutions(args):
     while True:
         _print_solutions_menu()
         try:
-            choice = input("\nSelect solution (0-20, A):").strip()
+            choice = input("\nSelect solution (0-23, A):").strip()
             if not choice:
                 continue
             if choice.upper() == "A":

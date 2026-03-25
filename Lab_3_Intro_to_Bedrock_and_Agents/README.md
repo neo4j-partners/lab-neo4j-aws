@@ -1,6 +1,6 @@
 # Lab 3 - Building AI Agents with Amazon Bedrock and SageMaker
 
-This lab sets up your SageMaker development environment and walks through building a basic AI agent with the Strands Agents SDK and Amazon Bedrock, then deploys it to AgentCore Runtime.
+This lab sets up your SageMaker development environment, walks through building a basic AI agent with the Strands Agents SDK and Amazon Bedrock, and then deploys it to AgentCore Runtime.
 
 ## What You'll Learn
 
@@ -85,7 +85,7 @@ This lab sets up your SageMaker development environment and walks through buildi
       ```
 3. Once the clone completes, click the **file browser icon** (folder icon) in the left sidebar to navigate into the `labs/lab-neo4j-aws` directory
 
-## Run the Agent Notebook
+## Notebook 1: Build and Test the Agent
 
 1. Open [01_basic_strands_agent.ipynb](01_basic_strands_agent.ipynb) in this lab folder
 2. The notebook loads configuration from `../CONFIG.txt` (MODEL_ID and REGION)
@@ -95,12 +95,19 @@ This lab sets up your SageMaker development environment and walks through buildi
    - Create a Strands agent with BedrockModel
    - Test the agent with sample queries
    - Ask questions about sample SEC financial filing data
-   - Package and deploy the agent to AgentCore Runtime
+
+## Notebook 2: Deploy to AgentCore Runtime
+
+1. Open [02_deploy_to_agentcore.ipynb](02_deploy_to_agentcore.ipynb)
+2. The agent code is pre-built in the `agentcore_deploy/` directory
+3. Run through the cells to:
+   - Review the deployment package (agent.py and pyproject.toml)
+   - Configure and deploy the agent to AgentCore Runtime
    - Invoke the deployed agent via CLI and boto3
 
 ## Explore AgentCore in the Console
 
-After deploying the agent from the notebook, you can view and test it directly in the AWS console.
+After deploying the agent from the second notebook, you can view and test it directly in the AWS console.
 
 ### Step 1: Navigate to AgentCore
 

@@ -480,6 +480,7 @@ SOLUTIONS = [
     ("solution_srcs.04_01_load_and_query", "Load Data and Query (Lab 4)", False, "main"),
     ("solution_srcs.04_02_vector_retriever", "Vector Retriever (Lab 4)", False, "main"),
     ("solution_srcs.04_03_vector_cypher_retriever", "VectorCypher Retriever (Lab 4)", False, "main"),
+    ("solution_srcs.04_04_strands_graphrag_agent", "Strands GraphRAG Agent (Lab 4)", False, "main"),
     ("solution_srcs.05_01_intro_strands_mcp", "Intro to Strands + MCP (Lab 5)", False, "main"),
     ("solution_srcs.05_02_graph_enriched_search", "Graph-Enriched Search via MCP (Lab 5)", False, "main"),
     ("solution_srcs.05_03_text2cypher_agent", "Text2Cypher Agent (Lab 5)", False, "main"),
@@ -503,17 +504,19 @@ def _print_solutions_menu():
     print("  3. Load Data and Query")
     print("  4. Vector Retriever")
     print("  5. VectorCypher Retriever")
+    print("  6. Strands GraphRAG Agent")
     print("\nLab 5 - MCP Server:")
-    print("  6. Intro to Strands + MCP")
-    print("  7. Graph-Enriched Search via MCP")
-    print("  8. Text2Cypher Agent")
-    print("\nLab 6 - GraphRAG Pipeline (WARNING: 9 will delete all data):")
-    print("  9. Data Loading")
-    print(" 10. Embeddings")
-    print(" 11. VectorCypher Retriever")
+    print("  7. Intro to Strands + MCP")
+    print("  8. Graph-Enriched Search via MCP")
+    print("  9. Text2Cypher Agent")
+    print("\nLab 6 - GraphRAG Pipeline (WARNING: 10 will delete all data):")
+    print(" 10. Data Loading")
+    print(" 11. Embeddings")
+    print(" 12. VectorCypher Retriever")
     print("\n  A. Run all")
     print("  0. Exit")
     print("=" * 50)
+
 
 
 def _run_solution(choice: int) -> bool:
@@ -572,7 +575,7 @@ def cmd_solutions(args):
     while True:
         _print_solutions_menu()
         try:
-            choice = input("\nSelect solution (0-11, A):").strip()
+            choice = input("\nSelect solution (0-12, A):").strip()
             if not choice:
                 continue
             if choice.upper() == "A":
@@ -759,7 +762,7 @@ def main():
     p_solutions = subparsers.add_parser(
         "solutions", help="Workshop solution runner")
     p_solutions.add_argument(
-        "choice", nargs="?", help="Solution number (1-11) or A for all")
+        "choice", nargs="?", help="Solution number (1-12) or A for all")
     p_solutions.set_defaults(func=cmd_solutions)
 
     args = parser.parse_args()

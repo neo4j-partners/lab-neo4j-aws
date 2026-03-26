@@ -9,6 +9,7 @@ TIP: Ready to start? Jump to the xref:lab4-instructions.adoc[Lab 4 Instructions]
 * **Data loading**: add pre-computed chunk embeddings and cross-links to the existing knowledge graph
 * **Vector search**: find text passages whose meaning is closest to your question using `VectorRetriever`
 * **Graph-enriched search**: after finding matching passages, follow graph relationships to pull in companies, products, and risk factors using `VectorCypherRetriever`
+* **Agent-driven retrieval**: wrap both retrievers as Strands `@tool` functions and let the agent choose the right strategy per question
 
 == The Two-Layer Graph
 

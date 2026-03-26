@@ -66,8 +66,10 @@ image::lab1-gds-panel.png[Graph Data Science]
 
 == Apply Community Detection
 
+Louvain is a community detection algorithm that identifies clusters of nodes which are more densely connected to each other than to the rest of the graph. It assigns each node a community ID — an arbitrary numeric label (e.g. 634, 485). The number itself has no ranking or magnitude; what matters is which nodes share the same ID, meaning they belong to the same cluster. Nodes in the same community share similar connection patterns, even if they aren't directly connected to each other.
+
 1. Click **Add algorithm**
-2. Select **Louvain** from the Algorithm dropdown. The Louvain method detects communities by finding groups of nodes that are more densely connected to each other than to the rest of the graph
+2. Select **Louvain** from the Algorithm dropdown
 3. Click **Apply algorithm** to run the analysis
 4. Under **Rule-based styling**, toggle on **Unique colors**. This assigns a distinct color to each community
 

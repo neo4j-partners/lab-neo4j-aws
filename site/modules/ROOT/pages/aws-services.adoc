@@ -1,6 +1,6 @@
 = AWS GenAI Services
 
-Building a GraphRAG agent requires three capabilities: access to foundation models for reasoning and embedding, a development environment for iterating on agent code, and a deployment target for running agents as callable services. Amazon Bedrock provides the models, SageMaker Studio provides the development environment, and AgentCore Runtime provides the deployment target. Each handles one layer of the GenAI stack, and they connect through standard AWS IAM and API patterns.
+Building a GraphRAG agent requires three capabilities: access to foundation models for reasoning and embedding, a development environment for iterating on agent code, and a deployment target for running agents as callable services. Amazon Bedrock provides the models, SageMaker Studio provides the development environment, and AgentCore Runtime provides the deployment target. Each handles one layer of the GenAI stack.
 
 .**At a Glance**
 
@@ -28,7 +28,7 @@ Each user session runs in a dedicated microVM with isolated CPU, memory, and fil
 
 === Framework and Protocol Support
 
-AgentCore is framework agnostic. It works with LangGraph, Strands Agents SDK, CrewAI, and custom agent code without a specific framework. It also supports MCP (Model Context Protocol) and A2A (Agent-to-Agent) protocols for inter-agent and agent-to-tool communication. In this workshop, Lab 3 deploys a Strands agent to AgentCore, and Labs 4 and 6 connect to Neo4j MCP Servers hosted on AgentCore.
+AgentCore is framework agnostic. It works with LangGraph, Strands Agents SDK, CrewAI, and custom agent code without a specific framework. It also supports MCP (Model Context Protocol) and A2A (Agent-to-Agent) protocols for inter-agent and agent-to-tool communication. In this workshop, Lab 3 deploys a Strands agent to AgentCore, and Lab 5 connects to a Neo4j MCP Server hosted on AgentCore.
 
 == Amazon SageMaker Studio
 
@@ -70,13 +70,13 @@ During development, notebooks call Bedrock directly and iterate on the agent loo
 | SageMaker Studio (environment setup), Bedrock (Converse API, tool use), AgentCore (agent deployment)
 
 | xref:lab4.adoc[Lab 4]
-| Bedrock (Nova embeddings, Claude reasoning), AgentCore (MCP Server hosting)
-
-| xref:lab5.adoc[Lab 5]
 | Bedrock (Nova embeddings, Claude reasoning)
 
+| xref:lab5.adoc[Lab 5]
+| Bedrock (Nova embeddings, Claude reasoning), AgentCore (MCP Gateway, MCP Server hosting)
+
 | xref:lab6.adoc[Lab 6]
-| Bedrock (Claude reasoning), AgentCore (MCP Server hosting)
+| Bedrock (Nova embeddings, Claude reasoning)
 |===
 
 == Next Steps

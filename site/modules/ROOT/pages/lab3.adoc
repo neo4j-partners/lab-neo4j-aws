@@ -104,6 +104,8 @@ Current foundation models can plan multi-step tool use, recover from errors, and
 
 == AgentCore Deployment
 
+NOTE: In the hosted workshop environment, this lab may not work due to permissions issues with the AgentCore deployment.
+
 After testing the agent locally in the first notebook, a second notebook (`02_deploy_to_agentcore.ipynb`) walks through deploying it to Amazon Bedrock AgentCore Runtime. The agent code is pre-built in the `agentcore_deploy/` directory. AgentCore provides a serverless hosting environment that runs each agent session in an isolated microVM. For the full service overview, see xref:aws-services.adoc#_amazon_bedrock_agentcore[AgentCore in AWS GenAI Services].
 
 The deployment uses `direct_code_deploy` from the AgentCore Starter Toolkit, which packages agent code without requiring a Dockerfile:

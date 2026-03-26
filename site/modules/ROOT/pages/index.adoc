@@ -6,6 +6,13 @@ This workshop teaches you to build Graph Retrieval-Augmented Generation (GraphRA
 
 NOTE: This lab is built from the GitHub repository at https://github.com/neo4j-partners/lab-neo4j-aws/tree/main[neo4j-partners/lab-neo4j-aws].
 
+.**At a Glance**
+
+* **Neo4j Aura**: graph database with built-in vector search that stores the SEC financial knowledge graph
+* **Amazon Bedrock**: foundation models (Claude for reasoning, Nova for embeddings) and AgentCore for agent deployment
+* **Databricks**: lakehouse platform that governs and pipelines enterprise data into the knowledge graph
+* **What you'll build**: GraphRAG agents that combine vector search, graph traversal, and MCP-based tool use to answer questions over financial filings
+
 == Graph Intelligence Meets Generative AI
 
 Neo4j Aura is the Graph Intelligence Platform. It makes connections between entities explicit and traversable. Amazon Bedrock provides managed access to foundation models for reasoning and embedding. Databricks is the Data Intelligence Platform. It handles structured and unstructured data at scale through the lakehouse architecture with unified governance. Together they form a complete GraphRAG stack: Databricks aggregates and governs enterprise data, Neo4j makes relationships traversable for retrieval, and Bedrock provides the reasoning and generation layer.
@@ -44,6 +51,8 @@ The SEC financial dataset includes six entity types connected by typed relations
 
 image::financial-data-model.png[SEC 10-K Financial Data Model,800]
 
+This diagram shows the structured layer loaded in Lab 1. In xref:lab4.adoc[Lab 4], you add the unstructured layer: Document and Chunk nodes with embeddings that connect filing text back to these entities, enabling graph-enriched retrieval.
+
 == Data Pipeline: Databricks to Neo4j
 
 The SEC 10-K data flows from Databricks to Neo4j through the Neo4j Spark Connector. Governed Delta tables in the lakehouse, refined through the medallion pattern (bronze, silver, gold) and managed by Unity Catalog, serve as the source of record. The Spark Connector reads from silver tables and writes nodes and relationships into the knowledge graph: table rows become nodes, foreign keys become relationships, and shared attributes become shared nodes that make connections explicit.
@@ -60,18 +69,18 @@ image::workshop-architecture.png[Workshop Architecture,800]
 
 == Labs
 
-=== Part 1: Setup & Visual Exploration with Neo4j
+=== Part 1: Setup & Visual Exploration with Neo4j (Labs 0-2)
 
 [cols="1,3,1"]
 |===
 | Lab | Description | Duration
 
 | xref:lab0.adoc[Lab 0]
-| Sign In to AWS and verify Bedrock access
+| AWS Console sign-in and Bedrock access verification
 | 10 min
 
 | xref:lab1.adoc[Lab 1]
-| Neo4j Aura Setup, data loading, and graph exploration
+| Sign up for Neo4j Aura, load knowledge graph via Cypher, explore graph
 | 30 min
 
 | xref:lab2.adoc[Lab 2]
@@ -79,33 +88,33 @@ image::workshop-architecture.png[Workshop Architecture,800]
 | 20 min
 |===
 
-=== Part 2: Building GraphRAG Agents
+=== Part 2: Building GraphRAG Agents (Labs 3-5)
 
 [cols="1,3,1"]
 |===
 | Lab | Description | Duration
 
 | xref:lab3.adoc[Lab 3]
-| Amazon Bedrock, SageMaker setup, Strands agents, and AgentCore deployment
+| SageMaker setup, Strands Agents SDK, tool binding, ReAct pattern, AgentCore deployment
 | 30 min
 
 | xref:lab4.adoc[Lab 4]
-| Graph-enriched search: vector, graph-traversal, and hybrid retrieval over a knowledge graph
+| Load chunk embeddings, vector retrieval, and vector-cypher retrieval over a knowledge graph
 | 30 min
+
+| xref:lab5.adoc[Lab 5]
+| Strands Agents with MCP: tool discovery, Cypher Templates, and Text2Cypher patterns
+| 45 min
 |===
 
-=== Part 3: Advanced GraphRAG Patterns
+=== Part 3: Bonus — Build Your Own Pipeline
 
 [cols="1,3,1"]
 |===
 | Lab | Description | Duration
 
-| xref:lab5.adoc[Lab 5]
-| MCP-based GraphRAG agents: Cypher Templates, Text2Cypher, and schema-first query generation
-| 45 min
-
 | xref:lab6.adoc[Lab 6]
-| Build the GraphRAG data pipeline from scratch: chunking, embeddings, and graph-enriched retrieval
+| Build a GraphRAG data pipeline from scratch: data loading, embeddings, and vector-cypher retrieval
 | 30 min
 |===
 

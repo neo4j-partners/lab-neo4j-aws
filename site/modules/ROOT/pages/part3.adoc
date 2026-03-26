@@ -1,0 +1,9 @@
+= Part 3: Build Your Own Pipeline
+
+This bonus part takes you behind the scenes to build a GraphRAG data pipeline from scratch.
+
+You will wipe the graph, reload structured data from JSON, generate embeddings with Amazon Nova, and wire up vector-cypher retrieval — giving you a complete, end-to-end view of how a GraphRAG pipeline comes together.
+
+== Labs
+
+* xref:lab6.adoc[Lab 6: GraphRAG Pipeline] — Data loading, embedding generation, and vector-cypher retrieval

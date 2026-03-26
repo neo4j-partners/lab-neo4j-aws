@@ -1,0 +1,13 @@
+= Part 2: Building GraphRAG Agents
+
+This part adds the unstructured layer and builds agents that retrieve across both layers of the knowledge graph.
+
+You will use the Strands Agents SDK with Amazon Bedrock to build agents that combine vector search and graph traversal for retrieval. The labs progress from a basic agent with simple tools, to graph-enriched vector retrieval using the neo4j-graphrag library, to connecting agents to the Neo4j knowledge graph through MCP servers.
+
+image::two-layer-graph.png[The Two-Layer Graph,800]
+
+== Labs
+
+* xref:lab3.adoc[Lab 3: Bedrock & Agents] — Strands Agents SDK, ReAct pattern, and AgentCore deployment
+* xref:lab4.adoc[Lab 4: GraphRAG Retrievers] — Vector retrieval and vector-cypher retrieval over the knowledge graph
+* xref:lab5.adoc[Lab 5: Neo4j MCP Server] — MCP tool discovery, Cypher Templates, and Text2Cypher patterns

@@ -25,7 +25,7 @@ Two notebooks:
 - `01_basic_strands_agent.ipynb`: Uses `strands.Agent` with `strands.models.BedrockModel` and `@tool` decorator. Defines simple tools (get_current_time, add_numbers), creates an agent, tests it with queries including sample SEC filing data.
 - `02_deploy_to_agentcore.ipynb`: Deploys the agent to AgentCore Runtime via `bedrock-agentcore-starter-toolkit` using `direct_code_deploy`. Agent code is pre-built in `agentcore_deploy/` (agent.py + pyproject.toml).
 
-### Lab 4 - GraphRAG Retrievers
+### Lab 4 - neo4j-graphrag Library
 Location: `Lab_4_GraphRAG_Search/`
 
 Three notebooks using the neo4j-graphrag Python library with direct Python driver connections:

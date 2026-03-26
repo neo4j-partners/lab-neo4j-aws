@@ -1,8 +1,8 @@
-= Lab 4 Instructions: GraphRAG Retrievers
+= Lab 4 Instructions: neo4j-graphrag Library
 
 Follow these notebooks to load chunk embeddings into your knowledge graph, build retrieval pipelines that progress from pure vector search to graph-enriched retrieval, then combine both retrievers in a Strands agent that chooses the right strategy per question.
 
-TIP: For concepts and background, see xref:lab4.adoc[Lab 4: GraphRAG Retrievers].
+TIP: For concepts and background, see xref:lab4.adoc[Lab 4: neo4j-graphrag Library].
 
 == What You'll Learn
 

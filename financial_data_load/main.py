@@ -471,7 +471,7 @@ def cmd_samples(args):
 # Solution definitions: (module_name, title, is_async, entry_func)
 # Module prefixes align with workshop labs:
 #   03_xx = Lab 3 (Intro to Bedrock and Agents)
-#   04_xx = Lab 4 (GraphRAG Retrievers)
+#   04_xx = Lab 4 (neo4j-graphrag Library)
 #   05_xx = Lab 5 (MCP Server)
 #   06_xx = Lab 6 (GraphRAG Pipeline)
 SOLUTIONS = [
@@ -500,7 +500,7 @@ def _print_solutions_menu():
     print("\nLab 3 - Intro to Bedrock and Agents:")
     print("  1. Basic Strands Agent")
     print("  2. Deploy to AgentCore")
-    print("\nLab 4 - GraphRAG Retrievers:")
+    print("\nLab 4 - neo4j-graphrag Library:")
     print("  3. Load Data and Query")
     print("  4. Vector Retriever")
     print("  5. VectorCypher Retriever")

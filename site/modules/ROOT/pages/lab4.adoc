@@ -1,4 +1,4 @@
-= Lab 4: GraphRAG Retrievers
+= Lab 4: neo4j-graphrag Library
 
 In Lab 3 you built an agent that calls simple tools. Now you connect directly to your knowledge graph using the neo4j-graphrag Python library and build retrieval pipelines that progress from pure vector search to graph-enriched search, then wrap both retrievers as Strands agent tools so the model picks the right strategy per question. This lab uses the same Neo4j Aura instance from Labs 1 and 2. You load the unstructured layer (document chunks with embeddings) on top of the structured graph you already built.
 
@@ -18,6 +18,18 @@ The graph you explored in Lab 1 (companies, products, risk factors, asset manage
 The `FILED` relationship bridges the two layers: `(Company)-[:FILED]->(Document)`. When graph-enriched search traverses from a chunk to its source document to the company that filed it, it crosses from unstructured text into the structured entities you already know. That traversal chain, `(Chunk)-[:FROM_DOCUMENT]->(Document)<-[:FILED]-(Company)`, is what makes GraphRAG possible.
 
 image::two-layer-graph.png[The Two-Layer Graph,800]
+
+== The neo4j-graphrag Library
+
+This lab uses the https://github.com/neo4j/neo4j-graphrag-python[neo4j-graphrag] Python library, which provides the building blocks for GraphRAG applications on Neo4j:
+
+* **Retrievers**: `VectorRetriever` and `VectorCypherRetriever` handle embedding the query, running the vector search, and (for Cypher retrievers) traversing the graph to enrich results with structured context
+* **GraphRAG pipeline**: combines a retriever with an LLM to go from a natural-language question to a grounded answer in a single call
+* **LLM and Embedder abstractions**: pluggable providers including Bedrock, OpenAI, Anthropic, Cohere, and Vertex AI
+* **Knowledge Graph Construction**: `SimpleKGPipeline` for building graphs from text and PDFs (used in xref:lab6.adoc[Lab 6])
+* **Vector index utilities**: `create_vector_index` and `upsert_vectors` for managing Neo4j vector indexes
+
+The library handles the plumbing so you can focus on retrieval strategy rather than low-level Cypher and embedding management.
 
 == Chunks, Embeddings, and Graph-Enriched Search
 

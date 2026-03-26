@@ -19,7 +19,7 @@ A hands-on workshop teaching Graph Retrieval-Augmented Generation (GraphRAG) pat
 | Lab | Title | Description |
 |-----|-------|-------------|
 | [Lab 3](Lab_3_Intro_to_Bedrock_and_Agents/README.md) | Intro to Bedrock and Agents | SageMaker setup, Strands Agents SDK, tool binding, ReAct pattern, AgentCore deployment |
-| [Lab 4](Lab_4_GraphRAG_Search/README.md) | GraphRAG Retrievers | Load chunk embeddings, vector retrieval, and vector-cypher retrieval over a knowledge graph |
+| [Lab 4](Lab_4_GraphRAG_Search/README.md) | neo4j-graphrag Library | Load chunk embeddings, vector retrieval, and vector-cypher retrieval over a knowledge graph |
 | [Lab 5](Lab_5_MCP_Server/README.md) | Neo4j MCP Server | Strands Agents with MCP: tool discovery, Cypher Templates, and Text2Cypher patterns |
 
 ### Part 3: Bonus — Build Your Own Pipeline

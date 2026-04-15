@@ -74,15 +74,15 @@ This lab sets up your SageMaker development environment, walks through building 
 1. With the `labs` folder open, click on the **Git icon** in the left sidebar (it looks like a diamond/branch symbol)
 2. If a **Clone a Repository** button is visible, click it and enter the repository URL:
    ```
-   https://github.com/neo4j-partners/lab-neo4j-aws.git
+   https://github.com/neo4j-partners/neo4j-bedrock-graphrag-workshop.git
    ```
    If the clone button is not available, open a terminal instead:
    1. In the JupyterLab Launcher, click **Terminal** under the **Other** section
    2. Run these commands to clone the repository into your labs folder:
       ```bash
-      git clone https://github.com/neo4j-partners/lab-neo4j-aws.git
+      git clone https://github.com/neo4j-partners/neo4j-bedrock-graphrag-workshop.git
       ```
-3. Once the clone completes, click the **file browser icon** (folder icon) in the left sidebar to navigate into the `labs/lab-neo4j-aws` directory
+3. Once the clone completes, click the **file browser icon** (folder icon) in the left sidebar to navigate into the `labs/neo4j-bedrock-graphrag-workshop` directory
 
 ## Notebook 1: Build and Test the Agent
 

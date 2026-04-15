@@ -84,7 +84,7 @@ Amazon Bedrock is available in select regions. For this workshop, we recommend *
 
 ## Improving the Labs
 
-As you work through these labs, we'd appreciate your feedback. Help us improve by opening an issue at [GitHub Issues](https://github.com/neo4j-partners/lab-neo4j-aws/issues). Bug reports, usability suggestions, and general comments are all welcome. Pull requests are great too!
+As you work through these labs, we'd appreciate your feedback. Help us improve by opening an issue at [GitHub Issues](https://github.com/neo4j-partners/neo4j-bedrock-graphrag-workshop/issues). Bug reports, usability suggestions, and general comments are all welcome. Pull requests are great too!
 
 ## Next Steps
 

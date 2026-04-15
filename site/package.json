@@ -1,5 +1,5 @@
 {
-  "name": "lab-neo4j-aws",
+  "name": "neo4j-bedrock-graphrag-workshop",
   "version": "1.0.0",
   "description": "Neo4j + AWS Bedrock: GraphRAG Workshop",
   "scripts": {

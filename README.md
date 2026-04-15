@@ -1,6 +1,6 @@
 # Neo4j and AWS Bedrock GraphRAG Workshop
 
-**[View the full workshop guide](https://neo4j-partners.github.io/lab-neo4j-aws)**
+**[View the full workshop guide](https://neo4j-partners.github.io/neo4j-bedrock-graphrag-workshop)**
 
 A hands-on workshop teaching Graph Retrieval-Augmented Generation (GraphRAG) patterns using Neo4j Aura and Amazon Bedrock. You will build and query a knowledge graph of SEC 10-K financial filings, then connect AI agents that retrieve structured and unstructured data to answer questions about companies, risk factors, and institutional ownership.
 
@@ -42,8 +42,8 @@ Follow [Lab 3](Lab_3_Intro_to_Bedrock_and_Agents/README.md) to set up SageMaker 
 ### Option 2: Local Development
 
 ```bash
-git clone https://github.com/neo4j-partners/lab-neo4j-aws.git
-cd lab-neo4j-aws
+git clone https://github.com/neo4j-partners/neo4j-bedrock-graphrag-workshop.git
+cd neo4j-bedrock-graphrag-workshop
 
 # Copy and fill in your credentials
 cp CONFIG.txt CONFIG.txt.local
@@ -98,7 +98,7 @@ User Query → AI Agent → Tool Selection
 ## Contributing
 
 We welcome contributions! To report bugs or suggest improvements, open an issue at:
-https://github.com/neo4j-partners/lab-neo4j-aws/issues
+https://github.com/neo4j-partners/neo4j-bedrock-graphrag-workshop/issues
 
 ## License
 

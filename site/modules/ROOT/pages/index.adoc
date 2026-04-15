@@ -4,7 +4,7 @@
 
 This workshop teaches you to build Graph Retrieval-Augmented Generation (GraphRAG) pipelines using Neo4j Aura and Amazon Bedrock. You will work with SEC 10-K financial filing data including companies, products, risk factors, and institutional ownership, progressing from no-code tools to building custom AI agents.
 
-NOTE: This lab is built from the GitHub repository at https://github.com/neo4j-partners/lab-neo4j-aws/tree/main[neo4j-partners/lab-neo4j-aws].
+NOTE: This lab is built from the GitHub repository at https://github.com/neo4j-partners/neo4j-bedrock-graphrag-workshop/tree/main[neo4j-partners/neo4j-bedrock-graphrag-workshop].
 
 .**At a Glance**
 
